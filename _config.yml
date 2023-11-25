@@ -20,9 +20,6 @@
 
 title: komidawi's blog
 email: komidawi@gmail.com
-description: >- # this means to ignore newlines until "baseurl:"
-  This is just a small set of notes done by me :)
-  Hope some of them will be helpful to you!
 baseurl: "/KnowledgeBaseBlog" # the subpath of your site, e.g. /blog
 url: "https://komidawi.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 github_username: komidawi
@@ -31,6 +28,16 @@ github_username: komidawi
 remote_theme: jekyll/minima
 minima:
   skin: dark
+  social_links:
+    - platform: github
+      user_url: "https://github.com/komidawi"
+      title: github.com/komidawi
+    - platform: linkedin
+      user_url: "https://www.linkedin.com/in/dawidkomisarczuk/"
+      title: linkedin.com/in/dawidkomisarczuk
+    - platform: stackoverflow
+      user_url: "https://stackoverflow.com/users/10699128/komidawi" 
+      title: stackoverflow.com/users/10699128/komidawi
 plugins:
   - jekyll-remote-theme # add this line to the plugins list if you already have one
 
