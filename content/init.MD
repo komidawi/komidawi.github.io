@@ -1,7 +1,7 @@
 ---
 layout: page
-title: shell
-permalink: /shell/
+title: init
+permalink: /init/
 ---
 
 ```bash

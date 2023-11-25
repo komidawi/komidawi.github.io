@@ -4,9 +4,9 @@ title: Terraform
 permalink: /terraform/
 ---
 
-# Terraform
+# Table of contents
 
-- [Terraform](#terraform)
+- [Table of contents](#table-of-contents)
   - [Syntax](#syntax)
   - [Variables](#variables)
     - [Best practices](#best-practices)
