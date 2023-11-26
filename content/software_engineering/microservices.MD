@@ -18,7 +18,7 @@ permalink: /microservices/
   - [Microservice pain points](#microservice-pain-points)
   - [Should I use Microservices?](#should-i-use-microservices)
     - [When rather not](#when-rather-not)
-  - [When rather yes](#when-rather-yes)
+    - [When rather yes](#when-rather-yes)
 - [Source](#source)
 
 
@@ -142,7 +142,7 @@ It will be than a single unit of deployment - **everything** must be deployed to
     - It's better to migrate to microservices when you understand the constraints of the current architecture and possible tradeoffs
 
 
-## When rather yes
+### When rather yes
 
 1. When you want to allow more developers work on the same system without conflicts
 2. SaaS products

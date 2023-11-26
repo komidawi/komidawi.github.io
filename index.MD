@@ -74,9 +74,7 @@ It was the first project I have ever made. Although it's mostly just modified tu
 
 <br />
 
-### Contact:
+## Contact
 [<img align="left" alt="komidawi | GMail" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/gmail.svg" />][gmail]
-[<img align="left" alt="komidawi | LinkedIn" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/linkedin.svg" />][linkedin]<br />
 
-[linkedin]: https://www.linkedin.com/in/dawidkomisarczuk/
 [gmail]: mailto:komidawi@gmail.com
