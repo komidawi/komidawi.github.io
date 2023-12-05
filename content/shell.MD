@@ -2,6 +2,7 @@
 layout: page
 title: shell
 permalink: /shell/
+comments: true
 ---
 
 # Zsh + Oh-my-zsh + Powerlevel10k
@@ -41,19 +42,21 @@ permalink: /shell/
    - Press again for next occurrence
 7. Quick `cd`
    - You can move into folders by name of the folder without `cd`
-8. Command parking
+1. List last visited dirs
+   1. `d` (shortcut for `dirs -v`)
+2. Command parking
    - Press `Ctrl + Q` to hide current command
    - After invoking another command, the first one comes back
-9. Open command in editor
+3. Open command in editor
    - `Ctrl + X`, `Ctrl + E`
    - Opens in default editor (`$EDITOR`)
    - Useful for long commands
-10. cd shortcuts
+4.  cd shortcuts
     - `cd ....` \
     -> moves 4 levels up
     - `cd -`\
     -> jumps to previous path
-11. Extensive search
+5.  Extensive search
     - `ls *.txt`\
         -> text files
     - `ls **/*.txt`\

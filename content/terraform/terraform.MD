@@ -2,6 +2,7 @@
 layout: page
 title: Terraform
 permalink: /terraform/
+comments: true
 ---
 
 # Table of contents

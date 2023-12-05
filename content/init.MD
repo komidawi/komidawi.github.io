@@ -2,6 +2,7 @@
 layout: page
 title: init
 permalink: /init/
+comments: true
 ---
 
 ```bash
