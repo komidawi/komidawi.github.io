@@ -2,7 +2,6 @@
 layout: page
 title: Microservices
 permalink: /microservices/
-comments: true
 ---
 
 # Table of Contents

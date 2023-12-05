@@ -2,7 +2,6 @@
 layout: page
 title: Markdown
 permalink: /markdown/
-comments: true
 ---
 
 # Adding Elements in Lists

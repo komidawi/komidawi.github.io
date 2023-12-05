@@ -2,7 +2,6 @@
 layout: page
 title: shell
 permalink: /shell/
-comments: true
 ---
 
 # Zsh + Oh-my-zsh + Powerlevel10k
@@ -71,4 +70,17 @@ comments: true
         -> search only files
     - `ls **/*(/)`
         -> search only folders
-    
+1. Complex alias
+   1. In general:
+        ```bash
+        aliasname() {
+            command $firstParam $secondParam
+        }
+        ```
+    1. Example:
+        ```bash
+        getaks() {
+            az aks list -g $1 -o $2
+        }
+        ```
+2. 
