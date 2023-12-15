@@ -13,10 +13,14 @@ layout: home
 
 ## About me
 
-* IT enthusiast keen on programming
-* JVM fan: Java liker, Kotlin lover 😉
-* ~4 years of commercial experience, mostly in backend
-* Computer Science BSc
+
+<img src="/assets/img/avatar-komidawi-circle.png" width="100px" height="auto" style="float: left; margin-right: 35px;"/>
+
+* I'm a Computer Science and Programming enthusiast
+* JVM languages fan: Java liker, Kotlin lover 😉
+* 4+ years of commercial experience, mostly in backend
+* Computer Science BSc graduate (AGH, Cracow, Poland)
+
 
 <sub>Java, Kotlin, Spring, Spring Boot, Hibernate, SQL, PostgreSQL, PL/pgSQL, Ktor, Maven, Gradle, Android, Python, Kotest, JUnit, Spock, Mockito, TDD, BDD, Unit Testing, Integration Testing, Docker, Jenkins, CI/CD, ELK, Kafka, REST API, OpenAPI, Clean Code, Clean Architecture, SOLID, DRY, YAGNI, KISS, POLA, DDD, Hexagonal Architecture / Ports and Adapters, Git, GitHub, GitLab, Bitbucket, Unix, Linux, Ubuntu, Windows, Functional Programming, IntelliJ IDEA, SCRUM, JIRA, Confluence, Microservices</sub>
 <br />
