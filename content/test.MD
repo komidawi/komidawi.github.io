@@ -1,8 +1,9 @@
 ---
 layout: page
-title: "test"
-permalink: /preview/
+permalink: /test/
 ---
+
+___
 
 # Markdown formatting preview
 

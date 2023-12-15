@@ -35,9 +35,9 @@ layout: home
 ## Featured blog posts
 
 
-* [shell](/shell) - some interesting commands and features of zsh + oh-my-zsh + Powerlevel10k combo
-* [terraform](/terraform) - cheatsheet of syntax, descriptions of features, best practices
-* [microservices](/microservices) - notes taken during reading _Building Microservices_ book from O'Reilly, detailed summary with own comments
+* [shell](/shell) - interesting commands and features of zsh + oh-my-zsh + Powerlevel10k combo
+* [terraform](/terraform) - cheatsheet of syntax, descriptions of features, best practices - notes from terraform course
+* [microservices](/microservices) - notes taken during reading _Building Microservices_ book from O'Reilly, a detailed summary with my comments
 
 <br />
 <hr>
