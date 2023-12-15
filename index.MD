@@ -5,11 +5,14 @@ title: "Home"
 layout: home
 ---
 
+<hr>
+
 # Welcome Dear Visitor! 
 
 ### I'm komidawi and I'm flattered you came here :)
 
 <br />
+<hr>
 
 ## About me
 
@@ -26,6 +29,18 @@ layout: home
 <br />
 
 <br />
+
+<hr>
+
+## Featured blog posts
+
+
+* [shell](/shell) - some interesting commands and features of zsh + oh-my-zsh + Powerlevel10k combo
+* [terraform](/terraform) - cheatsheet of syntax, descriptions of features, best practices
+* [microservices](/microservices) - notes taken during reading _Building Microservices_ book from O'Reilly, detailed summary with own comments
+
+<br />
+<hr>
 
 ## My Projects/Repositories
 
@@ -77,6 +92,7 @@ It was the first project I have ever made. Although it's mostly just modified tu
 **Technologies**: `Python`, `PyGame`, `tilemap`
 
 <br />
+<hr>
 
 ## Contact
 [<img align="left" alt="komidawi | GMail" width="22px" src="https://cdn.jsdelivr.net/npm/simple-icons@v3/icons/gmail.svg" />][gmail]
