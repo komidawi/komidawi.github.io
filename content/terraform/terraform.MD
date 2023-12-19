@@ -25,8 +25,8 @@ permalink: /terraform/
     - [Remote state](#remote-state)
   - [Others](#others)
 
-
 ## Syntax
+
 ```
 <BLOCK TYPE> "<BLOCK LABEL>" "<BLOCK_LABEL"> {
    # Block body
@@ -34,26 +34,24 @@ permalink: /terraform/
 }
 ```
 
-
 ## Variables
 
 1. Terraform auto-converts variables into target type.
-    - when anticipating an int (`2`), you can provide string (`"2"`) and it's gonna work
+   - when anticipating an int (`2`), you can provide string (`"2"`) and it's gonna work
 2. You can use `terraform console` to evaluate expressions
-    - Console loads configuration on startup, so remember to restart it to refresh config.
-    - Type `exit` to quit
-3. *Collection* variable types can contain more than one value of the same type:
+   - Console loads configuration on startup, so remember to restart it to refresh config.
+   - Type `exit` to quit
+3. _Collection_ variable types can contain more than one value of the same type:
    - List
    - Map
    - Set
-4. *Structural* types have fixed number of values which can be of different types
+4. _Structural_ types have fixed number of values which can be of different types
    - Tuple - sequence of values
    - Object - lookup table
 5. Variates can be specified inline by `-var` parameter. It can be both simple or more complex values.
-    - `terraform apply -var ec2_instance_type=t2.micro`
-    - `terraform apply -var='resource_tags={project="project-name",environment="env-name"}'`
+   - `terraform apply -var ec2_instance_type=t2.micro`
+   - `terraform apply -var='resource_tags={project="project-name",environment="env-name"}'`
 6. Variables can be validated in `validation` block
-
 
 ### Best practices
 
@@ -63,34 +61,30 @@ permalink: /terraform/
 4. For root modules, provide variables in `*.tfvars` file
 5. It's good to include the unit in the name, e.g. `ram_size_gb`
 
-
 ## Values
 
 1. Terraform automatically loads files from the current directory
-   - `terraform.tfvars` 
+   - `terraform.tfvars`
    - or matching `*.auto.tfvars`
 2. You can also specify file using `-var-file`
-    - `terraform apply -var-file="secrets.tfvars"`
-
+   - `terraform apply -var-file="secrets.tfvars"`
 
 ## Secrets
 
 1. Flagging variables as sensitive make Terraform redact them from output while running `plan`, `apply` or `destroy`.
 2. Sensitive vs sensitive values
    - When marking variable as sensitive, it will be shown in logs like \
-   `~ password = (sensitive)`
-   -  However some values may be considered as sensitive by provider, they will be printed as\
-   `~ password = (sensitive value)`
+     `~ password = (sensitive)`
+   - However some values may be considered as sensitive by provider, they will be printed as\
+     `~ password = (sensitive value)`
    - Nonetheless you should always mark sensitive values appropriately to make sure they won't be disclosed e.g. when referencing them in other locations.
    - It is advised to keep such variables in a separate file and exclude it from version control.
 3. Terraform will raise an error when detects some sensitive may be exposed.
-
 
 ## Environmental variables
 
 1. Terraform automatically reads `TF_VAR_<VARIABLE_NAME>` environmental variables
    - Tip: when using envs for sensitive values, keep in mind they may be visible in command line history
-
 
 ## Locals
 
@@ -103,7 +97,6 @@ permalink: /terraform/
 6. It's good to use locals in moderation, when a single value or result is used in many places and it is likely to change in the future.
 7. Locals main use case is to easily change a value in a central place.
 
-
 ## Outputs
 
 1. Outputs can export structured data about resources, which can also be used e.g. to configure other parts of infrastructure with automation tools.
@@ -111,7 +104,7 @@ permalink: /terraform/
    - They can also expose data from a child module to a root module.
 2. Outputs are stored in the state file.
 3. Outputs require refresh by applying the new configuration (even when nothing else changes).
-4. Use `terraform output` to show all 
+4. Use `terraform output` to show all
    - Use `terraform output [element]` to show only one.
 5. String outputs are wrapped in quotes by default. To disable it, use `-raw` flag when querying
    - `terraform output -raw prod_url`
@@ -123,11 +116,9 @@ permalink: /terraform/
      - querying all outputs into a JSON
      - using outputs from a child module in the root module
 
-
 ## Data sources
 
 1. Data sources allow to fetch data from APIs or other Terraform state backends. Examples are machine image IDs from cloud provider or Terraform outputs from other configurations.
-
 
 ## Dynamic expressions
 
@@ -136,20 +127,22 @@ permalink: /terraform/
 1. Splat expression captures all objects sharing given attribute.
 2. Without splat expressions, Terraform would return the first item in the array, instead of iterating.
 3. Example
-    ```tf
-    output "private addresses" {
-        description = "Private DNSs for AWS instances"
-        value       = aws_instance.ubuntu[*].private_dns
-    }
-    ```
+   ```tf
+   output "private addresses" {
+       description = "Private DNSs for AWS instances"
+       value       = aws_instance.ubuntu[*].private_dns
+   }
+   ```
 
 ### count
 
 1. Count replicates resource/module a given number of times with an incrementing counter
 2. The name of resource/module like `aws_instance.app` refers to all instances then. To reference the individual one, use indexing notation like `aws_instance.app[0]`
 3. You can create a list of all values with a `*`
+
    - `aws_instance.app.*.id` will be a list of all IDs of instances
    - Example:
+
      ```tf
       resource "aws_instance" "app" {
          # ...
@@ -166,14 +159,12 @@ permalink: /terraform/
       }
      ```
 
-
 ## Modules
 
 1. A module is a collection of configuration files
 2. Modules let you group a set of resources and reuse them later
 3. The root module is the one where other modules and resources are instantiated
 4. Define the reusable code within a module, so that any change you make to the module will be reflected across all the environments that you plan to reuse
-
 
 ## State
 
@@ -189,13 +180,11 @@ permalink: /terraform/
 ### Remote state
 
 1. Shared access
-   - Data is always present for everyone 
+   - Data is always present for everyone
 2. Locking
-   - Multiple team members can work on configuration without issues 
+   - Multiple team members can work on configuration without issues
 3. Confidentiality
    - Secrets are not stored in a local file
-
-
 
 ## Others
 
