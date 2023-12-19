@@ -46,6 +46,30 @@ permalink: /microservices/
     - [Tooling](#tooling)
     - [Appendix: Reporting DB](#appendix-reporting-db)
   - [More information](#more-information)
+- [Chapter 4: Microservice Communication Styles](#chapter-4-microservice-communication-styles)
+  - [Synchronous Blocking](#synchronous-blocking)
+    - [Pros](#pros)
+    - [Cons](#cons)
+    - [Where to use?](#where-to-use)
+  - [Asynchronous Non-blocking](#asynchronous-non-blocking)
+    - [Pros](#pros-1)
+    - [Cons](#cons-1)
+    - [Where to use?](#where-to-use-1)
+  - [Pattern: Communication Through Common Data](#pattern-communication-through-common-data)
+    - [Pros](#pros-2)
+    - [Cons](#cons-2)
+    - [Where to use?](#where-to-use-2)
+  - [Pattern: Request-Response Communication](#pattern-request-response-communication)
+    - [Where to use?](#where-to-use-3)
+  - [Pattern: Event-Driven Communication](#pattern-event-driven-communication)
+    - [Cons](#cons-3)
+  - [Event design](#event-design)
+    - [Just ID](#just-id)
+      - [Cons](#cons-4)
+    - [Fully detailed event](#fully-detailed-event)
+      - [Pros](#pros-3)
+      - [Cons](#cons-5)
+    - [Hybrid](#hybrid)
 - [Source](#source)
 
 # Chapter 1: What Are Microservices?
@@ -365,6 +389,120 @@ Don't neglect decomposition of user interface.
 ## More information
 
 - See "Monolith to Microservices" book for much more information about this topic
+
+# Chapter 4: Microservice Communication Styles
+
+## Synchronous Blocking
+
+### Pros
+
+- Simple and well-known
+
+### Cons
+
+- Temporal coupling
+  - This coupling is not only between two services - it's indeed between two **instances** of microservices
+  - Failure either of them may cause operation to fail (e.g. caller fails before getting response)
+- Being blocked until response arrives, doing nothing all that time
+- Prone to cascading failures
+
+### Where to use?
+
+- Simple architectures
+- (Very) short chains of calls
+
+## Asynchronous Non-blocking
+
+### Pros
+
+- Temporal decoupling
+- Not blocking on long operations
+  - (e.g. sending parcel can take days)
+
+### Cons
+
+- High complexity
+
+### Where to use?
+
+- Long-running processes
+- Long call chains
+
+## Pattern: Communication Through Common Data
+
+- It can be e.g. a file placed on a given location or Shared Database
+- Two common examples are Data Lakes and Data Warehouses (where files go in one direction)
+  - Data Lake
+    - Sources upload raw data in any convenient format, consumers have to know how to process it
+  - Data Warehouse
+    - Warehouse is structured data store, so uploader must adhere to contract
+
+### Pros
+
+- Simple
+- High interoperability between different systems
+- Works fine for high volumes of data
+
+### Cons
+
+- Bad for low-latency needs as you have to provide mechanism for consumers to know about new data like polling or cron job
+- Common Coupling
+- It's worth to make sure that e.g. filesystem is reliable enough
+
+### Where to use?
+
+- Where high interoperability needed, especially with systems which can't be modified
+- When you want to share high volumes of data
+
+## Pattern: Request-Response Communication
+
+- Can be blocking sync or non-blocking async
+
+### Where to use?
+
+- When result of a request is needed before any further processing
+- When service wants to know if call succeeded or failed to carry out proper next action
+
+## Pattern: Event-Driven Communication
+
+- Loose coupling - event emitter knows nothing about recipients (even if they exist or not)
+- Emitter doesn't have to know what recipient can do - the recipient handles it the right way - in opposite to request-based communication
+  - This way components are more autonomous
+
+### Cons
+
+- More complex
+- Overhead with maintaining message broker and related infrastructure
+
+## Event design
+
+### Just ID
+
+#### Cons
+
+- One service has to know about other service containing data for a given ID - domain coupling
+- In case of lots of subscribers, it can cause a sudden spike of all of them calling for details
+- Higher latency and lesser reliability, as a separate request has to be made
+
+### Fully detailed event
+
+#### Pros
+
+- No domain coupling
+- No need to invoke extra calls, also no risks associated with network
+- Detailed events can act as a log with snapshots of state of the data
+  - It can be even an event sourcing mechanism
+
+#### Cons
+
+- Higher volume of data
+- Every service sees all the data - but we may not want to some of them see some info
+  - The solution can be to emit two events - but this "duplication" is a tradeoff
+- Data becomes a contract - so it may be hard to change or remove some field
+
+### Hybrid
+
+- Just include information widely needed and skip some less interesting trivia
 
 # Source
 
