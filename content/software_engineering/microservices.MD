@@ -70,6 +70,35 @@ permalink: /microservices/
       - [Pros](#pros-3)
       - [Cons](#cons-5)
     - [Hybrid](#hybrid)
+- [Part II: Implementation](#part-ii-implementation)
+- [Chapter 5: Implementing Microservice Communication](#chapter-5-implementing-microservice-communication)
+  - [Technology choices](#technology-choices)
+    - [RPC](#rpc)
+      - [Cons](#cons-6)
+      - [Pros](#pros-4)
+      - [When to use it](#when-to-use-it)
+      - [Tips](#tips)
+    - [REST](#rest)
+      - [Pros](#pros-5)
+      - [Cons](#cons-7)
+      - [When to use it](#when-to-use-it-1)
+    - [GraphQL](#graphql)
+      - [Pros](#pros-6)
+      - [Cons](#cons-8)
+      - [When to use it](#when-to-use-it-2)
+    - [Message Brokers](#message-brokers)
+  - [Schemas](#schemas)
+    - [Why to use schemas](#why-to-use-schemas)
+  - [Handling Change Between Microservices](#handling-change-between-microservices)
+    - [Avoiding Breaking Changes](#avoiding-breaking-changes)
+    - [Managing Breaking Changes](#managing-breaking-changes)
+    - [Social Contract](#social-contract)
+    - [Tracking usage](#tracking-usage)
+    - [Extreme measures](#extreme-measures)
+  - [DRY and the Perils of Code Reuse in a Microservice World](#dry-and-the-perils-of-code-reuse-in-a-microservice-world)
+    - [Sharing code via libraries](#sharing-code-via-libraries)
+      - [In general](#in-general)
+      - [Client libraries](#client-libraries)
 - [Source](#source)
 
 # Chapter 1: What Are Microservices?
@@ -503,6 +532,196 @@ Don't neglect decomposition of user interface.
 ### Hybrid
 
 - Just include information widely needed and skip some less interesting trivia
+
+# Part II: Implementation
+
+# Chapter 5: Implementing Microservice Communication
+
+## Technology choices
+
+### RPC
+
+- RPC framework defines serialization and deserialization
+- Framework with explicit schema allow to easily generate client code
+  - It may reduce the need for libraries
+  - Avro RPC can send schema along with the payload, so clients can interpret it dynamically
+- The ease of generating client-side code may a huge benefit and selling point for RPC
+
+#### Cons
+
+- Some RPC mechanisms are tied to a specific platform (e.g. Java RMI), so it can shrink technology choices
+- As idea of RPC is to hide remote call complexity, it can hide too much - especially that the call is remote
+  - Network calls are totally different from local calls and it should not be overseen!
+- It may force us to regenerate clients even if it _shouldn't_ so
+  - Examples: - Adding a new method to the interface -> you may have to regenerate clients even if they won't use this method
+    1 - Changing data model (e.g. removing field or moving into another class) -> you may have to regenerate client even if they don't use this class/field
+  - We may end up with lockstep deployments, where changes in server will cause need for changes in (all) clients
+
+#### Pros
+
+- Good performance
+
+#### When to use it
+
+- Fine for synchronous request-response models
+  - But it can also work with reactive extensions
+- When having high control of both client and server
+
+#### Tips
+
+- Don't make it invisible that call is remote - actually make it explicit
+- Make sure you can change server without changing clients
+
+### REST
+
+#### Pros
+
+- Well understood
+- Using verbs is helpful
+- Large tooling and technology ecosystem
+- Fine for high volumes
+- Fine security
+
+#### Cons
+
+- Code generation is somehow less convenient
+- Performance can be an issue (depending on payload type)
+  - Overhead of HTTP for each request may be problematic for low-latency systems (and it goes with TCP)
+
+#### When to use it
+
+- Obvious choice for synchronous request-response interfaces
+- When you need to support a high variety of clients (high interoperability)
+- When you want to large-scale and effective utilization of caches
+
+### GraphQL
+
+#### Pros
+
+- It makes possible for a client to make queries to fetch only needed data and thus avoid unnecessary calls.
+- In server side it may reduce the need for call aggregation.
+  - Imagine scenario where mobile has to make multiple calls fetching a lot of data, while actually it needs only a small subset of it. Using GraphQL it is possible to declare what's needed and fetch only such info - and everything in one call.
+
+#### Cons
+
+- An expensive GraphQL call can have large impact, just as an expensive SQL query.
+  - (But the difference is for SQL we have at least query planners.)
+- Also caching is an issue, which is more complex.
+  - For ordinary REST API, we can use headers to control cache mechanisms. In GraphQL it's not possible to be done in any simple way (you can try associating an ID with every requested resource and make client cache them by ID, but it will introduce difficulties with CDNs or caching reverse proxies).
+- GraphQL doesn't handle writes well.
+  - In short, it is common to use GraphQL for reads, but REST API for writes.
+- The last, somehow relative, issue is it may make you think you deal with sheer wrappers over DBs, forgetting that in fact it may be a complex, long-tailed logic chain solution.
+
+#### When to use it
+
+- At the perimeter of the system to be used by external clients
+  - Typically GUIs
+  - Often mobile phones
+- Cases when it is usually needed to make multiple calls to fetch all required information
+- It can be a call aggregation and filtering mechanism
+- It can be used for BFF scenarios (Backend For Frontend)
+
+### Message Brokers
+
+A type of a middleware.
+
+**Queue vs Topic**
+
+- When a message is sent through a queue, the recipient is known
+- When a message is published on a topic, the recipient(s) (if any) are unknown
+
+Topics suit more for event-based messaging, queues suit more for request-response communication style.
+
+## Schemas
+
+### Why to use schemas
+
+- Makes life easier for both devs and consumers
+- They act as a documentation
+  - And help write documentation as well
+- They protect from structural breaking of a contract
+- Allow to have history of API in version control
+- With static typing they assure the code is valid
+- They help writing tests
+- Explicit schemas make it easier to collaborate between teams
+
+## Handling Change Between Microservices
+
+### Avoiding Breaking Changes
+
+1. Expansion Changes: Add new things, don't remove old things
+2. Tolerant Reader Pattern: When consuming microservice, be flexible what you read
+   1. For example - you shouldn't fail when there's an error in fields you don't even use
+   2. Or when fields you don't use were moved in different place in a structure
+3. Right Technology: Pick technology that allows easy backward-compatible changes
+4. Explicit Interface: Have an explicit schema/docs/interface
+   1. Just be as much explicit as possible, please
+5. Catch errors early: Have mechanisms for catching errors before going to prod
+   1. Using schemas is helpful in such scenarios
+   2. Also there's some software like Protolock, json-schema-diff-validator, openapi-diff
+
+### Managing Breaking Changes
+
+1. Lockstep Deployment: Require that microservice and all its consumers to be changed (deployed) at the same time
+   1. It's the opposite of independent deployability
+2. Coexist Multiple Microservice Versions: You can route old consumers into old service and new consumers into new service
+   1. Downside is you have to maintain both versions simultaneously
+   2. And introduce complexity of routing
+   3. In case of service having some persistent state, it may be also a source of issues to mange it properly, for both old and new data models and/or service logic
+   4. Such technique seem to be fine for short periods of time (like canary)
+   5. But for longer periods of time - consider e.g. having two endpoints instead of having two separate microservice versions
+3. Emulate Old Interface: Just have e.g. two endpoints in one service
+   1. Consumers can upgrade to new version at any time
+   2. Choosing the right interface may be handled e.g. by HTTP Headers or URL paths
+
+### Social Contract
+
+As you work with people, you should think about dealing with people as well.
+Both service owners and service consumers should be clear about certain things:
+
+1. How will it be raised that interface has to be changed?
+2. What way it be worked out together to decide on a final shape of a contract?
+3. Who should get hands on updating consumers?
+4. When the change is accepted, how much time will consumer have to shift over?
+
+Well done microservices are done with consumer-first approach. They exist to be used by their consumers. So the consumers' needs are an so important factor then.
+
+### Tracking usage
+
+1. Even if you agree on a migration deadline, make sure consumers migrated indeed
+2. Have monitoring of API usage with details of who uses it and in what scale
+3. You don't want to suddenly disconnect an important part of the whole system
+
+### Extreme measures
+
+Suppose time is out, maybe even double out, and there's still someone using old API. What to do the? You can take the plug off, but there may be some better ways to handle it.
+
+1. At first - really do try to speak with them and make everything you can to find a way out.
+2. You can just insert a `sleep` inside the old API. And increase this delay over time. This way you won't break the integration, yet still make consumer rethink their plans
+
+## DRY and the Perils of Code Reuse in a Microservice World
+
+DRY is relevant not in terms of avoiding duplication of code, but **behavior** and **knowledge**.
+
+### Sharing code via libraries
+
+#### In general
+
+In general we want to avoid heavy coupling. However, sometimes using shared code can cause a heavy coupling. Let's imagine case of library of common domain objects representing core entities, which is used by many, many services. 
+If breaking change is introduces in such a library, it will cause hard time for the whole ecosystem.
+
+When use of shared code leaks outside service boundary, then a coupling appears. Using common code such as logging frameworks is fine, as such internal concepts are invisible to the outer world.
+
+In real-estate.com.au they handle duplication&coupling case for bootstrapping new services just by coping the code. In such way there is no coupling and such duplication seem to be fine.
+
+A huge downside of shared library is that you can't reasonably update all users at once. They usually will have to upgrade its version within the microservice and deploy it. In scenario when you need all of them to upgrade at once you have to welcome lockstep deployment.
+
+If you have a code that needs to be both shared and upgraded for everyone at once, you'd better use a shared microservice in this case.
+
+The conclusion is if you want to reuse code by a shared library, you have to accept that different services will use different versions of it at different times. Make sure it's fine in this scenario. If not, it will be a pain, but if yes - it will be a huge advantage.
+
+#### Client libraries
+
 
 # Source
 
