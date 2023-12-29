@@ -99,6 +99,24 @@ permalink: /microservices/
     - [Sharing code via libraries](#sharing-code-via-libraries)
       - [In general](#in-general)
       - [Client libraries](#client-libraries)
+  - [Service discovery](#service-discovery)
+    - [DNS](#dns)
+    - [Dynamic Service Registers](#dynamic-service-registers)
+      - [Zookeper](#zookeper)
+      - [Consul](#consul)
+      - [etcd and Kubernetes](#etcd-and-kubernetes)
+  - [Service Meshes and API Gateways](#service-meshes-and-api-gateways)
+    - [API Gateways](#api-gateways)
+      - [Where to use](#where-to-use-4)
+      - [What to avoid](#what-to-avoid)
+    - [Service Meshes](#service-meshes)
+      - [How do they work](#how-do-they-work)
+      - [Aren’t service meshes smart pipes?](#arent-service-meshes-smart-pipes)
+      - [Do you need one?](#do-you-need-one)
+  - [Documenting Services](#documenting-services)
+    - [Explicit Schemas](#explicit-schemas)
+    - [The Self-Describing System](#the-self-describing-system)
+- [Pause](#pause)
 - [Source](#source)
 
 # Chapter 1: What Are Microservices?
@@ -707,7 +725,7 @@ DRY is relevant not in terms of avoiding duplication of code, but **behavior** a
 
 #### In general
 
-In general we want to avoid heavy coupling. However, sometimes using shared code can cause a heavy coupling. Let's imagine case of library of common domain objects representing core entities, which is used by many, many services. 
+In general we want to avoid heavy coupling. However, sometimes using shared code can cause a heavy coupling. Let's imagine case of library of common domain objects representing core entities, which is used by many, many services.
 If breaking change is introduces in such a library, it will cause hard time for the whole ecosystem.
 
 When use of shared code leaks outside service boundary, then a coupling appears. Using common code such as logging frameworks is fine, as such internal concepts are invisible to the outer world.
@@ -722,6 +740,146 @@ The conclusion is if you want to reuse code by a shared library, you have to acc
 
 #### Client libraries
 
+One may say that client libraries help avoid duplication of code. You have to be aware, however, of problem of logic that should exist only on the server is leaking to the client - such happens when the same team creates both server and client API. A good practice is when such libraries are written by wider community - especially when people who use these libraries should be other than these who write them.
+
+If you think of concept of client libraries, it may be a good idea to separate code handling transport protocol, that can deal with things like e.g. service discovery and failure. Also make sure clients can upgrade their library versions at any time they want, independently of each other.
+
+## Service discovery
+
+### DNS
+
+DNS entries have its TTL, so after we change IP of some DNS entry, it will take some time for changes to be read and used. DNS entries can get cached in many places. The more such places, the more stale DNS entry can become.
+
+One of the workarounds can be DNS entry pointing to the Load Balancer which points to actual instances. You can then add and remove instances without risk of having outdated DNS entries.
+
+Some people use DNS round-robin, where DNS entries refer to the group of machines, however this approach is highly problematic! Client is hidden from the underlying host and it can't stop routing traffic to one of the hosts when it start malfunctioning.
+
+In other words it seems that pointing to Load Balancer is fine, while having direct DNS entries is not, as it won't be able to detect problems and auto-update healthy node list, unlike the LB.
+
+In general having only single nodes, having DNS referring directly to them may by sufficient, however when you have more than one instance of a host
+
+### Dynamic Service Registers
+
+In highly dynamic environments, just a DNS may be not enough.
+
+#### Zookeper
+
+ZooKeeper is used for lots of use cases, like configuration management, synchronizing data between services, leader election, message queues and as a naming service.
+
+ZooKeeper runs of multiple nodes in a cluster to provide guarantees. Smarts in ZooKeeper are focused on ensuring data is replicated safely between nodes, what should make data remain intact when nodes fail.
+
+Inside, Zookeeper provides a hierarchical namespace for storing information. Clients can insert, change or query nodes in this hierarchy. They can also add watches to nodes to be notified when they change. We could also store the information about where our services are located in this structure and as a client be told when they change.
+
+ZooKeeper is often used as a general configuration store, so you can also store service-specific configuration in it. This way you can e.g. dynamically changing log levels or turn off features of a running system.
+
+In reality, for sheer dynamic service registration Zookeper is less relevant as more appropriate software exists.
+
+#### Consul
+
+Like Zookeper, Consul supports both config management and service discovery, but provides much wider support in these terms - for example it exposes HTTP interface for service discovery.
+
+Its killer feature is providing a DNS server out of the box, serving SRV records (giving both IP and port for a given name). Consul has also some other features like providing health checks on nodes.
+
+Consul uses REST HTTP as an interface, so it's very easy to integrate it with other technologies. It also has a suite of tools like consul-template, which updates text files basing on entries in Consul.
+
+You may think it's not a rocket science, but imagine that you can update a configuration file and any node reading config can be updated dynamically without even knowing about Consul existence. An example can be adding or removing nodes to a load balancer pool using a software load balancer like HAProxy.
+
+#### etcd and Kubernetes
+
+etcd has capabilities similar to Consul. In a nutshell, when you deploy a container in a pod, service dynamically identifies which pods should be a part of a service by pattern matching on metadata of the pod. It's a quite neat mechanism and can be very powerful. Requests to a service will then get routed to one of the pods that make up that service.
+
+etcd is a fine solution for K8s only environments, however if you run a mixed environment with some workloads on K8s, and some elsewhere, having a dedicated service discovery tool capable of working with both platform would be a wise thing.
+
+## Service Meshes and API Gateways
+
+In typical data center speak, “east-west” traffic is inside a data center, while “north-south” traffic relates to entering or leaving the data center from the outside world.
+
+Generally, an API gateway sits on the perimeter of the system and deals
+with "north-south" traffic. Its primary concerns are managing access from the outside
+world to your internal microservices.  
+A service mesh, on the other hand, deals very narrowly with communication between microservices inside your perimeter - "east-west" traffic.
+
+Service Meshes and API Gateways can potentially allow to share code without need of creating new client libs or new microservices. Using a simplification, you can think of Service Meshes and API Gateways as proxies between microservices, where you can implement some microservice-agnostic behavior like service discovery or logging, otherwise needed to be done in code.  
+If you are using Service Mesh or API Gateway to implement shared, common behavior, it's **essential** for it to be totally generic - so without any relation to any specific behavior of any individual microservice.
+
+By the way - a number of API Gateways try to provide capabilities for "east-west" traffic as well (and it will be discussed soon).
+
+### API Gateways
+
+Focused on "north-south" traffic, main responsibility of API Gateway is mapping requests from external parties to internal microservices. However they can also be used to implement mechanisms like API keys for external parties, logging, rate limiting etc Some products also provide developer portals, often targeted at external consumers.
+
+Much of the time, all an API gateway is actually being used for is to manage access to organization's microservices from its own GUI clients (web pages, native mobile applications) via the public internet.  
+The need for some for of an API Gateway for Kubernetes is essential, as Kubernetes natively handles networking only within the cluster and does nothing about handling communication to and from the cluster itself.  
+In such case, API Gateway designed for external third-party access is totally unnecessary.
+
+If you want to have API Gateway, be sure what exactly you need from it.  
+You should probably avoid having API Gateway that does too much.
+
+#### Where to use
+
+If you need just to expose microservices on K8s, you can run your own reverse proxies or even better look at a focused product like Ambassador build for this purpose.  
+If you need to manage large numbers of third-party uses accessing your API, there are probably ready solutions for such scenario.
+It's even possible to have multiple API Gateways (but of course keep in mind caveats like system complexity or more hops).
+
+#### What to avoid
+
+Two prominent examples of API Gateway misuse is call aggregation and protocol rewriting. Another cases is extensive use for in-perimeter (east-west) calls.
+
+"In this chapter we’ve already briefly looked at the usefulness of a protocol like GraphQL to help us in a situation in which we need to make a number of calls and then aggregate and filter the results, but people are often tempted to solve this problem in API gateway layers too.  
+It starts off innocently enough: you combine a couple of calls and return a single payload. Then you start making another downstream call as part of the same aggregated flow. Then you start wanting to add conditional logic, and before long you realize that you’ve baked core business processes into a thirdparty tool that is ill suited to the task"
+
+If you need to do call aggregation and filtering - look at GraphQL or BFF pattern.  
+If the call aggregation is a business process (rather than technical process), look at Saga pattern.
+
+In terms of protocol rewriting at API Gateway level, it's a violation of rule "keep the pipes dumb, and the endpoints smart". Pushing so much logic into a pipe component, which should be as simple as possible. Generally the more behavior is added to API Gateway, the less efficient it would be to maintain this - handoffs, coordination, lockstep deployments..
+
+The last misuse is placing API Gateway as an intermediary between all microservice calls, what at least increases number of hops. Here the answer would be simple - just Use Service Meshes for this use case.
+
+### Service Meshes
+
+With a Service Mesh, common functionality associated with inter-microservice communication is moved into the mesh. This provides consistency across how particular things are done and also allows to reduce functionality required to be implemented by microservice.
+
+Examples of features done by Service Mesh are mutual TLS, correlation IDs, Service Discovery, Load Balancing. These functionalities are so generic, that they could be placed in a shared library - but then we would have to deal with all drawbacks of sharing code this way. Service Mesh allows us to avoid all these difficulties.
+
+With Service Mesh we can reuse common functionalities across services written by different teams in various programming languages and technologies.
+
+#### How do they work
+
+Service Meshes are done in various ways, but one thing in common is their architecture focusing on limiting the impact caused by calls to and from the proxy. This is primarily achieved by reducing number of remote calls by distributing the proxy processes to run on the same physical machine as the microservice instances.
+
+Service Mesh instances are managed by a Control Plane, which allows to see what's going on. It also handles functionalities like distributing client and server certificates when using MTLS.
+
+#### Aren’t service meshes smart pipes?
+
+You may now wonder if pushing all this behavior into a Service Mesh isn't making pipe smart.  
+But the answer is the common behavior that is put into the Service Mesh is not specific to any microservice. No business leaks to the outside. Configuration applies only to generic things like request time-outs.
+
+#### Do you need one?
+
+Service Meshes aren't for everyone. They add complexity. If you're not on Kubernetes, you have limited set of choices. If you have 5 microservices, it's unlikely you need Service Mesh.
+
+It's a fine option for organizations having many microservices, especially written in different languages.
+
+## Documenting Services
+
+### Explicit Schemas
+
+Schemas help by showing the structure, however they don't tell you behavior of an endpoint, so good documentation is still needed. In case of not using explicit schemas, such documentation is needed even more. And more work is required to detect if it's up to date with real shape of endpoint.  
+Stale docs is a problem, but explicit schema increases chances that at least some information will not be outdated.
+
+OpenAPI is a standard schema format and which is also effective in providing documentation, however its functionalities are somehow limited.  
+If you use Kubernetes, Ambassador's developer portal is an interesting product. Ambassador is a popular API Gateway for K8s and has ability to autodiscover available OpenAPI endpoints. The idea of deploying new microservice and having its documentation provided automatically is a huge value.
+
+In terms of Event-based Interfaces, we have some options like AsyncAPI (which started as an adaptation of OpenAPI) or CloudEvents (a project by CNCF).
+
+### The Self-Describing System
+
+It is a sensible idea to have some information board showing state of the system, especially at a scale.  
+"By tracking the health of our downstream services together with correlation IDs to help us see call chains, we can get real data in terms of how our services interrelate. Using service discovery systems like Consul, we can see where our microservices are running. Mechanisms like OpenAPI and CloudEvents can help us see what capabilities are being hosted on any given endpoint, while our health check pages and monitoring systems let us know the health of both the overall system and individual services."  
+One of solutions can be tool used by Spotify - Backstage.  
+Kubernetes' Ambassador also has some functionalities in its Service Catalog, although limited only to K8s.
+
+# Pause
 
 # Source
 
