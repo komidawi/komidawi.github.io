@@ -74,8 +74,8 @@ permalink: /microservices/
 - [Chapter 5: Implementing Microservice Communication](#chapter-5-implementing-microservice-communication)
   - [Technology choices](#technology-choices)
     - [RPC](#rpc)
-      - [Cons](#cons-6)
       - [Pros](#pros-4)
+      - [Cons](#cons-6)
       - [When to use it](#when-to-use-it)
       - [Tips](#tips)
     - [REST](#rest)
@@ -90,11 +90,11 @@ permalink: /microservices/
   - [Schemas](#schemas)
     - [Why to use schemas](#why-to-use-schemas)
   - [Handling Change Between Microservices](#handling-change-between-microservices)
-    - [Avoiding Breaking Changes](#avoiding-breaking-changes)
-    - [Managing Breaking Changes](#managing-breaking-changes)
-    - [Social Contract](#social-contract)
-    - [Tracking usage](#tracking-usage)
-    - [Extreme measures](#extreme-measures)
+    - [Avoiding Breaking Changes 🔨](#avoiding-breaking-changes-)
+    - [Managing Breaking Changes 🔨](#managing-breaking-changes-)
+    - [Social Contract 🔨](#social-contract-)
+    - [Tracking usage 🔨](#tracking-usage-)
+    - [Extreme measures 🔨](#extreme-measures-)
   - [DRY and the Perils of Code Reuse in a Microservice World](#dry-and-the-perils-of-code-reuse-in-a-microservice-world)
     - [Sharing code via libraries](#sharing-code-via-libraries)
       - [In general](#in-general)
@@ -116,7 +116,7 @@ permalink: /microservices/
   - [Documenting Services](#documenting-services)
     - [Explicit Schemas](#explicit-schemas)
     - [The Self-Describing System](#the-self-describing-system)
-- [Pause](#pause)
+- [Legend](#legend)
 - [Source](#source)
 
 # Chapter 1: What Are Microservices?
@@ -559,29 +559,28 @@ Don't neglect decomposition of user interface.
 
 ### RPC
 
-- RPC framework defines serialization and deserialization
-- Framework with explicit schema allow to easily generate client code
+RPC framework defines serialization and deserialization.
+
+#### Pros
+
+- Having explicit schema allows to really easily generate client code
   - It may reduce the need for libraries
   - Avro RPC can send schema along with the payload, so clients can interpret it dynamically
-- The ease of generating client-side code may a huge benefit and selling point for RPC
+- Good performance
 
 #### Cons
 
 - Some RPC mechanisms are tied to a specific platform (e.g. Java RMI), so it can shrink technology choices
-- As idea of RPC is to hide remote call complexity, it can hide too much - especially that the call is remote
+- As idea of RPC is to hide remote call complexity, but it can hide too much - especially even the fact, that the call is remote and not local one
   - Network calls are totally different from local calls and it should not be overseen!
-- It may force us to regenerate clients even if it _shouldn't_ so
-  - Examples: - Adding a new method to the interface -> you may have to regenerate clients even if they won't use this method
-    1 - Changing data model (e.g. removing field or moving into another class) -> you may have to regenerate client even if they don't use this class/field
-  - We may end up with lockstep deployments, where changes in server will cause need for changes in (all) clients
-
-#### Pros
-
-- Good performance
+- It may force us to regenerate clients even if it's de facto not required, e.g.:
+  - Adding a new method to the interface -> you may have to regenerate clients even if they won't use this method
+  - Changing data model (e.g. removing field or moving into another class) -> you may have to regenerate client even if they don't use this class/field
+- We may end up with lockstep deployments, where changes in server will cause need for changes in (all) clients
 
 #### When to use it
 
-- Fine for synchronous request-response models
+- RPC is fine for synchronous request-response models
   - But it can also work with reactive extensions
 - When having high control of both client and server
 
@@ -628,7 +627,7 @@ Don't neglect decomposition of user interface.
   - For ordinary REST API, we can use headers to control cache mechanisms. In GraphQL it's not possible to be done in any simple way (you can try associating an ID with every requested resource and make client cache them by ID, but it will introduce difficulties with CDNs or caching reverse proxies).
 - GraphQL doesn't handle writes well.
   - In short, it is common to use GraphQL for reads, but REST API for writes.
-- The last, somehow relative, issue is it may make you think you deal with sheer wrappers over DBs, forgetting that in fact it may be a complex, long-tailed logic chain solution.
+- The last (somehow relative) issue is it may make you think you deal with sheer wrappers over DBs, forgetting that in fact it may be a complex, long-tailed logic chain solution.
 
 #### When to use it
 
@@ -645,8 +644,8 @@ A type of a middleware.
 
 **Queue vs Topic**
 
-- When a message is sent through a queue, the recipient is known
-- When a message is published on a topic, the recipient(s) (if any) are unknown
+- When a message is sent through a **queue**, the **recipient is known**
+- When a message is published on a **topic**, the **recipient(s) (if any) are unknown**
 
 Topics suit more for event-based messaging, queues suit more for request-response communication style.
 
@@ -665,7 +664,7 @@ Topics suit more for event-based messaging, queues suit more for request-respons
 
 ## Handling Change Between Microservices
 
-### Avoiding Breaking Changes
+### Avoiding Breaking Changes 🔨
 
 1. Expansion Changes: Add new things, don't remove old things
 2. Tolerant Reader Pattern: When consuming microservice, be flexible what you read
@@ -678,7 +677,7 @@ Topics suit more for event-based messaging, queues suit more for request-respons
    1. Using schemas is helpful in such scenarios
    2. Also there's some software like Protolock, json-schema-diff-validator, openapi-diff
 
-### Managing Breaking Changes
+### Managing Breaking Changes 🔨
 
 1. Lockstep Deployment: Require that microservice and all its consumers to be changed (deployed) at the same time
    1. It's the opposite of independent deployability
@@ -692,7 +691,7 @@ Topics suit more for event-based messaging, queues suit more for request-respons
    1. Consumers can upgrade to new version at any time
    2. Choosing the right interface may be handled e.g. by HTTP Headers or URL paths
 
-### Social Contract
+### Social Contract 🔨
 
 As you work with people, you should think about dealing with people as well.
 Both service owners and service consumers should be clear about certain things:
@@ -702,17 +701,17 @@ Both service owners and service consumers should be clear about certain things:
 3. Who should get hands on updating consumers?
 4. When the change is accepted, how much time will consumer have to shift over?
 
-Well done microservices are done with consumer-first approach. They exist to be used by their consumers. So the consumers' needs are an so important factor then.
+Well done microservices are done with consumer-first approach. They exist to be used by their consumers. So the consumers' needs are so important factor then.
 
-### Tracking usage
+### Tracking usage 🔨
 
 1. Even if you agree on a migration deadline, make sure consumers migrated indeed
 2. Have monitoring of API usage with details of who uses it and in what scale
 3. You don't want to suddenly disconnect an important part of the whole system
 
-### Extreme measures
+### Extreme measures 🔨
 
-Suppose time is out, maybe even double out, and there's still someone using old API. What to do the? You can take the plug off, but there may be some better ways to handle it.
+Suppose time is out, maybe even double out, and there's still someone using old API. What to do then? You can take the plug off, but there may be some better ways to handle it.
 
 1. At first - really do try to speak with them and make everything you can to find a way out.
 2. You can just insert a `sleep` inside the old API. And increase this delay over time. This way you won't break the integration, yet still make consumer rethink their plans
@@ -726,13 +725,13 @@ DRY is relevant not in terms of avoiding duplication of code, but **behavior** a
 #### In general
 
 In general we want to avoid heavy coupling. However, sometimes using shared code can cause a heavy coupling. Let's imagine case of library of common domain objects representing core entities, which is used by many, many services.
-If breaking change is introduces in such a library, it will cause hard time for the whole ecosystem.
+If breaking change is introduced in such a library, it will cause a hard time for the whole ecosystem.
 
-When use of shared code leaks outside service boundary, then a coupling appears. Using common code such as logging frameworks is fine, as such internal concepts are invisible to the outer world.
+When use of shared code leaks outside the service boundary, then a coupling appears. Using common code such as logging frameworks is fine, as such internal concepts are invisible to the outer world.
 
-In real-estate.com.au they handle duplication&coupling case for bootstrapping new services just by coping the code. In such way there is no coupling and such duplication seem to be fine.
+In real-estate.com.au they handle duplication & coupling case for bootstrapping new services just by coping the code. In such way there is no coupling and such duplication seem to be fine.
 
-A huge downside of shared library is that you can't reasonably update all users at once. They usually will have to upgrade its version within the microservice and deploy it. In scenario when you need all of them to upgrade at once you have to welcome lockstep deployment.
+**A huge downside of shared library is that you can't reasonably update all users at once.** They usually will have to upgrade its version within the microservice and deploy it. In scenario when you need all of them to upgrade at once you have to welcome lockstep deployment.
 
 If you have a code that needs to be both shared and upgraded for everyone at once, you'd better use a shared microservice in this case.
 
@@ -740,7 +739,7 @@ The conclusion is if you want to reuse code by a shared library, you have to acc
 
 #### Client libraries
 
-One may say that client libraries help avoid duplication of code. You have to be aware, however, of problem of logic that should exist only on the server is leaking to the client - such happens when the same team creates both server and client API. A good practice is when such libraries are written by wider community - especially when people who use these libraries should be other than these who write them.
+One may say that client libraries help avoid duplication of code. You have to be aware, however, of problem when logic that should exist only on the server is leaking to the client - such happens when the same team creates both server and client API. **A good practice is when such libraries are written by wider community - especially when people who use these libraries should be different than these who write them.**
 
 If you think of concept of client libraries, it may be a good idea to separate code handling transport protocol, that can deal with things like e.g. service discovery and failure. Also make sure clients can upgrade their library versions at any time they want, independently of each other.
 
@@ -754,9 +753,9 @@ One of the workarounds can be DNS entry pointing to the Load Balancer which poin
 
 Some people use DNS round-robin, where DNS entries refer to the group of machines, however this approach is highly problematic! Client is hidden from the underlying host and it can't stop routing traffic to one of the hosts when it start malfunctioning.
 
-In other words it seems that pointing to Load Balancer is fine, while having direct DNS entries is not, as it won't be able to detect problems and auto-update healthy node list, unlike the LB.
+**In other words it seems that pointing to Load Balancer is fine, while having direct DNS entries is not, as it won't be able to detect problems and auto-update healthy node list, unlike the LB.**
 
-In general having only single nodes, having DNS referring directly to them may by sufficient, however when you have more than one instance of a host
+In general, when having only single nodes, making DNS refer them directly may by sufficient, but when you have more than one instance of a host it would be better to point to Load Balancer.
 
 ### Dynamic Service Registers
 
@@ -778,7 +777,7 @@ In reality, for sheer dynamic service registration Zookeper is less relevant as 
 
 Like Zookeper, Consul supports both config management and service discovery, but provides much wider support in these terms - for example it exposes HTTP interface for service discovery.
 
-Its killer feature is providing a DNS server out of the box, serving SRV records (giving both IP and port for a given name). Consul has also some other features like providing health checks on nodes.
+**Its killer feature is providing a DNS server out of the box, serving SRV records (giving both IP and port for a given name).** Consul has also some other features like providing health checks on nodes.
 
 Consul uses REST HTTP as an interface, so it's very easy to integrate it with other technologies. It also has a suite of tools like consul-template, which updates text files basing on entries in Consul.
 
@@ -788,16 +787,13 @@ You may think it's not a rocket science, but imagine that you can update a confi
 
 etcd has capabilities similar to Consul. In a nutshell, when you deploy a container in a pod, service dynamically identifies which pods should be a part of a service by pattern matching on metadata of the pod. It's a quite neat mechanism and can be very powerful. Requests to a service will then get routed to one of the pods that make up that service.
 
-etcd is a fine solution for K8s only environments, however if you run a mixed environment with some workloads on K8s, and some elsewhere, having a dedicated service discovery tool capable of working with both platform would be a wise thing.
+etcd is a fine solution for K8s only environments, however if you run a mixed environment with some workloads on K8s, and some elsewhere, it would be a wise thing to have a dedicated service discovery tool capable of working with both platforms.
 
 ## Service Meshes and API Gateways
 
-In typical data center speak, “east-west” traffic is inside a data center, while “north-south” traffic relates to entering or leaving the data center from the outside world.
+In typical data center language, “east-west” traffic is inside a data center, while “north-south” traffic relates to entering or leaving the data center from the outside world.
 
-Generally, an API gateway sits on the perimeter of the system and deals
-with "north-south" traffic. Its primary concerns are managing access from the outside
-world to your internal microservices.  
-A service mesh, on the other hand, deals very narrowly with communication between microservices inside your perimeter - "east-west" traffic.
+Generally, an API gateway sits on the perimeter of the system and deals with "north-south" traffic. Its primary concerns are managing access from the outside world to your internal microservices. A service mesh, on the other hand, deals very narrowly with communication between microservices inside your perimeter - "east-west" traffic.
 
 Service Meshes and API Gateways can potentially allow to share code without need of creating new client libs or new microservices. Using a simplification, you can think of Service Meshes and API Gateways as proxies between microservices, where you can implement some microservice-agnostic behavior like service discovery or logging, otherwise needed to be done in code.  
 If you are using Service Mesh or API Gateway to implement shared, common behavior, it's **essential** for it to be totally generic - so without any relation to any specific behavior of any individual microservice.
@@ -806,11 +802,11 @@ By the way - a number of API Gateways try to provide capabilities for "east-west
 
 ### API Gateways
 
-Focused on "north-south" traffic, main responsibility of API Gateway is mapping requests from external parties to internal microservices. However they can also be used to implement mechanisms like API keys for external parties, logging, rate limiting etc Some products also provide developer portals, often targeted at external consumers.
+Focused on "north-south" traffic, main responsibility of API Gateway is mapping requests from external parties to internal microservices. However they can also be used to implement mechanisms like API keys for external parties, logging, rate limiting etc. Some products also provide developer portals, often targeted at external consumers.
 
-Much of the time, all an API gateway is actually being used for is to manage access to organization's microservices from its own GUI clients (web pages, native mobile applications) via the public internet.  
-The need for some for of an API Gateway for Kubernetes is essential, as Kubernetes natively handles networking only within the cluster and does nothing about handling communication to and from the cluster itself.  
-In such case, API Gateway designed for external third-party access is totally unnecessary.
+Much of the time, all an API gateway is actually being used for is to manage access to organization's microservices from its own GUI clients (web pages, native mobile applications) via the public internet. In this scenario there isn't any "third-party", there are only "ours".  
+The need for some form of an API Gateway for Kubernetes is essential, as Kubernetes natively handles networking only within the cluster and does nothing about handling communication to and from the cluster itself.  
+In such case, API Gateway designed for external third-party access would be an overkill.
 
 If you want to have API Gateway, be sure what exactly you need from it.  
 You should probably avoid having API Gateway that does too much.
@@ -828,12 +824,12 @@ Two prominent examples of API Gateway misuse is call aggregation and protocol re
 "In this chapter we’ve already briefly looked at the usefulness of a protocol like GraphQL to help us in a situation in which we need to make a number of calls and then aggregate and filter the results, but people are often tempted to solve this problem in API gateway layers too.  
 It starts off innocently enough: you combine a couple of calls and return a single payload. Then you start making another downstream call as part of the same aggregated flow. Then you start wanting to add conditional logic, and before long you realize that you’ve baked core business processes into a thirdparty tool that is ill suited to the task"
 
-If you need to do call aggregation and filtering - look at GraphQL or BFF pattern.  
-If the call aggregation is a business process (rather than technical process), look at Saga pattern.
+**If you need to do call aggregation and filtering - look at GraphQL or BFF pattern.  
+If the call aggregation is a business process (rather than technical process), look at Saga pattern.**
 
-In terms of protocol rewriting at API Gateway level, it's a violation of rule "keep the pipes dumb, and the endpoints smart". Pushing so much logic into a pipe component, which should be as simple as possible. Generally the more behavior is added to API Gateway, the less efficient it would be to maintain this - handoffs, coordination, lockstep deployments..
+In terms of protocol rewriting at API Gateway level, it's a violation of rule "keep the pipes dumb, and the endpoints smart". It's pushing so much logic into a pipe component, which should be as simple as possible. Generally the more behavior is added to API Gateway, the less efficient it would be to maintain this - handoffs, coordination, lockstep deployments..
 
-The last misuse is placing API Gateway as an intermediary between all microservice calls, what at least increases number of hops. Here the answer would be simple - just Use Service Meshes for this use case.
+The last misuse is placing API Gateway as an intermediary between all microservice calls, what at least increases number of hops. Here the answer would be simple - just use Service Meshes for this use case.
 
 ### Service Meshes
 
@@ -852,11 +848,11 @@ Service Mesh instances are managed by a Control Plane, which allows to see what'
 #### Aren’t service meshes smart pipes?
 
 You may now wonder if pushing all this behavior into a Service Mesh isn't making pipe smart.  
-But the answer is the common behavior that is put into the Service Mesh is not specific to any microservice. No business leaks to the outside. Configuration applies only to generic things like request time-outs.
+**The answer is the common behavior that is put into the Service Mesh is not specific to any microservice. No business leaks to the outside. Configuration applies only to generic things like request time-outs.**
 
 #### Do you need one?
 
-Service Meshes aren't for everyone. They add complexity. If you're not on Kubernetes, you have limited set of choices. If you have 5 microservices, it's unlikely you need Service Mesh.
+Service Meshes aren't for everyone. They add complexity. If you're not on Kubernetes, you have limited set of choices. If you have 5 microservices, it's unlikely you need K8s yet alone Service Mesh.
 
 It's a fine option for organizations having many microservices, especially written in different languages.
 
@@ -879,7 +875,9 @@ It is a sensible idea to have some information board showing state of the system
 One of solutions can be tool used by Spotify - Backstage.  
 Kubernetes' Ambassador also has some functionalities in its Service Catalog, although limited only to K8s.
 
-# Pause
+# Legend
+
+🔨 - paragraph with higher amount of practical information
 
 # Source
 
