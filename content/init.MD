@@ -3,6 +3,36 @@ layout: page
 permalink: /init/
 ---
 
+# Installing things (new)
+
+List things you want to install and give some tips instead of having sheer file with no context.
+
+## Windows Terminal
+
+- jego kolory, czcionka
+
+## oh-my-zsh
+
+### plugins
+
+## aliases
+
+## sdkman
+
+## asdf
+
+## JS
+
+### nvm
+
+#### nvmrc
+
+## direnv
+
+--- 
+
+# Installing things (old)
+
 ```bash
 #!/bin/bash
 
@@ -31,8 +61,66 @@ exec zsh
 ## zsh-plugins
 
 # zsh-autosuggestions
-
 # https://github.com/zsh-users/zsh-autosuggestions/blob/master/INSTALL.md
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 
+```
+
+# `.zshrc`
+
+```bash
+# Command history
+HISTFILE=$HOME/.zsh_history
+HISTSIZE=999999999
+SAVEHIST=$HISTSIZE
+
+setopt hist_ignore_all_dups # remove older duplicate entries from history
+setopt hist_reduce_blanks # remove superfluous blanks from history items
+setopt inc_append_history # save history entries as soon as they are entered
+setopt share_history # share history between different instances of the shell
+
+# Autocorrect prompt
+setopt correct_all # autocorrect commands
+
+## Aliases
+# auto move
+if [[ $(pwd) == "/mnt/c/Windows/System32" ]]
+        then cd ~
+fi
+
+# cd
+alias cddev='cd /mnt/d/PRIV/LEARNING/DEVELOPER'
+alias cdblog='cd /mnt/d/PRIV/LEARNING/DEVELOPER/#PUBLIC/docs'
+
+# git
+alias ga='git add'
+alias gs='git status'
+alias gcm='git commit'
+alias gp='git push'
+
+# commands
+alias zshh='nano +118 ~/.zshrc'
+alias zzsh='exec zsh'
+
+# envs
+export EDITOR=nano
+
+# functions
+jwt-decode() {
+  jq -R 'split(".") |.[0:2] | map(@base64d) | map(fromjson)' <<< $1
+}
+
+# Ruby
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(~/.rbenv/bin/rbenv init - zsh)"
+export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"
+
+# nvm
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 ```
