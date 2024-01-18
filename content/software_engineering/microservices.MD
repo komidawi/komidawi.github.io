@@ -116,6 +116,22 @@ permalink: /microservices/
   - [Documenting Services](#documenting-services)
     - [Explicit Schemas](#explicit-schemas)
     - [The Self-Describing System](#the-self-describing-system)
+- [Chapter 6: Workflow](#chapter-6-workflow)
+  - [Transactions](#transactions-1)
+    - [Database Transactions](#database-transactions)
+    - [Distributed Transactions](#distributed-transactions)
+  - [Sagas](#sagas)
+    - [Saga Failure Modes](#saga-failure-modes)
+      - [Backward Recovery](#backward-recovery)
+      - [Forward Recovery](#forward-recovery)
+    - [Saga Implementations](#saga-implementations)
+      - [Orchestrated Sagas](#orchestrated-sagas)
+        - [Pros](#pros-7)
+        - [Cons](#cons-9)
+      - [Choreographed Sagas](#choreographed-sagas)
+        - [Pros](#pros-8)
+        - [Cons](#cons-10)
+      - [Which one to use?](#which-one-to-use)
 - [Legend](#legend)
 - [Source](#source)
 
@@ -874,6 +890,130 @@ It is a sensible idea to have some information board showing state of the system
 "By tracking the health of our downstream services together with correlation IDs to help us see call chains, we can get real data in terms of how our services interrelate. Using service discovery systems like Consul, we can see where our microservices are running. Mechanisms like OpenAPI and CloudEvents can help us see what capabilities are being hosted on any given endpoint, while our health check pages and monitoring systems let us know the health of both the overall system and individual services."  
 One of solutions can be tool used by Spotify - Backstage.  
 Kubernetes' Ambassador also has some functionalities in its Service Catalog, although limited only to K8s.
+
+# Chapter 6: Workflow
+
+## Transactions
+
+When thinking about a Transaction, we think about one or more actions which we want to treat as a single unit.
+
+### Database Transactions
+
+In terms of Database Transactions, we think about ACID Transactions.
+
+- **Atomicity**
+  - Everything completes or everything fails
+- **Consistency**
+  - After we make changes, DB is left in valid, consistent state
+- **Isolation**
+  - No interim changes of one Transaction are visible for other Transactions
+- **Durability**
+  - After Transaction completes, data won't be lost in case of e.g. system failure
+
+### Distributed Transactions
+
+Things like 2PC (2 Phase Commit) don't actually work as intended.  
+It's discouraged to use it, as well as distributed transactions in general.
+
+What to do then?
+
+First option can be just avoiding splitting the data apart at all.
+
+If you want to have state managed in an atomic and consistent way, but you have hard times making it work without ACID transactions, maybe just leave it in a single database and set state management in a single service (or monolith).
+
+However if you do really need to split data, have operations carried out without locking and these operations can actually take minutes, days or even longer - then you may consider use of Sagas.
+
+## Sagas
+
+Saga in an algorithm to coordinate multiple changes in state without need of locking resources. This is done by modelling particular steps as discrete activities which can be executed independently. Using sagas also help us explicitly model business processes, which is a nice advantage.
+
+The core idea is to handle Long Lived Transactions (LTT) by splitting them into multiple SubTransactions. SubTransactions will be shorter and will modify only a subset of data.  
+This way we can also break a single business process into a set of calls that will be
+made to collaborating services.
+
+### Saga Failure Modes
+
+Note that we talk about business failures (not technical ones), such as e.g. having insufficient stock in warehouse.
+
+#### Backward Recovery
+
+Revert a failure and clean-up afterwards by using compensation actions (semantic rollback).  
+Applies for actions that can be undone.
+
+**Example: An email sent to customer that his order was shipped.**  
+We can't unsend and email, but we can send another one clarifying the situation.  
+So it's not like `git reset --hard`, it's more like another commits that fix what's wrong.
+
+To be able to perform such compensating actions we may need to have some/many information stored in our system for such ability.
+
+It is advised then to model Saga in such way that in case of failure will require as less as possible compensating actions. For example we can move operations most likely to fail closer to the beginning.
+
+Look at this scenario:
+
+1. Check stock of an item and reserve it
+2. Take funds from a customer
+3. **Award loyalty points for customer**
+4. Package and send order
+
+Just by changing order of these steps we can really optimize it:
+
+1. Check stock of an item and reserve it
+2. Take funds from a customer
+3. Package and send order
+4. **Award loyalty points for customer**
+
+#### Forward Recovery
+
+We process the Saga from the point of failure and try to continue.  
+It can be e.g. retry of a step.
+
+### Saga Implementations
+
+#### Orchestrated Sagas
+
+We use a central coordinator (Orchestrator) which defines order of execution and triggers compensation actions.  
+It's command-and-control approach.
+
+##### Pros
+
+The biggest benefit is that we have our Saga explicitly modelled inside one place - The Orchestrator. We can look there and easily understand what's the whole flow of a business process.
+
+##### Cons
+
+Downside is by definition is a more coupled approach. The Orchestrator needs to know about all dependants, so we have at least coupling on domain level (Domain Coupling).
+
+Also, it's a (too) common tendency to have logic being pushed to the central place always, when such a place exists. Therefore this area collects more and more responsibility and becomes more and more coupled.  
+You have to take care that services are independent entities with their own state and behavior and they are in charge of themselves. Orchestrator just requests things from services - it's all.
+
+#### Choreographed Sagas
+
+Choreographed Saga distributes responsibility between multiple collaborating services.
+It's _trust-but-verify_ approach.
+
+Oftentimes Choreographed Sagas are build with heavy use of Event Architecture where particular services listen and react to events and this is the main way of communication. Many services can listen and react to the same events.
+
+##### Pros
+
+By using such highly decoupled approach, services usually don't know about other services. We have highly reduced Domain Coupling.  
+Also we don't have any central point, so logic is placed inside particular services and don't leaks into The Orchestrator.
+
+##### Cons
+
+It's much harder to reason about a such highly decoupled system. We can't just open The Orchestrator _main_ method and see what goes when. Logic is now scattered amongst many places.  
+Moreover, in terms of running Sagas, we don't actually know at what state the Saga is - this may e.g. make compensating actions harder.
+
+To overcome it one may create a dashboard listening to events and showing information based on these events. Then we may be able to conclude the state by examining details of events.
+
+#### Which one to use?
+
+You are free to mix styles of sagas.  
+Some business processes fit more into orchestrated style, another fit more into choreographed one.  
+You can use e.g. an orchestrated Saga as en step inside a choreographed Saga.
+
+In case when one team owns implementation of an entire saga, it may be fine to use choreographed Saga. Here, inherently more coupled architecture suits more to be inside the single team boundary.  
+When saga is spread across multiple teams, less coupled and more distributed choreographed saga should allow teams to be able to work more independently of each other.
+
+Also choreographed saga tend to go for request-response style of communication, whereas orchestrated saga is associated with higher use of events.
 
 # Legend
 
