@@ -132,6 +132,19 @@ permalink: /microservices/
         - [Pros](#pros-8)
         - [Cons](#cons-10)
       - [Which one to use?](#which-one-to-use)
+- [Chapter 7: Build](#chapter-7-build)
+  - [Are you really doing CI?](#are-you-really-doing-ci)
+  - [Branching models](#branching-models)
+  - [Continuous Delivery vs Continuous Deployment](#continuous-delivery-vs-continuous-deployment)
+  - [Artifact creation](#artifact-creation)
+  - [Mapping Source Code and Builds to Microservices](#mapping-source-code-and-builds-to-microservices)
+    - [Pattern: Multirepo](#pattern-multirepo)
+      - [Case: When features require changes in multiple repositories](#case-when-features-require-changes-in-multiple-repositories)
+    - [Pattern: Monorepo](#pattern-monorepo)
+      - [Pros](#pros-9)
+      - [Cons](#cons-11)
+      - [Semi-monorepo](#semi-monorepo)
+      - [Which approach should I use?](#which-approach-should-i-use)
 - [Legend](#legend)
 - [Source](#source)
 
@@ -1014,6 +1027,112 @@ In case when one team owns implementation of an entire saga, it may be fine to u
 When saga is spread across multiple teams, less coupled and more distributed choreographed saga should allow teams to be able to work more independently of each other.
 
 Also choreographed saga tend to go for request-response style of communication, whereas orchestrated saga is associated with higher use of events.
+
+# Chapter 7: Build
+
+## Are you really doing CI?
+
+Jez Humble asks 3 questions to assess if people _really_ get what CI is about:
+
+1. **Do you check in to mainline once per day?**
+   - Your code has to be integrated. If your whole team doesn't sync code frequently, the future integration will become harder. Even when using short-lived feature branches, you should integrate as frequently as possible - at least once a day.
+2. **Do you have a suite of tests to validate your changes?**
+   - CI without tests should not be called _CI_...
+3. **When the build is broken, is it the #1 priority of the team to fix it?**
+   - It means you cannot let more changes to pile up waiting for a build to be passing. It's not **Continuous** Integration, when you wait hours, maybe days to be able to integrate.
+
+## Branching models
+
+O'Really says:
+
+> _The discussion around this topic is nuanced, but my own take is that the benefits of frequent integration—and validation of that integration—are significant enough that **trunk-based development** is my preferred style of development. Moreover, the work to implement **feature flags** is frequently beneficial in terms of **progressive delivery**._
+
+Also, the 2016 State of DevOps [report](https://oreil.ly/YqEEh) by DORA and Puppet stated:
+
+> _We found that having branches or forks with very short lifetimes (less than a day)
+> before being merged into trunk, and less than three active branches in total, are important aspects of continuous delivery, and all contribute to higher performance. So does merging code into trunk or master on a daily basis._
+
+Although open-source projects live in a different way as a lot of unknown people perform ad-hoc development and repository authors are not systematically developing a project 5 days for 8 hours a week, some guidelines still apply:
+
+- **Committing code sooner is better**
+  - In open source projects, it was observed that merging patches faster (preventing e.g. rebases) helps developers move faster.
+- **Working in small batches is better**
+  - Large code bombs are harder and slower to merge into a project than small, concise patches, as maintainers need much more time to review such changes.
+
+## Continuous Delivery vs Continuous Deployment
+
+**Continuous Delivery** is when every commit/PR is treated as something that potentially can be released and we can verify its quality to make a final decision.
+
+**Continuous Deployment** is when every commit/PR after positive automatic verification is automatically deployed to the production.
+
+## Artifact creation
+
+Any given artifact should be built exactly once. Then it should be reused everywhere it's required.  
+Artifact should be also environment-agnostic - if some configuration for particular envs is needed, it should be stored elsewhere.
+
+## Mapping Source Code and Builds to Microservices
+
+### Pattern: Multirepo
+
+A common approach, where every project has its own, separate repository.
+
+You can easily change ownership of a repository (what supports a strong ownership model).
+
+Working with multiple repositories is harder, it's also not possible to make one atomic commit across all needed repositories.  
+Sharing code is also harder, as you have to e.g. create a library. Therefore you encounter drawbacks of this solution - to make an upgrade you have to make changes in library repo, wait for build to complete, deploy new version of lib, make changes in microservice repo, wait for build to complete, deploy new version of microservice.
+If there are many microservices using lib, the process would have to be repeated for each of them, and it probably won't happen at the same time.
+
+#### Case: When features require changes in multiple repositories
+
+If you see it happens (too) often that in order to add a new feature you have to make changes in many repositories, it may indicate too much coupling between them.  
+Maybe you are actually within one boundary, artificially (consciously or not) split into parts. In such scenario it may be considered to actually merge microservices.  
+Cross-cutting changes should be something rather unusual, rather than opposite of it.
+
+### Pattern: Monorepo
+
+An uncommon approach, where all of the code is stored in one repository.
+
+#### Pros
+
+There are some interesting advantages of such an approach:
+
+- Changes across multiple services can be done in atomic fashion
+- Code reuse is so much easier and requires much less maintenance compared to multirepo
+  - Just import a class or method you want to use - and it's just it!
+  - Such an import is selective - only the needed code is being acquired (not the e.g. whole library)
+- Visibility of other people's code is improved
+
+It's worth noting, that although changes can be done across many services, they still should be able to be released independently.
+
+#### Cons
+
+Build & Deployment side of this approach is however more intricate.
+
+(Let's assume, that separate services lie within separate directories)
+
+- More than one folder can trigger the same build
+- One folder can trigger more than one build
+  - Especially some "common" code may start build of a huge amount of services
+- It may be necessary to use some tooling (like Bazel) to manage the graph of dependencies
+- Ownership handling is more complex
+- Repo can be really huge in size, so it would be needed to handle this somehow
+- In overall, monorepo may/will require much more maintenance effort
+
+#### Semi-monorepo
+
+One variant of monorepo approach is one repository, but not for all developers - let one repo for a one team.  
+In such scenario we don't get drawbacks of immense size of enormous repository, but still achieve advantages it gives.
+
+#### Which approach should I use?
+
+In theory, for smaller teams each approach should be fine, however the problems emerge when the scale grows above the small one.  
+If you chose monorepo, you will likely encounter sunk cost fallacy - should we continue having monorepo and getting more problems with it, or migrate everything we have (and "lose" everything we have achieved) into multirepo? In both cases it's painful and costly. And too long hesitation may lead to even more pain and costs.
+
+Therefore, nonetheless, multirepo is recommended approach for most cases.
+
+If you want to use Monorepo, you do really should know it makes sense, as it's a kind of sophisticated approach that will shine only in exceptional circumstances.
+
+So TL;DR - if you aren't absolutely confident you have to use multirepo to cope with given concrete problems, don't touch it.
 
 # Legend
 
