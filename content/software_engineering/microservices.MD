@@ -145,6 +145,19 @@ permalink: /microservices/
       - [Cons](#cons-11)
       - [Semi-monorepo](#semi-monorepo)
       - [Which approach should I use?](#which-approach-should-i-use)
+- [Chapter 8: Deployment](#chapter-8-deployment)
+  - [Principles of Microservice Deployment](#principles-of-microservice-deployment)
+    - [_Financial Times_ case of zero-downtime deployment](#financial-times-case-of-zero-downtime-deployment)
+  - [Deployment options](#deployment-options)
+  - [Kubernetes and Container Orchestration](#kubernetes-and-container-orchestration)
+    - [Knative](#knative)
+  - [Progressive Delivery](#progressive-delivery)
+    - [Deploy vs Release](#deploy-vs-release)
+    - [Progressive Delivery techniques 🔨](#progressive-delivery-techniques-)
+      - [Blue/Green Deployment](#bluegreen-deployment)
+      - [Feature Toggles (Feature Flags)](#feature-toggles-feature-flags)
+      - [Canary Release](#canary-release)
+      - [Parallel Run](#parallel-run-1)
 - [Legend](#legend)
 - [Source](#source)
 
@@ -1133,6 +1146,103 @@ Therefore, nonetheless, multirepo is recommended approach for most cases.
 If you want to use Monorepo, you do really should know it makes sense, as it's a kind of sophisticated approach that will shine only in exceptional circumstances.
 
 So TL;DR - if you aren't absolutely confident you have to use multirepo to cope with given concrete problems, don't touch it.
+
+# Chapter 8: Deployment
+
+## Principles of Microservice Deployment
+
+- **Isolated Execution**
+  - Microservices should have their own resources and shouldn't impact on any other software running nearby
+- **Focus on automation**
+  - Choose tech that allows a high degree of automation and make it a part of work culture
+- **Infrastructure as Code**
+  - Store infrastructure configuration in repository
+- **Zero-downtime deployment**
+  - Make independent deployability a step higher and allow new releases to be done in a way invisible to end users
+- **Desired state management**
+  - Use platform which takes care of infrastructure and deployments, it should monitor and act in real-time to ensure valid state
+
+### _Financial Times_ case of zero-downtime deployment
+
+After implementing zero-downtime deployment, as one could have high confidence that releases won't break things to end users, companies greatly increase release frequency. Also such a deployment can be done during working hours (and not night maintenance ones).
+
+Practices like rolling updates and/or blue-green deployment are worth taking into consideration.
+
+It's also a good thing to implement zero-downtime deployment in earlier stages of a project - why wait with it until things become more complex?
+
+## Deployment options
+
+- **Physical Machine**
+  - No virtualization, just a real computer
+- **Virtual Machine**
+- **Container**
+  - Microservice instance runs as a separate container on a virtual or physical machine. Such a runtime can be managed by container orchestration tool like Kubernetes
+- **Application container**
+  - Microservice instance runs in application container that manages other application instances, typically on the same runtime, examples are Tomcat or IIS
+- **Platform as a Service (PaaS)**
+  - Highly abstracted platform hiding from user infrastructural details and allowing to focus more on the actual app, rather than everything around it
+- **Function as a Service (FaaS)**
+  - You deploy just code which is invoked on demand
+
+## Kubernetes and Container Orchestration
+
+Fundamentally, K8s **Cluster** consists of two things:
+
+- **Nodes** - a set of machines that run workloads
+- **Control Plane** - a set of software that manages these Nodes
+
+When we schedule a workload, we don't do it on a Container, but on a **Pod** (which can run 1 or more containers, but usually only one).
+
+A **Service** is actually a mapping between running Pods and Network Interface.
+
+Pods should be considered ephemeral - they can come up and down at any time. The stable thing here is Service.  
+You can say you deploy a service, however you actually deploy a Pod which maps to Service.
+
+**Replica Set** is definition of desired state - how many Pods you would like to have running.
+
+You don't manage Replica Set directly - it's handled via **Deployment** - this is how you apply changes to Pods and Replica Sets.  
+With a Deployment it's possible to issue things like rolling upgrades, rollbacks, scaling, etc.
+
+To sum up - to deploy a microservice in K8s you define a Pod, which will contain container with Microservice, define a Service which will enable access to Microservice, and you apply changes to running Pods with Deployment.
+
+### Knative
+
+Knative is open-source project aiming to provide FaaS-like workflows using K8s under the hood. It's goal is to hide the complexity of K8s from developers and make managing the full lifecycle of software much easier.
+
+## Progressive Delivery
+
+There's an observation that high-performing companies deploy more frequently and idea "go fast and break stuff" doesn't seem to apply here. Actually, shipping often goes hand in hand with lower failure rate. It is because such companies take advantage of feature toggles, canary releases, parallel runs, etc. which have positive effect on these metrics.
+
+### Deploy vs Release
+
+**Deployment** is when you **install** some version of software on a given environment.  
+**Release** is when you make it **available** to end users.
+
+### Progressive Delivery techniques 🔨
+
+#### Blue/Green Deployment
+
+You have one version of your software working currently (Blue),  
+then you deploy a new version alongside it in production (Green).  
+You perform verification to check if it works as intended - and only if it indeed works, you redirect users to the new version.  
+If you notice problems beforehand, no one will be affected.
+
+#### Feature Toggles (Feature Flags)
+
+You can have binary toggles, which you can enable or disable at any given moment (or at a scheduled time).  
+You can have more fine-grained toggles, which e.g. will accept only certain users (Beta group).
+Heavily used in Trunk Based Development.
+
+#### Canary Release
+
+You deploy two versions running side by side and route only a fraction of traffic to the new one.
+
+Tools like Spinnaker may be an interesting aid here.
+
+#### Parallel Run
+
+You deploy two versions running side by side, but the second one works in dry mode.  
+Then you compare metrics and results for both versions.
 
 # Legend
 
