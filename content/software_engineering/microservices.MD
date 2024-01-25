@@ -158,6 +158,13 @@ permalink: /microservices/
       - [Feature Toggles (Feature Flags)](#feature-toggles-feature-flags)
       - [Canary Release](#canary-release)
       - [Parallel Run](#parallel-run-1)
+- [Chapter 9: Testing](#chapter-9-testing)
+  - [In short](#in-short)
+  - [Contract Tests and CDCs (Consumer-Driven Contracts) 🔨](#contract-tests-and-cdcs-consumer-driven-contracts-)
+    - [Pact 🔨](#pact-)
+    - [Spring Cloud Contract 🔨](#spring-cloud-contract-)
+  - [Cross-functional testing](#cross-functional-testing)
+    - [Performance tests 🔨](#performance-tests-)
 - [Legend](#legend)
 - [Source](#source)
 
@@ -1243,6 +1250,58 @@ Tools like Spinnaker may be an interesting aid here.
 
 You deploy two versions running side by side, but the second one works in dry mode.  
 Then you compare metrics and results for both versions.
+
+# Chapter 9: Testing
+
+## In short
+
+In microservice world end-to-end tests are rather tough thing to do, so it seem to be pragmatic to lean toward different approach.  
+They have high degree of confidence and they indeed verify things in-depth, but the cost - the cost is just too high.  
+I mean you _can_ use e2e tests to achieve an adequate level of confidence, but the cost associated with it won't be probably worth it.
+It's discouraged to choose this method because we have other ways of providing a decent level of confidence, but with much smaller costs and overhead.  
+Using explicit schemas, Contract Tests / CDCs, in-production testing, Progressive Delivery - there are some effective means to assure quality in such a distributed world.
+
+## Contract Tests and CDCs (Consumer-Driven Contracts) 🔨
+
+Here, the team which uses some other microservice, create such tests. It's a kind of specifying how you expect that microservice to behave.
+
+One advantage is such tests can be run on any mock server or real server or even real microservice.
+
+They are also very useful while combined with Consumer-Driven Contracts (CDCs).  
+It's in effect an explicit representation of how upstream service expect the downstream service to work.
+
+With CDCs, the consumer team shares these tests with producer team to allow them to verify that microservice meets these expectations. They can be e.g. added CI/CD nightly builds and run for every consumer of the microservice. Of course you can also be both consumer and producer.
+
+Contract Tests are much faster, require less resources and are more convenient that e2e tests they actually replace.
+
+### Pact 🔨
+
+Pact is consumer-driving testing tool. You define expectations using DSL, start local Pact server and run expectations to make this server generate specification file (it's just a JSON).
+
+### Spring Cloud Contract 🔨
+
+It's a Spring way of CDC.
+
+## Cross-functional testing
+
+### Performance tests 🔨
+
+Having chain of multiple synchronous calls, if any node gets slower, everything goes slower, what can have significant impact. Therefore Performance Testing is even more important than in monolith system.  
+Performance Testing is often postponed argued that there's not much system to test. Unfortunately, (too) often this ends with it being done just before production release, or even never.
+
+To get reasonable results, it would be fine to run scenarios with gradually increasing number of users. This allows to describe load characteristics.  
+Such tests should also be run on environment and data as much similar to production as possible.
+
+Performance tests can take a really long time (and resources), so it's a common to run a subset of them nightly, and all of them on a weekend.
+
+Take care to run them regularly without any breaks. The longer you are without perf tests, the harder it will be to find the source of slow down.
+
+And don't forget to check the results!
+
+It's (too) often when a lot of effort is put into making perf tests operational just to continuously ignore their outputs.
+
+So, to have a solid reason to keep an eye on perf results, you should set targets. When microservice is a part of a wider architecture, you should have defined SLOs and one of them can be related to performance.  
+Another metrics can be a delta - if performance decreases in more than x%, tests should fail.
 
 # Legend
 
