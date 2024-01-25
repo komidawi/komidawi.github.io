@@ -9,11 +9,33 @@ List things you want to install and give some tips instead of having sheer file 
 
 ## Windows Terminal
 
-- jego kolory, czcionka
+Go to `C:\Users\komidawi\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState` and change JSON content according to [settings.json](init/settings.json).
 
 ## oh-my-zsh
 
 ### plugins
+
+#### ssh-agent
+
+##### Install
+
+Run `sudo apt install askpass` first
+
+Then add `ssh-agent` to plugin list
+
+Set these properties:
+`zstyle :omz:plugins:keychain agents ssh #gpg`  
+`zstyle :omz:plugins:keychain identities id_ed25519`  
+`zstyle :omz:plugins:ssh-agent lazy yes` (don't run it on every shell startup)  
+`zstyle :omz:plugins:ssh-agent quiet yes` (non-quiet mode will make p10k show warning on startup)
+
+##### TODO
+
+What gives `AddKeysToAgent`? Check [docs](https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/ssh-agent#lazy)
+
+##### Docs
+
+https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/ssh-agent
 
 ## aliases
 
@@ -29,7 +51,7 @@ List things you want to install and give some tips instead of having sheer file 
 
 ## direnv
 
---- 
+---
 
 # Installing things (old)
 
