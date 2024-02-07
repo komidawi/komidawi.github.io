@@ -1,9 +1,10 @@
 ---
 layout: page
+title: init
 permalink: /init/
 ---
 
-# Installing things (new)
+# My workplace initialization routine
 
 List things you want to install and give some tips instead of having sheer file with no context.
 

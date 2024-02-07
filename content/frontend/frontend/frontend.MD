@@ -1,6 +1,6 @@
 ---
 layout: page
-title: frontend
+title: Frontend
 permalink: /frontend/
 ---
 

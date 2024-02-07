@@ -1,6 +1,6 @@
 ---
 layout: page
-title: vscode
+title: VSCode
 permalink: /vscode/
 ---
 
