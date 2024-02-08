@@ -165,6 +165,40 @@ permalink: /microservices/
     - [Spring Cloud Contract 🔨](#spring-cloud-contract-)
   - [Cross-functional testing](#cross-functional-testing)
     - [Performance tests 🔨](#performance-tests-)
+- [Chapter 10: From Monitoring to Observability](#chapter-10-from-monitoring-to-observability)
+  - [Observability](#observability)
+    - [Log Aggregation](#log-aggregation)
+      - [First and foremost 🔨](#first-and-foremost-)
+      - [Common format 🔨](#common-format-)
+      - [Correlation IDs 🔨](#correlation-ids-)
+      - [Timing](#timing)
+    - [Metrics aggregation](#metrics-aggregation)
+      - [Cardinality 🔨](#cardinality-)
+    - [Distributed Tracing](#distributed-tracing)
+    - [Are you doing OK?](#are-you-doing-ok)
+      - [SLA](#sla)
+      - [SLO](#slo)
+      - [SLI](#sli)
+      - [Error Budgets 🔨](#error-budgets-)
+    - [Alerting](#alerting)
+      - [Good alerts characteristics 📜](#good-alerts-characteristics-)
+    - [Semantic Monitoring 📜](#semantic-monitoring-)
+      - [Real user monitoring](#real-user-monitoring)
+    - [Testing in Production 🔨](#testing-in-production-)
+      - [Synthetic Transactions 🔨](#synthetic-transactions-)
+      - [A/B Testing 🔨](#ab-testing-)
+      - [Canary release 🔨](#canary-release-)
+      - [Parallel run 🔨](#parallel-run-)
+      - [Smoke tests 🔨](#smoke-tests-)
+      - [Synthetic transaction 🔨](#synthetic-transaction-)
+      - [Chaos engineering 🔨](#chaos-engineering-)
+  - [Standardization 📜](#standardization-)
+  - [Selecting Tools](#selecting-tools)
+    - [Democratic](#democratic)
+    - [Easy to integrate](#easy-to-integrate)
+    - [Provide Context 📜](#provide-context-)
+    - [Able to scale](#able-to-scale)
+  - [Getting Started 🔨](#getting-started-)
 - [Legend](#legend)
 - [Source](#source)
 
@@ -1303,9 +1337,245 @@ It's (too) often when a lot of effort is put into making perf tests operational 
 So, to have a solid reason to keep an eye on perf results, you should set targets. When microservice is a part of a wider architecture, you should have defined SLOs and one of them can be related to performance.  
 Another metrics can be a delta - if performance decreases in more than x%, tests should fail.
 
+# Chapter 10: From Monitoring to Observability
+
+## Observability
+
+Building Blocks for Observability:
+
+- **Log aggregation**
+  - Collecting information across multiple microservices
+- **Metrics aggregation**
+  - Having a wide data range and being able to look at them from the distance
+- **Distributed tracing**
+  - Tracking a flow of calls across multiple microservice boundaries
+- **Are you doing OK?**
+  - Defining Error Budgets, SLAs, SLOs
+- **Alerting**
+- **Semantic monitoring**
+- **Testing in production**
+
+### Log Aggregation
+
+#### First and foremost 🔨
+
+**Log Aggregation tools should be a \*requirement\* to even start working in microservice architecture.**
+
+BTW: Implementing a log aggregation is easier than other microservice overheads, so if your company fails to do this, it means they would not handle microservices at all.
+
+#### Common format 🔨
+
+Make sure logs end up being stored in a common format.
+
+Some log forwarding agents allow to reformat logs before being sent to central log store.  
+**It's advised to avoid it**.  
+It can be both resource-consuming and more error-prone.
+
+**It's better for the microservice to send logs in target format from the beginning.**
+
+Log reformating tools can be helpful in cases when we have no power to change logging, like in 3rd party software. Then it would be helpful.
+
+#### Correlation IDs 🔨
+
+As soon as you start having log aggregation, implement Correlation IDs.
+
+#### Timing
+
+Keep in mind that logs are generated on machines, which have its own Time. There's no guarantee this time will be valid (synchronized) across them. In such cases we may see logs from the present before logs from the past.
+
+We have 2 limitations of logs then:
+
+1. We cannot be certain about timing of logs
+2. We cannot be certain about causality (causation)
+
+### Metrics aggregation
+
+#### Cardinality 🔨
+
+Cardinality can be described as number of fields that can be easily queried in a given data point.
+
+For every logging record I may want to capture microservice name, instance ID, customer ID, correlation ID, version number, headers etc. The more items in record, the higher the cardinality is.
+
+The problem here boils down not to the storage size of the record(s), but to indexing all of these tags.  
+Storing too much tags for a metric may significantly impact underlying engine.
+
+You should carefully design log records taking into consideration software limitations. E.g. Prometheus is made to store rather simple information like CPU usage for a given instance. In its documentation you can read:
+
+> _Remember that every unique combination of key-value label pairs represents a new time series, which can dramatically increase the amount of data stored. Do not use labels to store dimensions with high cardinality (many different label values), such as user IDs, email addresses, or other unbounded sets of values_
+
+### Distributed Tracing
+
+Instead of looking separately on a particular microservices, we want to see the state of a whole system.
+
+For this purpose we've got software which is usually a central collector which gathers info from all nodes and merges it into one story.
+
+With high volumes of traffic, we have to think about sampling resolution. It may not be possible to sample every single one event, so we may have to choose what to reject.  
+For example we may want to store every single one error event, but only 1 for 100 successful events, especially if they are very similar to each other.
+
+When choosing utility for distributed tracing, choose something supporting OpenTelemetry, as it's industry standard.
+
+### Are you doing OK?
+
+#### SLA
+
+SLAs are usually "bare minimum" of service not to make client upset - but the end-user still may be dissatisfied with quality of service.
+
+#### SLO
+
+It's what team signs to provide to the client. It can be e.g. expected uptime or response times.
+
+#### SLI
+
+SLIs are metrics that allow to assess if SLOs/SLAs are satisfied.
+
+#### Error Budgets 🔨
+
+Growth implies change, and change imply risk. Being too cautious may be impeding, Error Budgets are to define how much error is acceptable for the system.  
+They help find how well your system does (or not).  
+Error Budgets are something that gives a space to breathe and try new things without fear.
+
+### Alerting
+
+One important remark is to try to take care of amount of alerts an operator gets in case of system failure. Research about plane pilots showed when having too many alerts, especially competing with themselves, they exceed mental resources, narrow attentional focus and have negative impact on speed and quality of taken decisions.
+
+#### Good alerts characteristics 📜
+
+1. **Relevant**
+   - Make sure that alert is valuable
+2. **Unique**
+   - Ensure alert isn't a duplicate of another one
+3. **Timely**
+   - Alert should come up quickly enough to react on it
+4. **Prioritized**
+   - It should allow to decide how much importance the alert has
+5. **Understandable**
+   - Information should be clear and readable
+6. **Diagnostic**
+   - Information should tell what's wrong
+7. **Advisory**
+   - It should be a guidance what actions can be taken
+8. **Focusing**
+   - It should draw attention to the most important issues
+
+When creating an alert (or configuring alert system), keep in mind who will be receiving it. Make it be written especially for the recipient, not for nobody/anybody.
+
+### Semantic Monitoring 📜
+
+We don't specify low-level goals like "Disk usage should be below 80%", but we focus on business processes. For example we can describe our system as operational when:
+
+- Users can register
+- We are selling at least 10k products per hour during daytime
+- We are shipping orders out of a normal rate
+
+These statements can be also SLOs or similar to SLOs.
+
+How to perform such semantic monitoring then?
+
+#### Real user monitoring
+
+We gather data in real time and compare it with expectations.
+
+The drawback is it's about what happened in the past, a not if the next action will succeed. That's where Synthetic Transactions come and shine.
+
+### Testing in Production 🔨
+
+> _Not testing in prod is like not practicing with the full orchestra because your solo sounded fine at home_ (~Charity Majors)
+
+#### Synthetic Transactions 🔨
+
+We can e.g. create a new fake user in production system and see if it went fine.
+
+In a complex system there are many moving parts and plain metrics like CPU usage are insufficient. Implying based just of them isn't accurate.
+
+But verification of the real system can be done in an empiric way - for example e.g. generating fake events (with some tag allowing to distinguish them with real events) and putting them into the real queue. The system would consume them and produce some output, but it wouldn't go as usual with other users' flow, let end in a special bucket. Then such output and other factors can be analyzed and system condition can be assessed.
+
+But low-level metrics are **not** obsolete now - they just tell us a different set of information.
+
+PS: Of course make sure that fake transactions won't have a real effect, indeed!
+
+#### A/B Testing 🔨
+
+You simultaneously deploy two versions, half users see A, half user see B.  
+You then analyze differences in operation. And example can be a different placing order UI with analysis of time spent in the form and finished orders rate.
+
+#### Canary release 🔨
+
+You can gradually increase amount of users using a new version.
+
+#### Parallel run 🔨
+
+You deploy two versions, both are working (but only one has process effects) and you compare outputs.
+
+#### Smoke tests 🔨
+
+Smoke tests are done after microservice is deployed, but before it's released. They check if the software starts and doesn't brake.
+
+Usually such tests are automated and check simple activity like health check + some synthetic transaction.
+
+#### Synthetic transaction 🔨
+
+A full-blown, fake user interaction which is injected into the system.  
+It's actually often very close to e2e tests.
+
+#### Chaos engineering 🔨
+
+Injecting artificial faults to the running system to ensure it can handle it or monitoring/alerting works as intended.
+
+## Standardization 📜
+
+Write all logs in the same format, use the same formatting, use the same field names and tags.
+
+## Selecting Tools
+
+### Democratic
+
+Having tools which are too complicated for an ordinary employee to use will decrease number of people that will be able to help when something wrong happens. Also picking tools being too expensive to use will have similar effect.
+
+Pick tools which are accessible for the most widest range of users.
+
+### Easy to integrate
+
+Pick tools that support open standards like OpenTelemetry to make integration easier as well as changing tools in the future.
+
+### Provide Context 📜
+
+When looking at a piece of information, tool should provide as much context to aid to understand what's going on and what to do next.
+
+Here's an example categorization system:
+
+1. **Temporal context**
+   - How does this look compared to a minute, hour, day or month ago?
+2. **Relative context**
+   - How has this changed in relation to other things in the system?
+3. **Relational context**
+   - Is something depending on this? Is this depending on something else?
+4. **Proportional context**
+   - How bad is this? Is it large or small scoped? Who is impacted?
+
+### Able to scale
+
+You should take tool that can scale along with you. Also - make sure, that costs of such scaling won't skyrocket at the same time.
+
+## Getting Started 🔨
+
+Capture basic system info: CPU, memory, I/O.  
+Also make sure you can match a microservice instance back to the host it is running on.  
+For each instance capture response times for network interfaces and record (log) all calls with downstream microservices.  
+Add correlationID from the very beginning.  
+Log major steps of business process.  
+You should have at least a basic metric and log aggregation tooling being operational.
+
+You may not have to start with dedicated distributed tracing tool - especially if it requires to run and host it by yourself. However if you have something that would work with a little effort - it would be definitely worth it.
+
+For key operations, strongly consider using synthetic transactions - it will give you high confidence that whole system works properly. Try to design the system with this capability in mind.
+
+This is just the beginning. Over time you will collect more information and get more confidence with assessing if the system works well and end-users can use it successfully.
+
 # Legend
 
 🔨 - paragraph with higher amount of practical information
+
+📜 - paragraph with information worth to pay attention to
 
 # Source
 
