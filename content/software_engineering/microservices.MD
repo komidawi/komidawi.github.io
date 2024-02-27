@@ -199,6 +199,40 @@ permalink: /microservices/
     - [Provide Context 📜](#provide-context-)
     - [Able to scale](#able-to-scale)
   - [Getting Started 🔨](#getting-started-)
+- [Chapter 11: Security](#chapter-11-security)
+  - [The 5 functions of Cybersecurity](#the-5-functions-of-cybersecurity)
+    - [Identify](#identify)
+    - [Protect](#protect)
+    - [Detect](#detect)
+    - [Respond](#respond)
+    - [Recover](#recover)
+  - [Foundations of Application Security](#foundations-of-application-security)
+    - [Credentials](#credentials)
+      - [User Credentials](#user-credentials)
+      - [Secrets](#secrets)
+        - [Secret management](#secret-management)
+        - [Secret rotation](#secret-rotation)
+        - [Key leaking 🔨](#key-leaking-)
+        - [Limiting scope - Principle of Least Privilege](#limiting-scope---principle-of-least-privilege)
+        - [Secret management 🔨](#secret-management-)
+    - [Patching 🔨](#patching-)
+    - [Backups 📜](#backups-)
+    - [Rebuild](#rebuild)
+  - [Implicit Trust vs Zero Trust](#implicit-trust-vs-zero-trust)
+    - [Implicit Trust](#implicit-trust)
+    - [Zero Trust](#zero-trust)
+    - [Spectrum Trust](#spectrum-trust)
+  - [Securing Data](#securing-data)
+    - [Data in transit](#data-in-transit)
+      - [Concerns about data in transit](#concerns-about-data-in-transit)
+    - [Data at rest](#data-at-rest)
+      - [Be frugal](#be-frugal)
+  - [Confused Deputy Problem](#confused-deputy-problem)
+    - [Centralized, Upstream Authorization](#centralized-upstream-authorization)
+    - [Decentralizing Authorization](#decentralizing-authorization)
+      - [JWT](#jwt)
+        - [Using Tokens 📜](#using-tokens-)
+        - [Challenges 🔨](#challenges-)
 - [Legend](#legend)
 - [Source](#source)
 
@@ -1570,6 +1604,251 @@ You may not have to start with dedicated distributed tracing tool - especially i
 For key operations, strongly consider using synthetic transactions - it will give you high confidence that whole system works properly. Try to design the system with this capability in mind.
 
 This is just the beginning. Over time you will collect more information and get more confidence with assessing if the system works well and end-users can use it successfully.
+
+# Chapter 11: Security
+
+## The 5 functions of Cybersecurity
+
+1. **Identify**
+   - who your potential attackers are, what can be their targets, where your are most unprotected
+2. **Protect**
+   - your key assets from potential hackers
+3. **Detect**
+   - that attack happened
+4. **Respond**
+   - when you find out that something happened
+5. **Recover**
+   - in the case of security accident
+
+### Identify
+
+Threat modeling is about understanding what attackers may want from your system. It's about going into mind of a potential attacker.  
+Will different types of attackers want to take over different assets? Or maybe there's a single place valuable for many parties?  
+Outside view is very important, and having somebody from the outside perform such analysis is valuable.
+
+### Protect
+
+Once we identified most valuable and most vulnerable assets, we need to protect them adequately. Microservices are wider area of attack than simple monoliths, so there will be more things to be protected. Yet at the same time we have also more means to defend.
+
+### Detect
+
+With microservices, detecting adverse operations can be more complex task.
+There's more things to have an eye on, there are more sources of information.
+
+Log aggregation is some basic way to monitor things going on.
+
+There is also software for intrusion detection, e.g. Aqua.
+
+### Respond
+
+If something bad happens - what next? What to do?
+
+Having an effective incident response approach may limit damage caused by breach. Basics cover analyzing scope of breach and what data was exposed. Especially if any PII got leaked, you have to follow both security and privacy incident
+response and notification processes.
+
+Also one aspect is how things are handled internally. If the company has culture of blame, it would be hard to perform quality post-mortem analysis and draw conclusions. Culture of openness supports learning from mistakes.
+
+### Recover
+
+With Microservices we have many moving parts, so to perform recovery it will be probably somehow more complex.
+
+## Foundations of Application Security
+
+### Credentials
+
+#### User Credentials
+
+> _There is some excellent advice out there about how to properly handle things like passwords—advice that despite being simple and clear to follow is still not being adopted widely enough. (...) This advice includes recommendations to **use password managers and long passwords**, to avoid the use of complex password rules, and—somewhat surprisingly—to avoid mandated regular password changes._
+
+#### Secrets
+
+Examples of secrets:
+
+- Certificates for TLS
+- SSH keys
+- public/private API keypairs
+- DB credentials
+
+##### Secret management
+
+1. **Creation**
+   - How the secret is created?
+2. **Distribution**
+   - After the secret is created, how it is delivered to the destination?
+   - And **only** there?
+3. **Storage**
+   - Is secret stored in a way that allows access for no one other than authorized parties?
+4. **Monitoring**
+   - Do we see how the secret is used?
+5. **Rotation**
+   - Can we change secret without brakes and downtime?
+
+##### Secret rotation
+
+Secret rotation process can be very painful, even to degree of stopping working for the whole system. It is often caused by secrets having too broad scope. Therefore a given secret should have only a single responsibility.
+
+Also make sure you performed tests of secret rotation process, don't wait until they expire!
+
+##### Key leaking 🔨
+
+It is not rare to expose private keys publicly by committing them to the repository.
+
+Therefore it may be useful to use tools like [gitsecrets](https://github.com/awslabs/git-secrets) or [gitleaks](https://github.com/gitleaks/gitleaks) to scan repository for such leaks.
+
+##### Limiting scope - Principle of Least Privilege
+
+Limiting scope can be performed on two levels at once - limiting the scope of a given secret and limiting the scope of who has access to such a secret.  
+Therefore we limit impact of damage in case of secret leakage, we limit area of verification we have to make, also it makes easier to track down source of leakage.  
+We may also easy track down e.g. expensive query killing our DB.
+
+##### Secret management 🔨
+
+Secret management can be daunting, therefore it is advised to use tools aiding this - e.g. Vault from HashiCorp.
+
+### Patching 🔨
+
+On a daily basis vulnerabilities are discovered across libraries used in your project. Having unpatched software may make you susceptible to hacker attack. And such scenario can become a real thing - and you certainly don't want it to happen.
+
+Detect such holes in software on a daily bases in an automated manner - use code scanning tools like **Snyk** or **GitHub Code Scanning**.
+
+### Backups 📜
+
+1. Create Backups on a regular basis
+2. **Verify that Backups indeed can be restored on a regular basis as well!**
+
+### Rebuild
+
+If malicious party gains access to your system, even if you recover, it's still not guaranteed you evicted all evil.  
+There's a chance an attacker is still present somewhere in your system. Rootkits can help it especially (imagine modifying `ls` command not to show suspicious files).
+
+**Reinstalling system from scratch is something giving higher level of safety.**
+
+The ability to wipe everything and rebuild from scratch is effective not only after a known attack, but also is something that can remove undetected transgressors.
+
+**It would be desired to rebuild microservices or even a whole system based on information in source code.**  
+Then you need to restore backups of data.
+
+**Having the same process for deployment and rebuilding assures that the rebuilding indeed works.** (Actually it happens even now - with containers you shut down old containers and spin up new ones)
+
+One harder thing can be rebuilding the whole platform - e.g. whole Kubernetes.  
+If you have managed solution, creating a new cluster can be relatively easy, however if you have your own on-prem installation, things will be much harder.
+
+## Implicit Trust vs Zero Trust
+
+### Implicit Trust
+
+Assumption that calls made from inside our perimeter are implicitly trusted.
+
+**This is the most common approach, however it is often like that due to unconsciousness about dangers related with it!**
+
+### Zero Trust
+
+When operating in Zero Trust environment, you assume that the whole system is compromised and you can trust nobody. It's a kind of Paranoic Mode.  
+The goal is to operate in such a way that malicious parties won't be able to hurt you.
+
+**All calls have to be verified, all secrets have to be stored securely, all sensitive data in transit have to be encrypted.**
+
+One thing - this approach is also called "perimeterless computing", but don't act as it was really true - for example one may allow connections from the Internet to the whole system "because there's no perimeter"! Just remember to be sane.
+
+### Spectrum Trust
+
+Implicit vs Zero trust is not a xor - it's more like a spectrum.  
+Some services can have either one, or even both approaches depending on certain factors.
+
+You can for example group information in such way:
+
+1. **Public**
+   - Data shared freely with third-parties. It's effectively a public domain.
+2. **Private**
+   - Information only for authorized users. For example details of customer orders.
+3. **Secret**
+   - Sensitive information. Can be accessed only in particular circumstances only by allowed users, e.g. medical data.
+
+You can make microservices run in these 3 different environments, but allow one-way connections - only from lower layers to upper layers.
+
+Also we can see we have here moving from Zero Trust Area, through Implicit Trust Area to end up in Public Area.
+
+## Securing Data
+
+### Data in transit
+
+#### Concerns about data in transit
+
+1. **Is the Client actually the one it claims it is?**
+   - For example use certificate to sign its message.
+2. **Can anyone see the data being sent?**
+   - Using HTTPS or Mutual TLS makes data in-transit encrypted.
+3. **Can anyone change the data being sent?**
+   - Usually data unavailable for third parties can't be manipulated
+   - However when we want to send data without encryption, we can make sure they are not modified - e.g. use HMAC (hash-based message authentication code)
+4. **Is the Server actually the one it claims it is?**
+   - With HTTPS browser can look at Server Certificate and verify if it's valid.
+
+### Data at rest
+
+#### Be frugal
+
+Of course data, especially sensitive, have to be stored in a safe manner.
+
+**But at a first place you can avoid having to deal with securing such data just by avoiding storing it.**  
+Keep bare minimum required for system to work and no more.
+
+Also - when logging a request - do we need the whole IP, or can we just save 81.45.162.x?  
+Do we need name, gender, address, DoB or just age and postal code would be enough to provide product offers?
+
+Not having data makes you not having to deal with it, no danger of leaking them and no requirement to share it to e.g. Police.
+
+Also remember to encrypt also backups, if they contain sensitive data.
+
+## Confused Deputy Problem
+
+Imagine there's a logged used who wants to check status of an order. He clicks on a link and then an `store.com/orderStatus/12345` opens up. In behind, SSO Gateway calls WebShopService which calls both ShippingService and OrderService.
+
+Should ShippingService and OrderService accept calls from WebShopService? We can assume that yes - calls come from within the perimeter from trusted service.
+
+However what if user opens `store.com/orderStatus/55555` which is someone else's order? In such case he still will see the details, although he shouldn't!
+
+What happened here is that we had Authentication, but we didn't have Authorization.
+
+### Centralized, Upstream Authorization
+
+One approach would be to have a central point, e.g. on the API Gateway or in some Orchestrating Microservice. Therefore all requests that went through this Central Point would be treated as authorized. In such scenario we have some kind of Implicit Trust.
+
+One issue is that upstream component has to have knowledge about downstream services, functionality they provide and how to limit access to these functionalities.  
+This impairs independent deployability as we may need to deploy both microservice and central point at the same time.
+
+It implies that it would be better to move this logic into the microservice itself.
+
+### Decentralizing Authorization
+
+With decentralized authorization we need to make sure, that client sending request is indeed authenticated.
+
+#### JWT
+
+- Multiple claims can be stored in one JWT
+- Can be signed for ensuring data integrity
+- Can be encrypted to limit who can read the data
+- Can be configured to expire
+
+##### Using Tokens 📜
+
+Customer authenticates as normal, e.g. logging on a webpage and obtaining e.g. an OAuth token. Requests he makes contain this OAuth token which our Gateway validates. If everything is OK, the Gateway can create JWT Token for internal communication. Such token can be valid only for duration of a request.
+
+Downstream microservices can validate this Token and also check claims included in it, so it can both verify authentication and authorization.
+
+A variation of this method can be generating JWT Token and giving it for the user himself, however it's less secure and such tokens should have limited validity time.
+
+##### Challenges 🔨
+
+In case of signed JWTs, to be able to validate signature, receiver will need e.g. public key for such operation. Therefore all inconveniences related with key management come in place.
+
+Also it is a balancing act with defining token expiration time. Some processing can take a very long time (e.g. ordering an item is something taking days, usually). Set too short time, and you have problems. Set too long time and increase risk.  
+In such case you may generate a special long-lived token with this narrow scope of privileges just for this long-lived operation.  
+Some just stop using token at a certain point in the flow.  
+In terms of this issue, you need to find the right solution for yourself.
+
+Sometimes also there are cases, when system needs really a lot of information to be carried with the request - exceeding max JWT length. In such scenario you would need to find another solution.  
+However nothing stops from splitting the flow to be able to use JWT in some parts of it, at least.
 
 # Legend
 
