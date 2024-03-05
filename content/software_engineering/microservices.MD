@@ -233,6 +233,33 @@ permalink: /microservices/
       - [JWT](#jwt)
         - [Using Tokens 📜](#using-tokens-)
         - [Challenges 🔨](#challenges-)
+- [Chapter 12: Resiliency](#chapter-12-resiliency)
+  - [What is Resiliency?](#what-is-resiliency)
+    - [Robustness](#robustness)
+    - [Rebound](#rebound)
+    - [Graceful Extensibility](#graceful-extensibility)
+    - [Sustained Adaptability](#sustained-adaptability)
+  - [Degrading Functionality](#degrading-functionality)
+  - [Stability Patterns](#stability-patterns)
+    - [Time-Outs 🔨](#time-outs-)
+    - [Retries 🔨](#retries-)
+    - [Bulkheads 🔨](#bulkheads-)
+    - [Circuit Breakers](#circuit-breakers)
+    - [Isolation](#isolation)
+    - [Redundancy](#redundancy)
+    - [Middleware](#middleware)
+    - [Idempotency](#idempotency)
+  - [CAP Theorem](#cap-theorem)
+    - [Sacrificing Consistency (AP)](#sacrificing-consistency-ap)
+    - [Sacrificing Availability (CP)](#sacrificing-availability-cp)
+    - [Sacrificing Partition Tolerance (CA)](#sacrificing-partition-tolerance-ca)
+    - [It's not All or Nothing 📜](#its-not-all-or-nothing-)
+  - [Chaos Engineering 📜](#chaos-engineering--1)
+    - [Game Days 📜](#game-days-)
+      - [Anecdote of Bob's Team 📜](#anecdote-of-bobs-team-)
+    - [Production Experiments 📜](#production-experiments-)
+      - [Netflix and its Simian Army 🔨](#netflix-and-its-simian-army-)
+      - [Tools 🔨](#tools-)
 - [Legend](#legend)
 - [Source](#source)
 
@@ -1849,6 +1876,212 @@ In terms of this issue, you need to find the right solution for yourself.
 
 Sometimes also there are cases, when system needs really a lot of information to be carried with the request - exceeding max JWT length. In such scenario you would need to find another solution.  
 However nothing stops from splitting the flow to be able to use JWT in some parts of it, at least.
+
+# Chapter 12: Resiliency
+
+## What is Resiliency?
+
+1. **Robustness**
+   - Ability to absorb an expected perturbation
+2. **Rebound**
+   - Ability to recover after a traumatic event
+3. **Graceful extensibility**
+   - How well unexpected situations are dealt with
+4. **Sustained adaptability**
+   - Ability to continually adapt to changing environments, stakeholders and demands
+
+### Robustness
+
+Robustness by definition requires prior knowledge - we are putting measures into
+place to deal with known perturbations.
+
+It is being able to handle cases like e.g.:
+
+- Failing host
+  - auto spin up replacement host
+- Connection getting timed out
+  - perform a retry
+- Unavailable microservice
+  - handle failure in a graceful manner
+- Important employee gets sick
+  - have many individuals with given knowledge
+
+### Rebound
+
+Rebound is how well we recover from possible disruptions.
+
+One may put all its energy to prevent scenarios, but can't foresee everything, so it's wide to prepare to recover when they eventually, nonetheless happen.
+
+- Having backups
+  - Testing these backups!!!
+- Having Instructions how to handle outages
+
+### Graceful Extensibility
+
+Graceful Extensibility is about handling unforeseen scenarios.
+
+In short - more flat organizations handle it better as employees hands aren't so tied up, also automation can be helpful. However, when it replaces \<too\> many people, it may actually decrease this metric.
+
+### Sustained Adaptability
+
+Sustained Adaptability requires us to not be complacent.
+
+That we haven’t yet suffered from a catastrophic outage doesn’t mean that it cannot happen. We need to challenge ourselves to make sure we are constantly adapting what we do as an organization to ensure future resiliency. Done right, a concept like **Chaos Engineering** can be a useful tool in helping build sustained adaptability.
+
+## Degrading Functionality
+
+Assuming your system consists of many parts, some of them are probably less crucial or not crucial at all. When some of them fails, it may be fine for the system still work but without these features. This way it still would be operational, even if some elements are broken.
+
+## Stability Patterns
+
+### Time-Outs 🔨
+
+- Set time-outs on all calls.
+- Log when time-out occurs.
+- Monitor these occurrences.
+
+Also single time-outs for particular service calls may not be enough. When a call is a part of a wider set of operations (and likely it is), add also some meta-timeout for the whole set.  
+Therefore you won't wait `t1 + t2 + ... + tn` seconds (as we can see the number grows along with number of hops), but a certain `T` time for the whole operation.
+
+This is especially important for user-facing operations.
+
+### Retries 🔨
+
+Some problems are just temporary - packets can get misplaced, gateways can face an odd load spike, etc.  
+Retrying a call is a so simple yet reasonable solution.
+
+Just don't make a retry immediately - wait some time to allow downstream service to take a breath, as it's probably under heavy load or facing other problems.
+
+Also before making retry make sure the timeout budget isn't exceeded - if so, there's no point of retrying as it's already too late.
+
+### Bulkheads 🔨
+
+In short these are Worker Pools that isolate Threads (load shedding). Therefore if one of downstream services hangs, it won't halt all available threads with waiting for it.
+
+### Circuit Breakers
+
+When a certain number of requests to the downstream service fail (due to service being unavailable or just sheer time-outs), the circuit breaker opens.
+
+**Set circuit breakers for all synchronous calls.**
+
+For asynchronous calls, when the circuit breakers is down, you can queue up requests and retry them later.  
+However for synchronous calls it would be better to fail-fast.
+
+Having circuit breakers also allows us also to manually "enable" and "disable" microservices.
+
+### Isolation
+
+The more one microservice is depending on another one being available, the bigger is the impact of the first one to do its job. Using technologies which allow a downstream services to be offline (e.g. using middleware or call buffering system), upstream microservices are less prone to be affected by outages of downstream ones.
+
+Also increased isolation between services makes them require less coordination. The less coordination needed, the higher autonomy and teams can develop their services more freely.
+
+Isolation can be also on higher level. Consider two microservices, totally isolated of each other. However they both use database deployed to the same db infrastructure. A failure in such infrastructure will affect both these microservices.
+
+Therefore aim to make microservices run on independent hosts with their own ring-fenced OS and computing resources (actually this is what happens when running them on VMs or Containers).
+
+However take into consideration all trade-offs. Isolating by running on different machines requires more infrastructure and related tooling. Having separate db infrastructures, like stated in paragraph above, also ..increases infrastructure overhead. We could use middleware to decrease temporal coupling, but this in turn makes us to worry about the broker itself.
+
+### Redundancy
+
+- Having multiple instances is a way of achieving redundancy
+- But remember that this also applies to people!
+  - You should have multiple employees being able to perform certain tasks
+
+### Middleware
+
+One of useful things a middleware as a Message Broker can provide, is guaranteed delivery.
+
+### Idempotency
+
+Having idempotent operations makes cases of receiving a message multiple times not cause any harm.
+
+For example for operation of receiving money, receiving duplicated events may make balance invalid. However, when having an assumption that one order can be paid once, and having orderID inside event, many same events won't cause payment to be accounted more than once.
+
+## CAP Theorem
+
+**Consistency** - receive the same data from all different nodes
+
+**Availability** - every request receives a response
+
+**Partition Tolerance** - system can work even when communication between its parts is not possible
+
+### Sacrificing Consistency (AP)
+
+**Available and Partition Tolerant**
+
+When changes made to one node can't be visible in the another one, we have a partition. And we lost consistency.
+
+However, though another node serves stale data - it still works.
+
+In reality, if we don't have partition situation, we still aren't actually consistent, as data flow between nodes takes time. So here we are Eventually Consistent.
+
+### Sacrificing Availability (CP)
+
+**Consistent and Partition Tolerant**
+
+When nodes can't talk with each other to ensure Consistency, we respond with error.
+
+Actually in Distributed Systems this approach is really hard.
+
+Distributed Transactions are.. we've already discussed this.
+
+So, if you do really need to have CP system, use some existing, well-tested in production, solution.
+
+### Sacrificing Partition Tolerance (CA)
+
+Actually, if system can't tolerate partition, it can't be Distributed..
+
+### It's not All or Nothing 📜
+
+It's not that the whole system is CP or AP.  
+It's even not that the microservice is CP or AP.
+
+Actually, you can be CP or AP per particular feature. And also within a feature you can be "both" CP and AP.
+
+For example reading loyalty points can be AP, while using these points can be CP.
+
+Tech also don't need to be either-or - look at Cassandra, where different trade-offs can be set for different calls. You may want a confirmation from one, majority or all nodes.
+
+## Chaos Engineering 📜
+
+> _Chaos Engineering is the discipline of experimenting on a system in order to build
+> confidence in the system’s capability to withstand turbulent conditions in production._
+
+— from [Principles of Chaos Engineering](https://principlesofchaos.org/)
+
+### Game Days 📜
+
+Game Day exercises are to test people's readiness for system failures. Planned in advance, but started in surprise, allow to verify how people would behave in case of emergency.
+
+#### Anecdote of Bob's Team 📜
+
+In one of the companies, Game Days episode was to examine overreliance of one team member - Bob. He was closed in a special room where he could observe how his team will handle a failure.
+
+Interestingly, they eventually logged into production and started the process of destroying production data xd
+
+So.. As we can see, many may learn a lot from such exercises..
+
+### Production Experiments 📜
+
+One thing is planning for failures, expecting them, having some theoretical knowledge what to do, how our software will behave, how our people will behave.
+
+But the reality is, you ony assume, you only prophesize, you actually don't know.
+
+**And there's one, and only one way, to validate it.**
+
+So to prepare for real failures, you actually incur real failures - to make people respond, to make software work, and to draw conclusions.
+
+#### Netflix and its Simian Army 🔨
+
+In Netflix, they have a tool called Chaos Monkey, which turns off random machines in production.  
+They have also Latency Monkey, which simulates congestion in network.
+And they have Chaos Gorilla, which takes out an entire availability zone (one AWS DC).
+
+#### Tools 🔨
+
+There's a [Chaos Toolkit](https://chaostoolkit.org/) available for everyone.
+
+You can also take a look at [Reliably](https://reliably.com/) and [Gremlin](https://www.gremlin.com/).
 
 # Legend
 
