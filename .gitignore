@@ -13,6 +13,8 @@ vendor
 .favorites.json
 *.code-workspace
 
+**.ignored.**
+
 ## GENERATED
 # Created by https://www.toptal.com/developers/gitignore/api/jekyll,ruby,visualstudiocode,git,linux
 # Edit at https://www.toptal.com/developers/gitignore?templates=jekyll,ruby,visualstudiocode,git,linux
