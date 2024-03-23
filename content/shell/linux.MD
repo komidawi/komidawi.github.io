@@ -1,8 +1,17 @@
 ---
 layout: page
-title: Shell
-permalink: /shell/
+title: Linux
+permalink: /linux/
 ---
+
+# Table of Contents
+
+- [Table of Contents](#table-of-contents)
+- [Zsh + Oh-my-zsh + Powerlevel10k](#zsh--oh-my-zsh--powerlevel10k)
+- [All Terminals](#all-terminals)
+- [Nano](#nano)
+- [Top](#top)
+- [Man pages](#man-pages)
 
 # Zsh + Oh-my-zsh + Powerlevel10k
 
@@ -88,3 +97,47 @@ permalink: /shell/
            az aks list -g $1 -o $2
        }
        ```
+14. List recently open directories
+    1. `d`
+15. Copy to clipboard (WSL2)
+    1. `command | clip.exe`
+
+# All Terminals
+
+1. Pretty format JSON
+   - Use JQ, e.g.:
+     - `cat file.json | jq`
+   - Just colorize:
+     - `jc -c`
+
+# Nano
+
+1. Search a phrase
+   - `Ctrl + W`
+2. Search next occurrence
+   - `Ctrl + W`
+   - `F6`
+3. Previous occurrence
+   - `Alt + Q`
+4. Show help
+   - `F1`
+5. Show navigation help
+   - `h`
+
+# Top
+
+1. Show process tree
+   - `Shift + V`
+2. Sort by CPU usage
+   - `Shift + P`
+3. Sort by Memory usage
+   - `Shift + M`
+4. Kill process
+   - `k`
+
+# Man pages
+
+1. Search
+   - `/<phrase>`, `Enter`
+2. Next occurrence
+   - `n`
