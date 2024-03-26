@@ -13,6 +13,7 @@ permalink: /cassandra/
 - [Partitions](#partitions)
 - [Node](#node)
 - [Token Ring](#token-ring)
+- [Peer-to-Peer](#peer-to-peer)
 - [Cassandra](#cassandra)
 - [Nodetool](#nodetool)
 
@@ -160,6 +161,24 @@ permalink: /cassandra/
    - Other Nodes calculate where he will fit in the Ring (manually or automatically)
    - After joining, other Nodes stream data to the New Node (Joining status)
    - There's no any downtime during joining
+
+# Peer-to-Peer
+
+1. What are downsides of Leader-Follower design?
+   - When leader goes down, you have downtime until a new Leader gets elected
+   - When internode communication goes down, system may become highly inconsistent, as Leaders can't see Followers and vice versa
+     - Then probably new Leaders will be elected, and then after connections goes back up, you may end up with multiple competing Leaders
+   - Leader-Follower probably involves sharding, in which at least:
+     - You lose advantages of `JOIN`, `GROUP BY` and other aggregations
+     - You have to introduce some way of routing to/from shards
+2. What makes Peer-to-Peer a great approach?
+   - There are no Leaders, so there are no election issues
+   - There is a Coordinator, which takes data and performs writes asynchronously to Replicas
+   - You don't have to target any specific Node, you can reach any of them (as all are equal), and that Node will handle the rest
+3. Split "Failure" Scenario
+   - Each Node which can be seen by the client is still online
+   - As long as it's possible to write to right Replicas, system is operational
+   - Consistency Level determines if a split is a problem for the system or not especially
 
 # Cassandra
 
