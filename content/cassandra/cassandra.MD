@@ -15,6 +15,7 @@ permalink: /cassandra/
 - [Token Ring](#token-ring)
 - [Peer-to-Peer](#peer-to-peer)
 - [Virtual Nodes (VNodes)](#virtual-nodes-vnodes)
+- [Gossip](#gossip)
 - [Cassandra](#cassandra)
 - [Nodetool](#nodetool)
 
@@ -204,6 +205,57 @@ permalink: /cassandra/
 5. Show ring info
    - e.g. which nodes own which token ranges
    - `nodetool ring`
+
+# Gossip
+
+1. Gossip
+   - Broadcast Protocol for disseminating (spreading) data
+   - In Cassandra there's no central cluster information holder, peers spread such info by themselves (automatically)
+   - Info is spread out in a polynomial fashion, so as the more Nodes know that info, the more Nodes are sharing such info to another ones
+   - Gossip round is initiated every second
+   - There are 1-3 Nodes chosen to gossip
+   - Nodes can Gossip to any other Node in the Cluster
+   - There are some Node choosing criteria
+     - e.g. Seed and Downed Nodes are slightly more favored
+   - Nodes don't save data about which Nodes they Gossiped to
+   - Only metadata are Gossiped, not any client data
+2. **Endpoint State**
+   - It's an overarching data structure each Node has, which contains:
+     - **Heartbeat State**
+       - `generation` - a timestamp of when Node bootstrapped
+       - `version` - a number incremented by Node every second
+     - **Application State**
+       - Stores metadata of the Node, like:
+       - `STATUS=NORMAL` - the one we see when executing `nodetool status`
+       - `DC=west` - data center
+       - `RACK=rack1` - rack
+       - `SCHEMA=c2a2b...` - changes as schema mutates over time
+       - `LOAD=100.0` - disk space used
+       - ...and some other metadata
+3. Message flow
+   - Node sends all info it possess about Nodes
+   - Each digest contains `IP address`, `generation`, `version` (Complete Heartbeat)
+   - The flow is:
+     1. `SYN`
+        - Sender initiates Gossip sending `SYN` to Recipient
+        - Recipient examines `SYN` and checks if values of `generation`/`versions` are newer that current ones
+     2. `ACK`
+        - Recipient sends `ACK` back to Sender
+        - For data outdated from Recipient perspective, Recipient sends related Heartbeats
+        - For data newer from Recipient perspective, Recipient sends fresh Endpoint States
+     3. `ACK2`
+        - Sender sends `ACK2` to Recipient with fresh Endpoint States for endpoints Recipient had stale data
+4. Message Flow, continuation
+   - Constant rate of network usage (trickle)
+     - Doesn't case network spikes
+   - Minimal message size in comparison with "real" table data
+   - Actually just a lightweight background process
+5. Gossip information
+   - Nodetool
+     - `nodetool gossipinfo`
+   - You can also get Gossip data with query like
+     - `SELECT peer, data_center, host_id, rack, release_version, rpc_address, schema_version FROM system.peers;`
+     - (And for current Gossip info look at `system.local` table)
 
 # Cassandra
 
