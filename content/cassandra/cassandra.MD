@@ -4,6 +4,16 @@ title: Cassandra
 permalink: /cassandra/
 ---
 
+# Table of Contents
+
+- [Table of Contents](#table-of-contents)
+- [Theory](#theory)
+- [Keyspaces](#keyspaces)
+- [Tables](#tables)
+- [Partitions](#partitions)
+- [Cassandra](#cassandra)
+- [Nodetool](#nodetool)
+
 # Theory
 
 1. Cassandra Strengths
@@ -47,7 +57,9 @@ permalink: /cassandra/
    - `INSERT INTO videos (video_id, added_date, title) VALUES (1645ea59-14bd-11e5-a993-8138354b7e31, '2014-01-29', 'Cassandra History');`
 3. Insert data from file
    - `COPY videos (video_id, added_date, title) FROM 'videos.csv' WITH HEADER = TRUE;`
-4. Remove everything
+4. Show info about table
+   - `DESCRIBE TABLE my_table;`
+5. Remove everything
    - `TRUNCATE videos`
 
 # Partitions
@@ -55,6 +67,13 @@ permalink: /cassandra/
 1. Partition Key
    - It makes data grouped together
    - It's responsible for how the data is placed on the Ring
+     - So basing on Partition Key you know where data is located on the Ring
+   - It's a part of `PRIMARY KEY`
+   - Partitioner uses consistent hashing algorithm
+     - Querying for data is O(1)
+2. `PRIMARY KEY`
+   - The first value in `PRIMARY KEY` is always Partition Key
+   - To make `PRIMARY KEY` unique, additional ID is added (like ordinal ID or UUID)
 
 # Cassandra
 
