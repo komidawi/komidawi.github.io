@@ -14,6 +14,7 @@ permalink: /cassandra/
 - [Node](#node)
 - [Token Ring](#token-ring)
 - [Peer-to-Peer](#peer-to-peer)
+- [Virtual Nodes (VNodes)](#virtual-nodes-vnodes)
 - [Cassandra](#cassandra)
 - [Nodetool](#nodetool)
 
@@ -179,6 +180,30 @@ permalink: /cassandra/
    - Each Node which can be seen by the client is still online
    - As long as it's possible to write to right Replicas, system is operational
    - Consistency Level determines if a split is a problem for the system or not especially
+
+# Virtual Nodes (VNodes)
+
+1. Adding or removing Nodes from/to the system causes it to be unbalanced for certain amount of time
+   - It also requires existing Nodes to stream data from/to other Nodes
+2. VNode
+   - It's a Virtual Node - an artificial SubNode within a real Node
+   - It helps to distribute data more evenly
+   - Real Node is responsible for multiple VNodes areas instead of just one big Node area
+   - VNodes automate Token Range assignment
+   - Setting number higher than `1` in `cassandra.yaml` `num_tokens` field turns on VNodes
+3. Consistent Hashing
+   - Idea: Let almost all Objects stay assigned to the same Servers even when number of Servers change
+   - Old Way (Simple Hashing): Having direct reference from Object to the Server. When Server goes down, all references have to be reassigned to another Server
+   - Implementation: Here both Objects and Servers have their Hashes. Servers overarch the full Hash Space - each Server has some Range of Hashes. After applying Hash Function on Object we compare it with provided Ranges and therefore find target Server. When new Server is added, it takes over only some subset of Ranges, thus only subset of Objects needs to be rearranged. Similarly is in case of removal of Server.
+   - Improvement: To mitigate case when removal or adding a Server causes (too) many Objects to be moved (as the **whole** Range inhabitants have to be reassigned), the actual distribution of Node Ranges is "stripped" - Nodes have not one long continuous space, but they have many small spaces interlaced by other Nodes' spaces. Therefore a continuous space contains Ranges of multiple Nodes, not just one or even two.
+4. Consistent Hashing, continuation
+   - It makes distribution of Objects much more balanced
+   - Adding/removing Node will require synchronization of less data per Node
+     - Nodes will have smaller overhead
+     - Synchronization will take less time as it will be more parallelized
+5. Show ring info
+   - e.g. which nodes own which token ranges
+   - `nodetool ring`
 
 # Cassandra
 
