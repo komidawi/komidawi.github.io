@@ -11,6 +11,7 @@ permalink: /cassandra/
 - [Keyspaces](#keyspaces)
 - [Tables](#tables)
 - [Partitions](#partitions)
+- [Node](#node)
 - [Cassandra](#cassandra)
 - [Nodetool](#nodetool)
 
@@ -97,6 +98,40 @@ permalink: /cassandra/
      - Avoid larger data sets
      - But still, pls, don't use it
    - **If you need such a query, there's probably something wrong with your data model**
+
+# Node
+
+1. Node performance
+   - Single Node can typically handle
+     - `6000 - 12000 TRX/s/core`
+     - `2 - 4 TB` of data
+   - Warning: Run Cassandra on local storage or direct attached storage, **never run on SAN**.
+     - If your Disc has an Ethernet cable, it's probably a wrong choice.
+2. Show info
+   - `nodetool info`
+3. Show Cluster information
+   - Settings common across all nodes, current schema used by each of them
+   - `nodetool describecluster`
+4. Show Logging Levels
+   - `nodetool getlogginglevels`
+5. Set Logging Level
+   - `nodetool setlogginglevel <logger> <level>`
+     - e.g. `nodetool setlogginglevel org.apache.cassandra TRACE`
+6. Set trace probability
+   - It's percentage of queries being saved
+   - `nodetool settraceprobability 0.1`
+7. Show trace
+   - Look at tables in `system_traces` keyspace
+8. Drain
+   - Stops writes from occurring on the node and flushes all the data to disk.
+   - Typically it may be run before stopping a Node
+   - `nodetool drain`
+9. Stop node execution
+   - `nodetool stopdaemon`
+10. Stress test
+    - Located in `cassandra/tools/bin` directory
+    - Example stress test:
+      - `cassandra-stress write n=50000 no-warmup -rate threads=1`
 
 # Cassandra
 
