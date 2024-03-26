@@ -16,6 +16,7 @@ permalink: /cassandra/
 - [Peer-to-Peer](#peer-to-peer)
 - [Virtual Nodes (VNodes)](#virtual-nodes-vnodes)
 - [Gossip](#gossip)
+- [Snitches](#snitches)
 - [Cassandra](#cassandra)
 - [Nodetool](#nodetool)
 
@@ -256,6 +257,52 @@ permalink: /cassandra/
    - You can also get Gossip data with query like
      - `SELECT peer, data_center, host_id, rack, release_version, rpc_address, schema_version FROM system.peers;`
      - (And for current Gossip info look at `system.local` table)
+
+# Snitches
+
+6. Snitches
+   - Report Node's Rack and DC
+   - Determine "topology" of a cluster (which Nodes belong where)
+   - Configured in `cassandra.yaml` `endpoint_snitch` field
+   - 🔨 Be sure all Nodes in a Cluster use the same Snitch!
+     - Also: changing Cluster network topology (and/or Snitches) requires restarting all Nodes
+   - 🔨 Be aware that Racks and DCs are **logical** assignments to Cassandra. Please ensure that your logical racks and data centers align with your physical failure zones.
+7. Types of Snitches
+   - Regular
+     - e.g. `SimpleSnitch`, `PropertyFileSnitch`, `GossipingPropertyFileSnitch`, `DynamicSnitch`
+   - Cloud Based
+     - Snitches for particular cloud environments like Ec2, Ec2 Multi Region, Cloudstack, Google Cloud
+8. `SimpleSnitch`
+   - Default
+   - Places all Nodes in the same DC and Rack
+   - Appropriate only for single DC deployments
+9. `PropertyFileSnitch`
+   - Reads DC and Rack info from `cassandra-topology.properties` file
+   - File consists of rows in shape like `IP=DC:RAC`
+   - When using this Snitch you have to keep files in sync across all Nodes in the Cluster!
+10. `GossipingPropertyFileSnitch`
+    - This should be your go-to Snitch for use in production
+    - Declare each Node's info in `cassandra-rackdc.properties` files separately
+    - You don't have to cope with manual sync like in regular `PropertyFileSnitch`
+    - Gossip automatically spreads info through the Cluster
+      - ```
+        dc=DC1
+        rack=RACK1
+        ```
+    - Note: Racks can have same names in different DCs, but these will be still **different** Racks (as they are in different DCs, indeed)
+11. `RackInferringSnitch`
+    - Infers DC and Rack from IP
+    - e.g. `110.100.200.105`
+      - `100` <- DC octet
+      - `200` <- Rack octet
+      - `105` <- Node octet
+    - Be sure to read docs about it as it's kinda simple yet complex solution!
+12. `DynamicSnitch`
+    - Layered on top of current Snitch (wrapper)
+    - Turned on by default for all Snitches
+    - Monitors Cluster health and performance
+    - Determines which Node to query so it will be the most efficient choice
+      - Thanks to that e.g. sluggish Nodes aren't overwhelmed and traffic goes to most performant ones at a given time
 
 # Cassandra
 
