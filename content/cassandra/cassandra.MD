@@ -12,6 +12,7 @@ permalink: /cassandra/
 - [Tables](#tables)
 - [Partitions](#partitions)
 - [Node](#node)
+- [Token Ring](#token-ring)
 - [Cassandra](#cassandra)
 - [Nodetool](#nodetool)
 
@@ -132,6 +133,33 @@ permalink: /cassandra/
     - Located in `cassandra/tools/bin` directory
     - Example stress test:
       - `cassandra-stress write n=50000 no-warmup -rate threads=1`
+11. Flush
+    - Use this to all data written to MemTable be committed into the disk
+    - `nodetool flush`
+
+# Token Ring
+
+1. Token Ring
+   - Key concept for performance
+   - Token Ring keeps track of tokens
+   - Each Node is responsible for a range of data (Token Range)
+   - Allows to know exactly which nodes contain which partitions
+   - Helps to avoid Single Points of Failure
+2. Token
+   - `hash_function(partition_key) => token`
+   - Token is 64bit integer
+     - So Token Range is `(-2^63 - 2^63-1)`
+3. Partitioner
+   - Determines how data will be distributed across the ring
+   - Murmur3 or MD5 do fine distribution in a random fashion
+4. Coordinator
+   - Any Node can be a Coordinator
+   - Thanks to Token Ring / Token Range, Coordinator knows where to relay data
+5. Node joining a Cluster
+   - New Node tells any existing Node about a will to join
+   - Other Nodes calculate where he will fit in the Ring (manually or automatically)
+   - After joining, other Nodes stream data to the New Node (Joining status)
+   - There's no any downtime during joining
 
 # Cassandra
 
