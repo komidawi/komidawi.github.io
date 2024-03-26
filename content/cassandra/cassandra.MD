@@ -17,6 +17,7 @@ permalink: /cassandra/
 - [Virtual Nodes (VNodes)](#virtual-nodes-vnodes)
 - [Gossip](#gossip)
 - [Snitches](#snitches)
+- [Replication](#replication)
 - [Cassandra](#cassandra)
 - [Nodetool](#nodetool)
 
@@ -303,6 +304,22 @@ permalink: /cassandra/
     - Monitors Cluster health and performance
     - Determines which Node to query so it will be the most efficient choice
       - Thanks to that e.g. sluggish Nodes aren't overwhelmed and traffic goes to most performant ones at a given time
+
+# Replication
+
+7. Replication
+   - With `RF=1` there's only one "instance" of data
+     - So if Node is unavailable, this data availability is equal to 0%
+   - With `RF=2` Nodes keep their own data and their neighbors' data as well
+   - `RF=3` seems to be a really decent (even preferable) factor in general.
+     - It's just a sweet spot.
+     - Any Node has data from both his neighbors.
+     - Scenario when three Servers get down together has a pretty low probability
+8. Multi DC Replication
+   - In Multi DC, Coordinator replicates data just like in a single DC, but of course according to DC's RF setting
+     - In another DC there becomes a Local Coordinator who does it
+   - RF can be different for different DCs
+     - 🔨 You can e.g. disable replication when due to law data must not leave the country
 
 # Cassandra
 
