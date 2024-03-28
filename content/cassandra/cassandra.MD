@@ -18,6 +18,7 @@ permalink: /cassandra/
 - [Gossip](#gossip)
 - [Snitches](#snitches)
 - [Replication](#replication)
+- [Consistency](#consistency)
 - [Cassandra](#cassandra)
 - [Nodetool](#nodetool)
 
@@ -261,65 +262,88 @@ permalink: /cassandra/
 
 # Snitches
 
-6. Snitches
+1. Snitches
    - Report Node's Rack and DC
    - Determine "topology" of a cluster (which Nodes belong where)
    - Configured in `cassandra.yaml` `endpoint_snitch` field
    - 🔨 Be sure all Nodes in a Cluster use the same Snitch!
      - Also: changing Cluster network topology (and/or Snitches) requires restarting all Nodes
    - 🔨 Be aware that Racks and DCs are **logical** assignments to Cassandra. Please ensure that your logical racks and data centers align with your physical failure zones.
-7. Types of Snitches
+2. Types of Snitches
    - Regular
      - e.g. `SimpleSnitch`, `PropertyFileSnitch`, `GossipingPropertyFileSnitch`, `DynamicSnitch`
    - Cloud Based
      - Snitches for particular cloud environments like Ec2, Ec2 Multi Region, Cloudstack, Google Cloud
-8. `SimpleSnitch`
+3. `SimpleSnitch`
    - Default
    - Places all Nodes in the same DC and Rack
    - Appropriate only for single DC deployments
-9. `PropertyFileSnitch`
+4. `PropertyFileSnitch`
    - Reads DC and Rack info from `cassandra-topology.properties` file
    - File consists of rows in shape like `IP=DC:RAC`
    - When using this Snitch you have to keep files in sync across all Nodes in the Cluster!
-10. `GossipingPropertyFileSnitch`
-    - This should be your go-to Snitch for use in production
-    - Declare each Node's info in `cassandra-rackdc.properties` files separately
-    - You don't have to cope with manual sync like in regular `PropertyFileSnitch`
-    - Gossip automatically spreads info through the Cluster
-      - ```
-        dc=DC1
-        rack=RACK1
-        ```
-    - Note: Racks can have same names in different DCs, but these will be still **different** Racks (as they are in different DCs, indeed)
-11. `RackInferringSnitch`
-    - Infers DC and Rack from IP
-    - e.g. `110.100.200.105`
-      - `100` <- DC octet
-      - `200` <- Rack octet
-      - `105` <- Node octet
-    - Be sure to read docs about it as it's kinda simple yet complex solution!
-12. `DynamicSnitch`
-    - Layered on top of current Snitch (wrapper)
-    - Turned on by default for all Snitches
-    - Monitors Cluster health and performance
-    - Determines which Node to query so it will be the most efficient choice
-      - Thanks to that e.g. sluggish Nodes aren't overwhelmed and traffic goes to most performant ones at a given time
+5. 🔨 `GossipingPropertyFileSnitch`
+   - This should be your go-to Snitch for use in production
+   - Declare each Node's info in `cassandra-rackdc.properties` files separately
+   - You don't have to cope with manual sync like in regular `PropertyFileSnitch`
+   - Gossip automatically spreads info through the Cluster
+     - ```
+       dc=DC1
+       rack=RACK1
+       ```
+   - Note: Racks can have same names in different DCs, but these will be still **different** Racks (see it like namespace, e.g. `DC1.RACK1` and `DC2.RACK1` are separate ones)
+6. `RackInferringSnitch`
+   - Infers DC and Rack from IP
+   - Be sure to read docs about it as it's kinda simple yet complex solution!
+7. 🔨 `DynamicSnitch`
+   - Layered on top of current Snitch (wrapper)
+   - Turned on by default for all Snitches
+   - Monitors Cluster health and performance
+   - Determines which Node to query so it will be the most efficient choice
+     - Thanks to that e.g. sluggish Nodes aren't overwhelmed and traffic goes to most performant ones at a given time
 
 # Replication
 
-7. Replication
+1. Replication
    - With `RF=1` there's only one "instance" of data
      - So if Node is unavailable, this data availability is equal to 0%
    - With `RF=2` Nodes keep their own data and their neighbors' data as well
-   - `RF=3` seems to be a really decent (even preferable) factor in general.
+   - 🔨 `RF=3` seems to be a really decent (even preferable) factor in general.
      - It's just a sweet spot.
      - Any Node has data from both his neighbors.
      - Scenario when three Servers get down together has a pretty low probability
-8. Multi DC Replication
+2. Multi DC Replication
    - In Multi DC, Coordinator replicates data just like in a single DC, but of course according to DC's RF setting
      - In another DC there becomes a Local Coordinator who does it
    - RF can be different for different DCs
      - 🔨 You can e.g. disable replication when due to law data must not leave the country
+
+# Consistency
+
+1. Consistency Levels - CL
+   - `ONE` - just one available Node is sufficient for data to be processed successfully
+   - `QUORUM` (MAJORITY) - it's a reasonable sweet spot
+   - `ALL` - here you just remove Partition Tolerance from your system (Total Consistency)
+   - Any many, many others.. (But actually only for sophisticated purposes)
+   - And don't use `ANY`
+2. Strong Consistency
+   - It can be described as
+     - _"When I try to read data that I've just wrote, I'll always receive exactly such data and **never anything stale**"_
+   - You can have e.g. `Write CL = ALL; Read CL = ONE` and have Strong Consistency (but this example it's rather not a great choice..)
+   - The reasonable way is to have both `Write CL = Read CL = QUORUM`.  
+     You have Strong Consistency here without having to Write/Read on all Nodes!
+3. `ONE`
+   - It can be used for eventually consistent data
+   - For example: log data, IoT data
+   - And it's just a tradeoff of having faster system but with slower consistency
+     - And slower can be just even millis (within DC)
+4. `LOCAL_QUORUM`
+   - In Multi DC, standard `QUORUM` would mean that confirmations would have come from all Nodes across all DCs. Do expect high latency, at least.
+   - Local Quorum handles this making Quorum limited only to given DC
+5. Check current CL
+   - `CONSISTENCY;`
+6. Set CL
+   - `CONSISTENCY <level>;`
 
 # Cassandra
 
