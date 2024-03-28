@@ -19,6 +19,7 @@ permalink: /cassandra/
 - [Snitches](#snitches)
 - [Replication](#replication)
 - [Consistency](#consistency)
+- [Hinted Handoff](#hinted-handoff)
 - [Cassandra](#cassandra)
 - [Nodetool](#nodetool)
 
@@ -344,6 +345,27 @@ permalink: /cassandra/
    - `CONSISTENCY;`
 6. Set CL
    - `CONSISTENCY <level>;`
+
+# Hinted Handoff
+
+1. Hinted Handoff
+   - Hinted Handoff allows to be able to handle writes, even when Nodes are down
+   - In short, Coordinator holds data and waits for Node to become available
+2. Check the scenario:
+   1. Write request arrives into a Cluster with `RF=3`
+   2. Coordinator sends data into Replicas, however one Replica is down
+   3. So then Coordinator stores data to send it when Node eventually goes up
+3. Hints
+   - Hints are stored in directory specified in `cassandra.yaml`
+   - Hints can be disabled
+   - Hints do not fulfill RF/CL settings
+     - e.g. when you execute Read Query when all relevant Nodes are down (and Write Data is stored merely as Hints), that Query will fail
+4. Default time Hint is stored = 3 hours
+   - After that time a given write is just lost
+   - Also if Coordinator dies during this time, data will be lost as well
+   - (That's why `CL=ANY` is quite not reasonable)
+5. Show saved Hints
+   - `ls -l node/data/hints`
 
 # Cassandra
 
