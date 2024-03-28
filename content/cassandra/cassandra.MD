@@ -11,7 +11,7 @@ permalink: /cassandra/
 - [Keyspaces](#keyspaces)
 - [Tables](#tables)
 - [Partitions](#partitions)
-- [Node](#node)
+- [Node / Nodetool](#node--nodetool)
 - [Token Ring](#token-ring)
 - [Peer-to-Peer](#peer-to-peer)
 - [Virtual Nodes (VNodes)](#virtual-nodes-vnodes)
@@ -21,8 +21,8 @@ permalink: /cassandra/
 - [Consistency](#consistency)
 - [Hinted Handoff](#hinted-handoff)
 - [Read Repair](#read-repair)
+- [Write Path](#write-path)
 - [Cassandra](#cassandra)
-- [Nodetool](#nodetool)
 
 # Theory
 
@@ -108,7 +108,7 @@ permalink: /cassandra/
      - But still, pls, don't use it
    - **If you need such a query, there's probably something wrong with your data model**
 
-# Node
+# Node / Nodetool
 
 1. Node performance
    - Single Node can typically handle
@@ -118,30 +118,37 @@ permalink: /cassandra/
      - If your Disc has an Ethernet cable, it's probably a wrong choice.
 2. Show info
    - `nodetool info`
-3. Show Cluster information
+3. Check status
+   - `nodetool status`
+4. Get stats for table
+   - `nodetool tablestats keyspace1.standard1`
+5. Show Cluster information
    - Settings common across all nodes, current schema used by each of them
    - `nodetool describecluster`
-4. Show Logging Levels
+6. Show Logging Levels
    - `nodetool getlogginglevels`
-5. Set Logging Level
+7. Set Logging Level
    - `nodetool setlogginglevel <logger> <level>`
      - e.g. `nodetool setlogginglevel org.apache.cassandra TRACE`
-6. Set trace probability
+8. Set trace probability
    - It's percentage of queries being saved
    - `nodetool settraceprobability 0.1`
-7. Show trace
+9. Show trace
    - Look at tables in `system_traces` keyspace
-8. Drain
-   - Stops writes from occurring on the node and flushes all the data to disk.
-   - Typically it may be run before stopping a Node
-   - `nodetool drain`
-9. Stop node execution
-   - `nodetool stopdaemon`
-10. Stress test
+10. Map tags to endpoints/nodes
+    - `nodetool getendpoints <keyspace> <table> <value>`
+    - e.g. `nodetool getendpoints killrvideo videos_by_tag 'datastax'`
+11. Drain
+    - Stops writes from occurring on the node and flushes all the data to disk.
+    - Typically it may be run before stopping a Node
+    - `nodetool drain`
+12. Stop node execution
+    - `nodetool stopdaemon`
+13. Stress test
     - Located in `cassandra/tools/bin` directory
     - Example stress test:
       - `cassandra-stress write n=50000 no-warmup -rate threads=1`
-11. Flush
+14. Flush
     - Use this to all data written to MemTable be committed into the disk
     - `nodetool flush`
 
@@ -396,12 +403,37 @@ permalink: /cassandra/
 4. Data is stored in
    - `/data/data/<keyspace>/`
 
+# Write Path
+
+1. When data arrives to a Node it goes into two places
+   1. `MemTable` in RAM
+      - `MemTable` is always (so at insert time) ordered by Partition Key and then by Clustering Columns
+      - `MemTable` is for fast serving data to the user
+   2. `CommitLog` on HDD
+      - Located in `node/data/commitlog`
+      - `CommitLog` is stored sequentially - every new record is appended at the very end
+      - `CommitLog` is for safety purposes - in case of Node failure not to lost data present in memory
+        - After Node restart can perform event sourcing using `CommitLog`
+2. After saving data in both `MemTable` and `CommitLog`, Cassandra responds to Client that Write was successful
+   - When flush time comes (e.g. when `MemTable` gets full), data is persisted in disk
+     - Also `CommitLog` is erased, as it's no longer needed
+   - Data is persisted in `SSTable` (Sorted String Table)
+     - **`SSTable` is an immutable data structure**
+     - Data in `SSTable` is always sorted by Partition Key and Clustering Columns
+     - Partitions in `SSTable` are likely to have different sizes
+   - As the time goes by, the more data is being added, more `SSTables` appear
+3. 🔨 It is recommended to store `CommitLog` in a different physical disk than `SSTables`
+   - `CommitLog` is just sequential write - append, append, append..
+   - `SSTable` is random
+   - So you want to split it - and then even on HDD seq-read will be ultra fast
+4. Watching `CommitLog`
+   - To see contents of `CommitLog` live, you can use such a bash command:
+   - `watch -n 1 -d "ls -lh /data/commitlog`
+
 # Cassandra
 
 1. Start Cassandra
    - Use `cassandra` to start
-
-# Nodetool
-
-1. Check status
-   - `nodetool status`
+2. Logs are located in
+   - `node/logs/`
+   - e.g. `node/logs/system.log`
