@@ -20,6 +20,7 @@ permalink: /cassandra/
 - [Replication](#replication)
 - [Consistency](#consistency)
 - [Hinted Handoff](#hinted-handoff)
+- [Read Repair](#read-repair)
 - [Cassandra](#cassandra)
 - [Nodetool](#nodetool)
 
@@ -366,6 +367,34 @@ permalink: /cassandra/
    - (That's why `CL=ANY` is quite not reasonable)
 5. Show saved Hints
    - `ls -l node/data/hints`
+
+# Read Repair
+
+1. Reading Data when `CL=ALL`
+   1. Coordinator gets a single instance of actual data and checksums
+      - The most performant Node is asked for data, other Nodes are asked just for checksums
+   2. Checksums are compared
+   3. When checksums don't match, Coordinator asks Nodes for real data
+   4. Coordinator compares the real data and chooses data instance with highest timestamp value
+   5. Coordinator sends this data instance for all Nodes having outdated data  
+      At the same time result is returned to the client
+2. Read Repair
+   - Read Repair happens only when `Read CL` < `ALL`
+     - (In other words: if there's a possibility of getting out of sync, Cassandra can proactively try to fix potentially existing inconsistencies)
+   - Process happens asynchronously in the background
+     - Note: Even if Read Repair repairs a given portion of data, client will receive stale data as process happens at the same time when data are returned
+   - By default `dclocal_read_repair_chance` (Read Repair taking place in the same DC as Coordinator) is set to `0.1` (10%)
+   - By default `read_repair_chance` (Read Repair taking place across all DCs) is set to `0`
+3. Full Repair
+   - You can use `nodetool` to manually execute Full Repair
+     - But beware! It's extremely resource intensive operation and can even get down your entire Cluster!
+     - Treat it as a last line of defense
+   - Full Repair synchronizes all data in Cluster
+   - If to do so, then only in Clusters servicing high writes/deletes
+     - Or to synchronize a failed Node coming back online
+     - Or run on Nodes that aren't read very often
+4. Data is stored in
+   - `/data/data/<keyspace>/`
 
 # Cassandra
 
