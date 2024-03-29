@@ -22,6 +22,7 @@ permalink: /cassandra/
 - [Hinted Handoff](#hinted-handoff)
 - [Read Repair](#read-repair)
 - [Write Path](#write-path)
+- [Read Path](#read-path)
 - [Cassandra](#cassandra)
 
 # Theory
@@ -107,6 +108,8 @@ permalink: /cassandra/
      - Avoid larger data sets
      - But still, pls, don't use it
    - **If you need such a query, there's probably something wrong with your data model**
+6. Show token for a given column
+   - `SELECT column, tag(column), other_column FROM table`
 
 # Node / Nodetool
 
@@ -122,35 +125,39 @@ permalink: /cassandra/
    - `nodetool status`
 4. Get stats for table
    - `nodetool tablestats keyspace1.standard1`
-5. Show Cluster information
+5. Get cfstats (e.g. `SSTables` info)
+   - `nodetool cfstats keyspace1.standard1`
+6. Show Cluster information
    - Settings common across all nodes, current schema used by each of them
    - `nodetool describecluster`
-6. Show Logging Levels
+7. Show Logging Levels
    - `nodetool getlogginglevels`
-7. Set Logging Level
+8. Set Logging Level
    - `nodetool setlogginglevel <logger> <level>`
      - e.g. `nodetool setlogginglevel org.apache.cassandra TRACE`
-8. Set trace probability
+9. Set trace probability
    - It's percentage of queries being saved
    - `nodetool settraceprobability 0.1`
-9. Show trace
-   - Look at tables in `system_traces` keyspace
-10. Map tags to endpoints/nodes
+10. Show trace
+    - Look at tables in `system_traces` keyspace
+11. Map tags to endpoints/nodes
     - `nodetool getendpoints <keyspace> <table> <value>`
     - e.g. `nodetool getendpoints killrvideo videos_by_tag 'datastax'`
-11. Drain
+12. Drain
     - Stops writes from occurring on the node and flushes all the data to disk.
     - Typically it may be run before stopping a Node
     - `nodetool drain`
-12. Stop node execution
+13. Stop node execution
     - `nodetool stopdaemon`
-13. Stress test
+14. Stress test
     - Located in `cassandra/tools/bin` directory
     - Example stress test:
       - `cassandra-stress write n=50000 no-warmup -rate threads=1`
-14. Flush
+15. Flush
     - Use this to all data written to MemTable be committed into the disk
     - `nodetool flush`
+16. A way to rebuild `SSTables`
+    - `nodetool upgradesstables (...)`
 
 # Token Ring
 
@@ -429,6 +436,53 @@ permalink: /cassandra/
 4. Watching `CommitLog`
    - To see contents of `CommitLog` live, you can use such a bash command:
    - `watch -n 1 -d "ls -lh /data/commitlog`
+
+# Read Path
+
+1. Read requires to take data from both `MemTable` and `SSTables`
+   1. Reading from `MemTable`
+      - Very fast, as it lies in Memory
+      - Also `MemTables` are organized by Partition Key (hash value / token), so finding data has complexity just of binary search comparing operations
+   2. Reading from `SSTable`
+      - Somehow slower, as it's on disk, not RAM
+      - Notice that Partitions don't have the same size/length
+      - Therefore we have file offsets for each given Partition
+      - Such offsets lie in Partition Index file
+2. Partition Index
+   - It's an offset index
+   - Thanks to it, Cassandra doesn't have to performing any search to reach data, as it has clear localization pointed in Partition Index
+   - You can look at it like:
+     - `token => partition_byte_offset`
+   - Partition Index size can be somehow big as `SSTables` can contain many Partitions in them
+   - Also it's stored in Disk, so it's not as fast as RAM
+3. Partition Summary
+   - As Partition Index can grow large, there's another index - Partition Summary
+   - Partition Summary is located in RAM
+   - It samples every N keys
+   - Provides an estimate of offset to be checked in Partition Index
+   - `token => index_offset`
+   - It's a meta index - an index for an index
+   - It means: for a given token, jump to specific area of Partition Index, where you will likely find that token and therefore you will be able to jump at Data Partition offset (where it really lies on disk)
+4. Key Cache
+   - Located in RAM
+   - It can be manually enabled
+   - `token => partition_byte_offset`
+5. Bloom Filter
+   - Answers if the data is there or not
+   - Sometimes it doesn't actually know, so responds telling data may or may not be there
+     - Of course sometimes can happen a False Read - when Bloom says token/data is there, but it isn't (it's false positive)
+   - `token => yes / no / maybe`
+   - Bloom Filter can be tuned for better results
+     - `ALTER TABLE <table> WITH bloom_filter_fp_chance = <value>;`
+       - The lower the `value`, the lower fp change, the bigger disk usage
+6. The whole flow
+   - input
+   - -> Bloom Filter
+   - -> Key Cache
+   - -> Partition Summary
+   - -> Partition Index
+   - -> `SSTable`
+   - data
 
 # Cassandra
 
