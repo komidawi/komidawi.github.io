@@ -86,7 +86,7 @@ tags: [gcp, gcloud] # TAG names should always be lowercase
 
 ## Storage Options
 
-See separate article [here](./STORAGE%20COMPARISON/Storage%20Comparison.MD).
+See separate article [here]({% post_url 2024-03-21-GoogleCloud-Storage %}).
 
 ## Database concepts
 
@@ -380,17 +380,17 @@ Resources:
 
 ## Sources
 
-Getting Started With Application Development
+Getting Started With Application Development  
 https://www.cloudskillsboost.google/paths/19/course_templates/22
 
-Getting Started with Google Kubernetes Engine
+Getting Started with Google Kubernetes Engine  
 https://www.cloudskillsboost.google/paths/19/course_templates/2
 
-Getting Started with Terraform for Google Cloud
+Getting Started with Terraform for Google Cloud  
 https://www.cloudskillsboost.google/course_templates/443
 
-Google Cloud Fundamentals: Core Infrastructure
+Google Cloud Fundamentals: Core Infrastructure  
 https://www.cloudskillsboost.google/paths/14/course_templates/60
 
-App Deployment, Debugging, and Performance
+App Deployment, Debugging, and Performance  
 https://www.cloudskillsboost.google/course_templates/43
