@@ -1,3 +1,9 @@
+---
+layout: page
+title: GCloud
+permalink: /gcloud/
+---
+
 # Google Cloud
 
 - [Google Cloud](#google-cloud)

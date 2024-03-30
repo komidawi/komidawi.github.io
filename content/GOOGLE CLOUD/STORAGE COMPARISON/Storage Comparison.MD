@@ -1,3 +1,9 @@
+---
+layout: page
+permalink: /gcloud/storage
+published: false
+---
+
 # Storage comparison
 
 ![](img/01_cloud_storage.png)
