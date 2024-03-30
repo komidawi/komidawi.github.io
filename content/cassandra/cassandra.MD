@@ -89,21 +89,23 @@ permalink: /cassandra/
    - It's responsible for how the data is placed on the Ring
      - So basing on Partition Key you know where data is located on the Ring
    - It's a part of `PRIMARY KEY`
-   - Partitioner uses consistent hashing algorithm
-     - Querying for data is O(1)
+   - Partitioner uses Consistent Hashing algorithm
+     - So with remapping hash table, only `number_of_keys / number_of_slots` keys have to be remapped
+       - (in contrast to almost all keys in standard hashing)
+     - Querying for data is `O(1)`
 2. `PRIMARY KEY`
-   - The first value in `PRIMARY KEY` is always Partition Key
+   - **The first value in `PRIMARY KEY` is always Partition Key**
    - To make `PRIMARY KEY` unique, additional ID is added (like ordinal ID or UUID)
    - You can't change `PRIMARY KEY` in existing data model
      - There's no `ALTER TABLE` and add column to `PRIMARY KEY`
 3. Clustering Columns
-   - The first column in `PRIMARY KEY` is Partition Key, remaining ones are Clustering Columns
+   - **The first column in `PRIMARY KEY` is Partition Key, remaining ones are Clustering Columns**
      - `PRIMARY KEY((state), city, name, manual_unique_id)`
    - Data is **sorted** according to these Clustering Columns
-     - And it's sorted during the **insert**
+     - (And they are sorted during the **insert**)
    - You can inverse sorting using `PRIMARY KEY (...) WITH CLUSTERING ORDER BY (city DESC, name ASC)`
      - 🔨 Descending sorting can be helpful for Time Series data, as we're gonna have the latest data right on the top
-4. Querying
+4. 🔨 Querying
    - **Always provide a Partition Key** - you ought to use it for the system to know where data lies.  
      Otherwise you'd end up with a full scan.
    - You can use `=`, `<`, `>` on Clustering Columns
@@ -128,17 +130,19 @@ permalink: /cassandra/
      - `2 - 4 TB` of data
    - Warning: Run Cassandra on local storage or direct attached storage, **never run on SAN**.
      - If your Disc has an Ethernet cable, it's probably a wrong choice.
-2. Show info
+2. Show wide basic info
    - `nodetool info`
-3. Check status
+3. Check DC and Clusters status
    - `nodetool status`
-4. Get stats for table
+4. Get stats for table (e.g. `SSTables info)
    - `nodetool tablestats keyspace1.standard1`
-5. Get cfstats (e.g. `SSTables` info)
-   - `nodetool cfstats keyspace1.standard1`
-6. Show Cluster information
+   - obsolete version: `nodetool cfstats keyspace1.standard1`
+5. Show Cluster information
    - Settings common across all nodes, current schema used by each of them
    - `nodetool describecluster`
+6. Show ring info
+   - e.g. which Nodes own what Token Ranges
+   - `nodetool ring`
 7. Show Logging Levels
    - `nodetool getlogginglevels`
 8. Set Logging Level
@@ -152,20 +156,22 @@ permalink: /cassandra/
 11. Map tags to endpoints/nodes
     - `nodetool getendpoints <keyspace> <table> <value>`
     - e.g. `nodetool getendpoints killrvideo videos_by_tag 'datastax'`
-12. Drain
+12. Gossip information
+    - `nodetool gossipinfo`
+13. Drain
     - Stops writes from occurring on the node and flushes all the data to disk.
     - Typically it may be run before stopping a Node
     - `nodetool drain`
-13. Stop node execution
+14. Stop node execution
     - `nodetool stopdaemon`
-14. Stress test
+15. Stress test
     - Located in `cassandra/tools/bin` directory
     - Example stress test:
       - `cassandra-stress write n=50000 no-warmup -rate threads=1`
-15. Flush
+16. Flush
     - Use this to all data written to MemTable be committed into the disk
     - `nodetool flush`
-16. A way to rebuild `SSTables`
+17. A way to rebuild `SSTables`
     - `nodetool upgradesstables (...)`
 
 # Token Ring
@@ -174,10 +180,10 @@ permalink: /cassandra/
    - Key concept for performance
    - Token Ring keeps track of tokens
    - Each Node is responsible for a range of data (Token Range)
-   - Allows to know exactly which nodes contain which partitions
+   - Allows to know exactly which Nodes contain which Partitions
    - Helps to avoid Single Points of Failure
 2. Token
-   - `hash_function(partition_key) => token`
+   - `partition_key => token`
    - Token is 64bit integer
      - So Token Range is `(-2^63 - 2^63-1)`
 3. Partitioner
@@ -188,7 +194,7 @@ permalink: /cassandra/
    - Thanks to Token Ring / Token Range, Coordinator knows where to relay data
 5. Node joining a Cluster
    - New Node tells any existing Node about a will to join
-   - Other Nodes calculate where he will fit in the Ring (manually or automatically)
+   - Other Nodes calculate (manually or automatically) where New Node will fit in the Ring
    - After joining, other Nodes stream data to the New Node (Joining status)
    - There's no any downtime during joining
 
@@ -219,11 +225,11 @@ permalink: /cassandra/
    - It helps to distribute data more evenly
    - Real Node is responsible for multiple VNodes areas instead of just one big Node area
    - VNodes automate Token Range assignment
-   - Setting number higher than `1` in `cassandra.yaml` `num_tokens` field turns on VNodes
+   - Having `num_tokens` > `1` in `cassandra.yaml` makes VNodes turned on
 3. Consistent Hashing
    - Idea: Let almost all Objects stay assigned to the same Servers even when number of Servers change
    - Old Way (Simple Hashing): Having direct reference from Object to the Server. When Server goes down, all references have to be reassigned to another Server
-   - Implementation: Here both Objects and Servers have their Hashes. Servers overarch the full Hash Space - each Server has some Range of Hashes. After applying Hash Function on Object we compare it with provided Ranges and therefore find target Server. When new Server is added, it takes over only some subset of Ranges, thus only subset of Objects needs to be rearranged. Similarly is in case of removal of Server.
+   - Implementation: Here both Objects and Servers have their Hashes. Servers cover the full Hash Space - each Server has some Range of Hashes. After applying Hash Function on Object we compare it with provided Ranges and therefore find target Server. When new Server is added, it takes over only some subset of Ranges, thus only subset of Objects needs to be rearranged. Similarly is in the case of removal of a Server.
    - Improvement: To mitigate case when removal or adding a Server causes (too) many Objects to be moved (as the **whole** Range inhabitants have to be reassigned), the actual distribution of Node Ranges is "stripped" - Nodes have not one long continuous space, but they have many small spaces interlaced by other Nodes' spaces. Therefore a continuous space contains Ranges of multiple Nodes, not just one or even two.
 4. Consistent Hashing, continuation
    - It makes distribution of Objects much more balanced
@@ -237,18 +243,19 @@ permalink: /cassandra/
 # Gossip
 
 1. Gossip
-   - Broadcast Protocol for disseminating (spreading) data
+   - Broadcast Protocol for disseminating (spreading) information
    - In Cassandra there's no central cluster information holder, peers spread such info by themselves (automatically)
-   - Info is spread out in a polynomial fashion, so as the more Nodes know that info, the more Nodes are sharing such info to another ones
+   - Info is spread out in a polynomial fashion
+     - so as the more Nodes know that info, the more Nodes are sharing such info to another ones
    - Gossip round is initiated every second
-   - There are 1-3 Nodes chosen to gossip
+   - There are 1-3 Nodes randomly\* chosen to Gossip
    - Nodes can Gossip to any other Node in the Cluster
-   - There are some Node choosing criteria
-     - e.g. Seed and Downed Nodes are slightly more favored
+     - \* Actually there are some Node choosing criteria
+       - e.g. Seed and Downed Nodes are slightly more favored
    - Nodes don't save data about which Nodes they Gossiped to
    - Only metadata are Gossiped, not any client data
 2. **Endpoint State**
-   - It's an overarching data structure each Node has, which contains:
+   - It's a data structure each Node has, containing:
      - **Heartbeat State**
        - `generation` - a timestamp of when Node bootstrapped
        - `version` - a number incremented by Node every second
@@ -260,8 +267,8 @@ permalink: /cassandra/
        - `SCHEMA=c2a2b...` - changes as schema mutates over time
        - `LOAD=100.0` - disk space used
        - ...and some other metadata
-3. Message flow
-   - Node sends all info it possess about Nodes
+3. Gossip Message flow
+   - Node sends info it possesses about Nodes
    - Each digest contains `IP address`, `generation`, `version` (Complete Heartbeat)
    - The flow is:
      1. `SYN`
@@ -273,7 +280,7 @@ permalink: /cassandra/
         - For data newer from Recipient perspective, Recipient sends fresh Endpoint States
      3. `ACK2`
         - Sender sends `ACK2` to Recipient with fresh Endpoint States for endpoints Recipient had stale data
-4. Message Flow, continuation
+4. Gossip Message Flow, continuation
    - Constant rate of network usage (trickle)
      - Doesn't case network spikes
    - Minimal message size in comparison with "real" table data
@@ -290,42 +297,44 @@ permalink: /cassandra/
 1. Snitches
    - Report Node's Rack and DC
    - Determine "topology" of a cluster (which Nodes belong where)
-   - Configured in `cassandra.yaml` `endpoint_snitch` field
+2. Snitches, continuation
+   - Configured in `endpoint_snitch` in `cassandra.yaml`
    - 🔨 Be sure all Nodes in a Cluster use the same Snitch!
      - Also: changing Cluster network topology (and/or Snitches) requires restarting all Nodes
    - 🔨 Be aware that Racks and DCs are **logical** assignments to Cassandra. Please ensure that your logical racks and data centers align with your physical failure zones.
-2. Types of Snitches
+3. Types of Snitches
    - Regular
      - e.g. `SimpleSnitch`, `PropertyFileSnitch`, `GossipingPropertyFileSnitch`, `DynamicSnitch`
    - Cloud Based
      - Snitches for particular cloud environments like Ec2, Ec2 Multi Region, Cloudstack, Google Cloud
-3. `SimpleSnitch`
-   - Default
-   - Places all Nodes in the same DC and Rack
-   - Appropriate only for single DC deployments
-4. `PropertyFileSnitch`
-   - Reads DC and Rack info from `cassandra-topology.properties` file
-   - File consists of rows in shape like `IP=DC:RAC`
-   - When using this Snitch you have to keep files in sync across all Nodes in the Cluster!
-5. 🔨 `GossipingPropertyFileSnitch`
-   - This should be your go-to Snitch for use in production
-   - Declare each Node's info in `cassandra-rackdc.properties` files separately
-   - You don't have to cope with manual sync like in regular `PropertyFileSnitch`
-   - Gossip automatically spreads info through the Cluster
-     - ```
-       dc=DC1
-       rack=RACK1
-       ```
-   - Note: Racks can have same names in different DCs, but these will be still **different** Racks (see it like namespace, e.g. `DC1.RACK1` and `DC2.RACK1` are separate ones)
-6. `RackInferringSnitch`
-   - Infers DC and Rack from IP
-   - Be sure to read docs about it as it's kinda simple yet complex solution!
-7. 🔨 `DynamicSnitch`
-   - Layered on top of current Snitch (wrapper)
-   - Turned on by default for all Snitches
-   - Monitors Cluster health and performance
-   - Determines which Node to query so it will be the most efficient choice
-     - Thanks to that e.g. sluggish Nodes aren't overwhelmed and traffic goes to most performant ones at a given time
+4. Snitches Comparison
+   1. `SimpleSnitch`
+      - Default
+      - Places all Nodes in the same DC and Rack
+      - Appropriate only for single DC deployments
+   2. `PropertyFileSnitch`
+      - Reads DC and Rack info from `cassandra-topology.properties` file
+      - File consists of rows in shape like `IP=DC:RAC`
+      - When using this Snitch you have to keep files in sync across all Nodes in the Cluster!
+   3. 🔨 `GossipingPropertyFileSnitch`
+      - This should be your go-to Snitch for use in production
+      - Declare each Node's info in `cassandra-rackdc.properties` files separately
+      - You don't have to cope with manual sync like in regular `PropertyFileSnitch`
+      - Gossip automatically spreads info through the Cluster
+        - ```
+          dc=DC1
+          rack=RACK1
+          ```
+      - Note: Racks can have same names in different DCs, but these will be still **different** Racks (see it like namespace, e.g. `DC1.RACK1` and `DC2.RACK1` are separate ones)
+   4. `RackInferringSnitch`
+      - Infers DC and Rack from IP
+      - Be sure to read docs about it as it's kinda simple yet complex solution!
+   5. 🔨 `DynamicSnitch`
+      - Layered on top of current Snitch (wrapper)
+      - Turned on by default for all Snitches
+      - Monitors Cluster health and performance
+      - Determines which Node to query so it will be the most efficient choice
+        - Thanks to that e.g. sluggish Nodes aren't overwhelmed and traffic goes to most performant ones at a given time
 
 # Replication
 
@@ -357,17 +366,18 @@ permalink: /cassandra/
    - You can have e.g. `Write CL = ALL; Read CL = ONE` and have Strong Consistency (but this example it's rather not a great choice..)
    - The reasonable way is to have both `Write CL = Read CL = QUORUM`.  
      You have Strong Consistency here without having to Write/Read on all Nodes!
-3. `ONE`
-   - It can be used for eventually consistent data
-   - For example: log data, IoT data
-   - And it's just a tradeoff of having faster system but with slower consistency
-     - And slower can be just even millis (within DC)
-4. `LOCAL_QUORUM`
-   - In Multi DC, standard `QUORUM` would mean that confirmations would have come from all Nodes across all DCs. Do expect high latency, at least.
-   - Local Quorum handles this making Quorum limited only to given DC
-5. Check current CL
+3. Consistency Levels - Comparison
+   1. `ONE`
+      - It can be used for eventually consistent data
+      - For example: log data, IoT data
+      - And it's just a tradeoff of having faster system but with slower consistency
+        - However "slower" can be just even in range of millis (within DC)
+   2. `LOCAL_QUORUM`
+      - In Multi DC, standard `QUORUM` would mean that confirmations would have come from all Nodes across all DCs. Do expect high latency (at least).
+      - Local Quorum handles this making Quorum limited only to given DC
+4. Check current CL
    - `CONSISTENCY;`
-6. Set CL
+5. Set CL
    - `CONSISTENCY <level>;`
 
 # Hinted Handoff
@@ -384,7 +394,7 @@ permalink: /cassandra/
    - Hints can be disabled
    - Hints do not fulfill RF/CL settings
      - e.g. when you execute Read Query when all relevant Nodes are down (and Write Data is stored merely as Hints), that Query will fail
-4. Default time Hint is stored = 3 hours
+4. Default time Hint is stored is `3 hours`
    - After that time a given write is just lost
    - Also if Coordinator dies during this time, data will be lost as well
    - (That's why `CL=ANY` is quite not reasonable)
@@ -393,15 +403,17 @@ permalink: /cassandra/
 
 # Read Repair
 
-1. Reading Data when `CL=ALL`
+1. Read Data Flow for `CL=ALL`
    1. Coordinator gets a single instance of actual data and checksums
       - The most performant Node is asked for data, other Nodes are asked just for checksums
    2. Checksums are compared
-   3. When checksums don't match, Coordinator asks Nodes for real data
-   4. Coordinator compares the real data and chooses data instance with highest timestamp value
-   5. Coordinator sends this data instance for all Nodes having outdated data  
-      At the same time result is returned to the client
+   3. When checksums don't match, Read Repair takes place
+      1. Coordinator asks Nodes for real data
+      2. Coordinator compares the real data and chooses data instance with highest timestamp value
+      3. Coordinator sends this data instance for all Nodes having outdated data  
+         At the same time result is returned to the client
 2. Read Repair
+   - Proactive activity improving Consistency
    - Read Repair happens only when `Read CL` < `ALL`
      - (In other words: if there's a possibility of getting out of sync, Cassandra can proactively try to fix potentially existing inconsistencies)
    - Process happens asynchronously in the background
@@ -429,10 +441,10 @@ permalink: /cassandra/
       - Located in `node/data/commitlog`
       - `CommitLog` is stored sequentially - every new record is appended at the very end
       - `CommitLog` is for safety purposes - in case of Node failure not to lost data present in memory
-        - After Node restart can perform event sourcing using `CommitLog`
+        - Node can perform event sourcing using `CommitLog` (e.g. after a sudden crash)
 2. After saving data in both `MemTable` and `CommitLog`, Cassandra responds to Client that Write was successful
    - When flush time comes (e.g. when `MemTable` gets full), data is persisted in disk
-     - Also `CommitLog` is erased, as it's no longer needed
+     - Also `CommitLog` is erased, because it's no longer needed
    - Data is persisted in `SSTable` (Sorted String Table)
      - **`SSTable` is an immutable data structure**
      - Data in `SSTable` is always sorted by Partition Key and Clustering Columns
@@ -441,7 +453,7 @@ permalink: /cassandra/
 3. 🔨 It is recommended to store `CommitLog` in a different physical disk than `SSTables`
    - `CommitLog` is just sequential write - append, append, append..
    - `SSTable` is random
-   - So you want to split it - and then even on HDD seq-read will be ultra fast
+   - So it is a good idea to split it - and then even on HDD seq-read will be surprisingly fast
 4. Watching `CommitLog`
    - To see contents of `CommitLog` live, you can use such a bash command:
    - `watch -n 1 -d "ls -lh /data/commitlog`
@@ -459,28 +471,26 @@ permalink: /cassandra/
       - Such offsets lie in Partition Index file
 2. Partition Index
    - It's an offset index
-   - Thanks to it, Cassandra doesn't have to performing any search to reach data, as it has clear localization pointed in Partition Index
+   - Thanks to it, Cassandra doesn't have to perform any search to reach data, as it has clear localization pointed in Partition Index
    - You can look at it like:
      - `token => partition_byte_offset`
-   - Partition Index size can be somehow big as `SSTables` can contain many Partitions in them
+   - `SSTables` can contain many Partitions in them what can lead to significant size of Partition Index
    - Also it's stored in Disk, so it's not as fast as RAM
 3. Partition Summary
    - As Partition Index can grow large, there's another index - Partition Summary
    - Partition Summary is located in RAM
    - It samples every N keys
-   - Provides an estimate of offset to be checked in Partition Index
+   - Provides an estimate of offset of Partition Index
    - `token => index_offset`
-   - It's a meta index - an index for an index
    - It means: for a given token, jump to specific area of Partition Index, where you will likely find that token and therefore you will be able to jump at Data Partition offset (where it really lies on disk)
 4. Key Cache
    - Located in RAM
    - It can be manually enabled
    - `token => partition_byte_offset`
 5. Bloom Filter
-   - Answers if the data is there or not
-   - Sometimes it doesn't actually know, so responds telling data may or may not be there
-     - Of course sometimes can happen a False Read - when Bloom says token/data is there, but it isn't (it's false positive)
+   - It's about existence, not localization of data
    - `token => yes / no / maybe`
+   - Sometimes a False Read can happen - when Bloom says token/data is there, but it isn't (false positive)
    - Bloom Filter can be tuned for better results
      - `ALTER TABLE <table> WITH bloom_filter_fp_chance = <value>;`
        - The lower the `value`, the lower fp change, the bigger disk usage
@@ -496,7 +506,7 @@ permalink: /cassandra/
 # Compaction
 
 1. Compaction is
-   1. Removing stale data from pre-existing `SSTables`
+   1. Removing stale data from persisted `SSTables`
    2. Combining multiple `SSTables` into one `SSTable`
       - Remember `SSTables` are immutable - nothing is modified, a brand new `SSTable` is created
 2. Compaction is based on timestamps
