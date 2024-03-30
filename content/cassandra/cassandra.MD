@@ -8,6 +8,7 @@ permalink: /cassandra/
 
 - [Table of Contents](#table-of-contents)
 - [Theory](#theory)
+- [Cassandra](#cassandra)
 - [Keyspaces](#keyspaces)
 - [Tables](#tables)
 - [Partitions](#partitions)
@@ -23,7 +24,7 @@ permalink: /cassandra/
 - [Read Repair](#read-repair)
 - [Write Path](#write-path)
 - [Read Path](#read-path)
-- [Cassandra](#cassandra)
+- [Compaction](#compaction)
 
 # Theory
 
@@ -37,6 +38,14 @@ permalink: /cassandra/
 2. Cassandra characteristics
    - IDs are created in an independent manner using UUIDs  
      (Also for time ordered data you can use TIMEUUID)
+
+# Cassandra
+
+1. Start Cassandra
+   - Use `cassandra` to start
+2. Logs are located in
+   - `node/logs/`
+   - e.g. `node/logs/system.log`
 
 # Keyspaces
 
@@ -484,10 +493,31 @@ permalink: /cassandra/
    - -> `SSTable`
    - data
 
-# Cassandra
+# Compaction
 
-1. Start Cassandra
-   - Use `cassandra` to start
-2. Logs are located in
-   - `node/logs/`
-   - e.g. `node/logs/system.log`
+1. Compaction is
+   1. Removing stale data from pre-existing `SSTables`
+   2. Combining multiple `SSTables` into one `SSTable`
+      - Remember `SSTables` are immutable - nothing is modified, a brand new `SSTable` is created
+2. Compaction is based on timestamps
+   - the latest record wins
+3. `gc_grace_seconds`
+   - time tombstone entry is kept before it gets evicted
+   - prevents resurrection of data in case of repair
+   - defaults to `10 days`
+4. Compaction Strategies
+   - Performing one big ultimate all-round Compaction would be an overkill
+   - Therefore there are particular strategies design for optimization of this process
+5. Compaction Strategies, continued
+   1. `SizeTiered` Compaction
+      - Default
+      - Triggers when there are multiple `SSTables` of a similar size
+      - Fine for write-heavy workloads
+   2. `Leveled` Compaction
+      - Groups `SSTables` into Levels
+        - each having fixed size limit being 10x larger than previous Level
+      - Fine for read-heavy workloads
+   3. `TimeWindow` Compaction
+      - Creates time windowed buckets of `SSTables`
+        - which are compacted (with each other) using `SizeTiered` Compaction
+      - Fine for data coming in sequentially by time
