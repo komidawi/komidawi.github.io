@@ -8,25 +8,25 @@ tags: [terraform] # TAG names should always be lowercase
 ## Table of contents
 
 - [Table of contents](#table-of-contents)
-  - [Syntax](#syntax)
-  - [Variables](#variables)
-    - [Best practices](#best-practices)
-  - [Values](#values)
-  - [Secrets](#secrets)
-  - [Environmental variables](#environmental-variables)
-  - [Locals](#locals)
-  - [Outputs](#outputs)
-  - [Data sources](#data-sources)
-  - [Dynamic expressions](#dynamic-expressions)
-    - [splat](#splat)
-    - [count](#count)
-  - [Modules](#modules)
-  - [State](#state)
-    - [Local state vs remote state](#local-state-vs-remote-state)
-    - [Remote state](#remote-state)
-  - [Others](#others)
+- [Syntax](#syntax)
+- [Variables](#variables)
+  - [Best practices](#best-practices)
+- [Values](#values)
+- [Secrets](#secrets)
+- [Environmental variables](#environmental-variables)
+- [Locals](#locals)
+- [Outputs](#outputs)
+- [Data sources](#data-sources)
+- [Dynamic expressions](#dynamic-expressions)
+  - [splat](#splat)
+  - [count](#count)
+- [Modules](#modules)
+- [State](#state)
+  - [Local state vs remote state](#local-state-vs-remote-state)
+  - [Remote state](#remote-state)
+- [Others](#others)
 
-### Syntax
+## Syntax
 
 ```
 <BLOCK TYPE> "<BLOCK LABEL>" "<BLOCK_LABEL"> {
@@ -35,7 +35,7 @@ tags: [terraform] # TAG names should always be lowercase
 }
 ```
 
-### Variables
+## Variables
 
 1. Terraform auto-converts variables into target type.
    - when anticipating an int (`2`), you can provide string (`"2"`) and it's gonna work
@@ -54,7 +54,7 @@ tags: [terraform] # TAG names should always be lowercase
    - `terraform apply -var='resource_tags={project="project-name",environment="env-name"}'`
 6. Variables can be validated in `validation` block
 
-#### Best practices
+### Best practices
 
 1. Only parametrize values that will be different e.g. for each instance or environment
 2. Changing a variable with a default value is backward-compatible
@@ -62,7 +62,7 @@ tags: [terraform] # TAG names should always be lowercase
 4. For root modules, provide variables in `*.tfvars` file
 5. It's good to include the unit in the name, e.g. `ram_size_gb`
 
-### Values
+## Values
 
 1. Terraform automatically loads files from the current directory
    - `terraform.tfvars`
@@ -70,7 +70,7 @@ tags: [terraform] # TAG names should always be lowercase
 2. You can also specify file using `-var-file`
    - `terraform apply -var-file="secrets.tfvars"`
 
-### Secrets
+## Secrets
 
 1. Flagging variables as sensitive make Terraform redact them from output while running `plan`, `apply` or `destroy`.
 2. Sensitive vs sensitive values
@@ -82,12 +82,12 @@ tags: [terraform] # TAG names should always be lowercase
    - It is advised to keep such variables in a separate file and exclude it from version control.
 3. Terraform will raise an error when detects some sensitive may be exposed.
 
-### Environmental variables
+## Environmental variables
 
 1. Terraform automatically reads `TF_VAR_<VARIABLE_NAME>` environmental variables
    - Tip: when using envs for sensitive values, keep in mind they may be visible in command line history
 
-### Locals
+## Locals
 
 1. In contradiction to input variables, locals are not set by users of the configuration
 2. In contradiction to variable values, locals can use dynamic expressions and resource arguments
@@ -98,7 +98,7 @@ tags: [terraform] # TAG names should always be lowercase
 6. It's good to use locals in moderation, when a single value or result is used in many places and it is likely to change in the future.
 7. Locals main use case is to easily change a value in a central place.
 
-### Outputs
+## Outputs
 
 1. Outputs can export structured data about resources, which can also be used e.g. to configure other parts of infrastructure with automation tools.
    - They can also act as a data source for another Terraform workspaces.
@@ -117,13 +117,13 @@ tags: [terraform] # TAG names should always be lowercase
      - querying all outputs into a JSON
      - using outputs from a child module in the root module
 
-### Data sources
+## Data sources
 
 1. Data sources allow to fetch data from APIs or other Terraform state backends. Examples are machine image IDs from cloud provider or Terraform outputs from other configurations.
 
-### Dynamic expressions
+## Dynamic expressions
 
-#### splat
+### splat
 
 1. Splat expression captures all objects sharing given attribute.
 2. Without splat expressions, Terraform would return the first item in the array, instead of iterating.
@@ -135,7 +135,7 @@ tags: [terraform] # TAG names should always be lowercase
    }
    ```
 
-#### count
+### count
 
 1. Count replicates resource/module a given number of times with an incrementing counter
 2. The name of resource/module like `aws_instance.app` refers to all instances then. To reference the individual one, use indexing notation like `aws_instance.app[0]`
@@ -160,16 +160,16 @@ tags: [terraform] # TAG names should always be lowercase
       }
      ```
 
-### Modules
+## Modules
 
 1. A module is a collection of configuration files
 2. Modules let you group a set of resources and reuse them later
 3. The root module is the one where other modules and resources are instantiated
 4. Define the reusable code within a module, so that any change you make to the module will be reflected across all the environments that you plan to reuse
 
-### State
+## State
 
-#### Local state vs remote state
+### Local state vs remote state
 
 1. No shared access
    - You have to synchronize manually in order to be up-to-date
@@ -178,7 +178,7 @@ tags: [terraform] # TAG names should always be lowercase
 3. No confidentiality
    - State file exposes sensitive data
 
-#### Remote state
+### Remote state
 
 1. Shared access
    - Data is always present for everyone
@@ -187,7 +187,7 @@ tags: [terraform] # TAG names should always be lowercase
 3. Confidentiality
    - Secrets are not stored in a local file
 
-### Others
+## Others
 
 1. When running terraform with a local state file, it's stored in `terraform.tfstate` in **plaintext**. It's required to be able to compare if secret values changed.
    - Therefore marking variables as sensitive may be not enough to protect them. You have to secure them also e.g. while passing into Terraform configuration. You may use e.g. Vault for secret management.
