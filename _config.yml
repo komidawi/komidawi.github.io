@@ -16,7 +16,7 @@ timezone: Europe/Warsaw
 
 title: komidawi's blog # the main title
 
-tagline: Nice to see you here! # it will display as the sub-title
+tagline: I'm glad to see you here! # it will display as the sub-title
 
 description: #>- # used by seo meta and the atom feed
 #  A minimal, responsive and feature-rich Jekyll theme for technical writing.

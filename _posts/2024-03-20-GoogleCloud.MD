@@ -267,7 +267,7 @@ Resources:
 
 ### K8s overview
 
-![K8s overview](/assets/posts/2024-03-20-GoogleCloud/1-k8s-overview.png)
+![K8s overview](/assets/img/posts/2024-03-20-GoogleCloud/1-k8s-overview.png)
 
 ### Kubernetes Object Model
 
@@ -360,17 +360,17 @@ Resources:
 
 ## Summary
 
-![](/assets/posts/2024-03-20-GoogleCloud/3-where-to-run-what-workloads.png)
+![](/assets/img/posts/2024-03-20-GoogleCloud/3-where-to-run-what-workloads.png)
 
 ## Other
 
 ### AppEngine vs Cloud Run
 
-![](/assets/posts/2024-03-20-GoogleCloud/4-app-engine-vs-cloud-run.png)
+![](/assets/img/posts/2024-03-20-GoogleCloud/4-app-engine-vs-cloud-run.png)
 
 ### Naming Best Practices
 
-![](/assets/posts/2024-03-20-GoogleCloud/2-naming-best-practices.png)
+![](/assets/img/posts/2024-03-20-GoogleCloud/2-naming-best-practices.png)
 
 ## Legend
 
