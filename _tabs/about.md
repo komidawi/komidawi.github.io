@@ -14,7 +14,7 @@ order: 1
 
 ## About me
 
-<img src="/assets/img/avatar-komidawi-circle.png" width="100px" height="auto" style="float: left; margin-right: 35px;"/>
+<img src="/assets/img/avatar-komidawi-circle.png" alt="komidawi-avatar" width="100px" height="auto" style="float: left; margin-right: 35px;"/>
 
 - I'm a Computer Science and Programming enthusiast
 - JVM languages fan: Java liker, Kotlin lover 😉
