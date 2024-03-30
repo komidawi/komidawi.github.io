@@ -15,5 +15,5 @@ quote_type = single
 [*.{yml,yaml}]
 quote_type = double
 
-[*.md]
+[*.{md,MD,markdown,MARKDOWN}]
 trim_trailing_whitespace = false
