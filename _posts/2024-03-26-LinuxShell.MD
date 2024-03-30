@@ -1,5 +1,5 @@
 ---
-title: Linux
+title: Linux/Shell
 date: 2024-03-26 00:00:00 +0100
 categories: [default]
 tags: [linux, shell, zsh, bash] # TAG names should always be lowercase
