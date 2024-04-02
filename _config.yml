@@ -21,8 +21,8 @@ tagline: |
   I'm very glad to see you here!
   
   NOTICE: 
-  Blog is still under construction. 
-  Theme and features will be improved. 
+  Blog is still under construction.
+  Theme and features will be improved.
 
 description: #>- # used by seo meta and the atom feed
 #  A minimal, responsive   and feature-rich Jekyll theme for technical writing.
@@ -73,7 +73,7 @@ goatcounter:
 #     light  - Use the light color scheme
 #     dark   - Use the dark color scheme
 #
-theme_mode: dark
+theme_mode: 
 
 # The CDN endpoint for images.
 # Notice that once it is assigned, the CDN url
