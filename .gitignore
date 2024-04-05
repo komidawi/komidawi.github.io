@@ -37,6 +37,7 @@ vendor
 .favorites.json
 *.code-workspace
 
+**.ignored
 **.ignored.**
 
 ## GENERATED
