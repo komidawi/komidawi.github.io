@@ -1,0 +1,83 @@
+{
+  "initialCols": 100,
+  "initialRows": 28,
+  "minimizeToNotificationArea": false,
+  "newTabMenu": [
+    {
+      "type": "remainingProfiles"
+    }
+  ],
+  "profiles": {
+    "defaults": {
+      "colorScheme": "Campbell",
+      "font": {
+        "face": "MesloLGS NF",
+        "size": 9.0
+      },
+      "opacity": 98
+    },
+    "list": [
+      {
+        "colorScheme": {
+          "light": "Blue Matrix"
+        },
+        "commandline": "C:\\WINDOWS\\system32\\wsl.exe -d Ubuntu",
+        "cursorShape": "bar",
+        "guid": "{51855cb2-8cce-5362-8f54-464b92b32386}",
+        "hidden": false,
+        "name": "Ubuntu",
+        "source": "CanonicalGroupLimited.Ubuntu_79rhkp1fndgsc"
+      }
+    ]
+  },
+  "schemes": [
+    {
+      "background": "#0C0C0C",
+      "black": "#0C0C0C",
+      "blue": "#0040FF",
+      "brightBlack": "#767676",
+      "brightBlue": "#3B78FF",
+      "brightCyan": "#61D6D6",
+      "brightGreen": "#16C60C",
+      "brightPurple": "#B4009E",
+      "brightRed": "#E74856",
+      "brightWhite": "#F2F2F2",
+      "brightYellow": "#F9F1A5",
+      "cursorColor": "#FFFFFF",
+      "cyan": "#3A96DD",
+      "foreground": "#CCCCCC",
+      "green": "#13A10E",
+      "name": "Campbell",
+      "purple": "#881798",
+      "red": "#C50F1F",
+      "selectionBackground": "#FFFFFF",
+      "white": "#CCCCCC",
+      "yellow": "#C19C00"
+    },
+    {
+      "background": "#101116",
+      "black": "#101116",
+      "blue": "#00B0FF",
+      "brightBlack": "#686868",
+      "brightBlue": "#6871FF",
+      "brightCyan": "#60FDFF",
+      "brightGreen": "#5FFA68",
+      "brightPurple": "#D682EC",
+      "brightRed": "#FF6E67",
+      "brightWhite": "#FFFFFF",
+      "brightYellow": "#FFFC67",
+      "cursorColor": "#76FF9F",
+      "cyan": "#76C1FF",
+      "foreground": "#00A2FF",
+      "green": "#00FF9C",
+      "name": "Blue Matrix",
+      "purple": "#D57BFF",
+      "red": "#FF5680",
+      "selectionBackground": "#C1DEFF",
+      "white": "#C7C7C7",
+      "yellow": "#FFFC58"
+    }
+  ],
+  "showTerminalTitleInTitlebar": true,
+  "themes": []
+}
