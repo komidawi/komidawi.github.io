@@ -1,7 +1,7 @@
 ---
 title: Terraform
 date: 2024-03-28 00:00:00 +0100
-categories: [default]
+categories: [devops]
 tags: [terraform] # TAG names should always be lowercase
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: Cassandra
 date: 2024-03-30 00:00:00 +0100
-categories: [default]
+categories: [databases]
 tags: [cassandra] # TAG names should always be lowercase
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: How to use two separate git profiles at once
 date: 2024-10-08 00:00:00 +0100
-categories: [ git, guide ]
+categories: [ git, guides ]
 tags: [ git, guide ] # TAG names should always be lowercase
 ---
 

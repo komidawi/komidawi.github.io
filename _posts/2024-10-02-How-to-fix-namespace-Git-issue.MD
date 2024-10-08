@@ -1,7 +1,7 @@
 ---
 title: How to fix 'The namespace you were looking for could not be found.' problem with Git
 date: 2024-10-02 00:00:00 +0100
-categories: [git, troubleshooting, guide]
+categories: [guides, git]
 tags: [git, troubleshooting, fix] # TAG names should always be lowercase
 ---
 

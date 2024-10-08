@@ -1,7 +1,7 @@
 ---
 title: Google Cloud Storage
 date: 2024-03-20 00:00:00 +0100
-categories: [default]
+categories: [devops]
 tags: [gcp, gcloud] # TAG names should always be lowercase
 ---
 
