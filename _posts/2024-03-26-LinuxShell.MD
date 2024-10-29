@@ -1,66 +1,85 @@
 ---
 title: Linux/Shell
 date: 2024-03-26 00:00:00 +0100
-categories: [linux]
-tags: [linux, shell, zsh, bash] # TAG names should always be lowercase
+categories: [ linux ]
+tags: [ linux, shell, zsh, bash ] # TAG names should always be lowercase
 ---
 
 ## Table of Contents
 
 - [Table of Contents](#table-of-contents)
+- [Behavior](#behavior)
 - [Zsh + Oh-my-zsh + Powerlevel10k](#zsh--oh-my-zsh--powerlevel10k)
 - [All Terminals](#all-terminals)
 - [Nano](#nano)
 - [Top](#top)
 - [Man pages](#man-pages)
 
+## Behavior
+
+1. Make `.sh` script fail on error, not continue like nothing happened!
+    1. `set -euo pipefail`
+        1. `-e`
+            1. exit immediately on error
+        2. `-u`
+            1. fail on unset variables
+        3. `-o pipefail`
+            1. fail on failed pipes
+        4. `-x`
+            1. before executing it command print it with arguments to stderr
+    2. More info:  
+       https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html
+2. `wget`
+    1. `wget -q0 - `
+        1. `-q`
+
 ## Zsh + Oh-my-zsh + Powerlevel10k
 
 1. You can shorthand autocomplete paths inside commands, like:
-   - `cd /h/k/.s/`\
-     -> `cd /home/komidawi/.ssh`
+    - `cd /h/k/.s/`\
+      -> `cd /home/komidawi/.ssh`
 2. History search by starting fragment
 
-   - Example:
+    - Example:
 
-     ```bash
-     nano /home/komidawi/.ssh/known_hosts
-     nano /etc/hosts
+        ```bash
+        nano /home/komidawi/.ssh/known_hosts
+        nano /etc/hosts
 
-     nano /h<UP>
-     ```
+        nano /h<UP>
+        ```
 
-     will auto-complete into
+      will auto-complete into
 
-     ```bash
-     nano /home/komidawi/.ssh/known_hosts
-     ```
+        ```bash
+        nano /home/komidawi/.ssh/known_hosts
+        ```
 
 3. Expand envs
-   - `$USER<TAB>`\
-     -> `komidawi`
+    - `$USER<TAB>`\
+      -> `komidawi`
 4. Print parameters help
    `cat -<TAB>`\
-   ```
-   --help                  -- display help and exit
-   --number            -n  -- number all output lines
-   --number-nonblank   -b  -- number nonempty output lines, overrides -n
-   --show-all          -A  -- equivalent to -vET
-   --show-ends         -E  -- display $ at end of each line
-   ```
+    ```
+    --help                  -- display help and exit
+    --number            -n  -- number all output lines
+    --number-nonblank   -b  -- number nonempty output lines, overrides -n
+    --show-all          -A  -- equivalent to -vET
+    --show-ends         -E  -- display $ at end of each line
+    ```
 5. Use `take` to `mkdir` and `cd` into it
-   - `take folder/subfolder/finish`
-   - it also works with zip archives, git repos and url downloads
+    - `take folder/subfolder/finish`
+    - it also works with zip archives, git repos and url downloads
 6. Command history
-   - `Ctrl + R`
-   - Press again for next occurrence
+    - `Ctrl + R`
+    - Press again for next occurrence
 7. Quick `cd`
-   - You can move into folders by name of the folder without `cd`
+    - You can move into folders by name of the folder without `cd`
 8. List last visited dirs
-   1. `d` (shortcut for `dirs -v`)
+    1. `d` (shortcut for `dirs -v`)
 9. Command parking
-   - Press `Ctrl + Q` to hide current command
-   - After invoking another command, the first one comes back
+    - Press `Ctrl + Q` to hide current command
+    - After invoking another command, the first one comes back
 10. Open command in editor
     - `Ctrl + X`, `Ctrl + E`
     - Opens in default editor (`$EDITOR`)
@@ -72,9 +91,9 @@ tags: [linux, shell, zsh, bash] # TAG names should always be lowercase
       -> jumps to previous path
 12. Extensive search
     - `ls *.txt`\
-       -> text files
+      -> text files
     - `ls **/*.txt`\
-       -> text files (also within subdirectories)
+      -> text files (also within subdirectories)
     - `ls **/(START)*.*`
       -> files starting with word START
     - `ls **/*(END).*`
@@ -87,17 +106,17 @@ tags: [linux, shell, zsh, bash] # TAG names should always be lowercase
       -> search only folders
 13. Complex alias
     1. In general:
-       ```bash
-       aliasname() {
-           command $firstParam $secondParam
-       }
-       ```
-    1. Example:
-       ```bash
-       getaks() {
-           az aks list -g $1 -o $2
-       }
-       ```
+        ```bash
+        aliasname() {
+            command $firstParam $secondParam
+        }
+        ```
+    2. Example:
+        ```bash
+        getaks() {
+            az aks list -g $1 -o $2
+        }
+        ```
 14. List recently open directories
     1. `d`
 15. Copy to clipboard (WSL2)
@@ -106,39 +125,39 @@ tags: [linux, shell, zsh, bash] # TAG names should always be lowercase
 ## All Terminals
 
 1. Pretty format JSON
-   - Use JQ, e.g.:
-     - `cat file.json | jq`
-   - Just colorize:
-     - `jc -c`
+    - Use JQ, e.g.:
+        - `cat file.json | jq`
+    - Just colorize:
+        - `jc -c`
 
 ## Nano
 
 1. Search a phrase
-   - `Ctrl + W`
+    - `Ctrl + W`
 2. Search next occurrence
-   - `Ctrl + W`
-   - `F6`
+    - `Ctrl + W`
+    - `F6`
 3. Previous occurrence
-   - `Alt + Q`
+    - `Alt + Q`
 4. Show help
-   - `F1`
+    - `F1`
 5. Show navigation help
-   - `h`
+    - `h`
 
 ## Top
 
 1. Show process tree
-   - `Shift + V`
+    - `Shift + V`
 2. Sort by CPU usage
-   - `Shift + P`
+    - `Shift + P`
 3. Sort by Memory usage
-   - `Shift + M`
+    - `Shift + M`
 4. Kill process
-   - `k`
+    - `k`
 
 ## Man pages
 
 1. Search
-   - `/<phrase>`, `Enter`
+    - `/<phrase>`, `Enter`
 2. Next occurrence
-   - `n`
+    - `n`
