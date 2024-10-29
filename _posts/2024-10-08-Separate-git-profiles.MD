@@ -28,6 +28,7 @@ It binds work `.gitconfig` with company's git remote URIs, and uses private`.git
 	name = Name Surname
 	email = private@mail.com
 ```
+
 {: file=".gitconfig-private" }
 
 ```bash
@@ -35,6 +36,7 @@ It binds work `.gitconfig` with company's git remote URIs, and uses private`.git
 	name = Name Surname
 	email = work@company.com
 ```
+
 {: file=".gitconfig-company" }
 
 ```bash
@@ -46,6 +48,7 @@ It binds work `.gitconfig` with company's git remote URIs, and uses private`.git
 [includeIf "hasconfig:remote.*.url:git@company.com*/**"]
     path = .gitconfig-company
 ```
+
 {: file=".gitconfig" }
 
 And that's all.

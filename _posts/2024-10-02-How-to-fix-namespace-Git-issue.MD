@@ -31,7 +31,8 @@ I could also make `git pull` and everything worked.
 
 The one thing I couldn't do was `git push` (or here: `git push -u origin branch-name`)
 
-Elementary troubleshooting like checking VPN, restarting IntelliJ, using different terminal(s), restarting PC didn't help, neither StackOverflow solutions.
+Elementary troubleshooting like checking VPN, restarting IntelliJ, using different terminal(s), restarting PC didn't
+help, neither StackOverflow solutions.
 
 ## Solution
 
@@ -44,6 +45,7 @@ There was one notable difference:
 	url = git@{gitlab-url}:{namespace}/{repository-name}.git
 	fetch = +refs/heads/*:refs/remotes/origin/*
 ```
+
 {: file="new/.git/.config" }
 
 ```bash
@@ -52,9 +54,11 @@ There was one notable difference:
 	fetch = +refs/heads/*:refs/remotes/origin/*
 	pushurl = git@{gitlab-url}:{username}/{namespace}/{repository-name}.gitgitlab-ci-token:@git@{gitlab-url}:{namespace}/{repository-name}.git
 ```
+
 {: file="old/.git/.config" }
 
 I don't know how this `pushurl` was set, probably due some refactoring etc.  
 Nevertheless, it was the culprit.
 
-To fix this I just replaced contents of `[remote "origin"]` in old file using the ones copied from the new file - and that's all.
+To fix this I just replaced contents of `[remote "origin"]` in old file using the ones copied from the new file - and
+that's all.

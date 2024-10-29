@@ -10,7 +10,7 @@ tags: [terraform] # TAG names should always be lowercase
 - [Table of contents](#table-of-contents)
 - [Syntax](#syntax)
 - [Variables](#variables)
-  - [Best practices](#best-practices)
+   - [Best practices](#best-practices)
 - [Values](#values)
 - [Secrets](#secrets)
 - [Environmental variables](#environmental-variables)
@@ -18,12 +18,12 @@ tags: [terraform] # TAG names should always be lowercase
 - [Outputs](#outputs)
 - [Data sources](#data-sources)
 - [Dynamic expressions](#dynamic-expressions)
-  - [splat](#splat)
-  - [count](#count)
+   - [splat](#splat)
+   - [count](#count)
 - [Modules](#modules)
 - [State](#state)
-  - [Local state vs remote state](#local-state-vs-remote-state)
-  - [Remote state](#remote-state)
+   - [Local state vs remote state](#local-state-vs-remote-state)
+   - [Remote state](#remote-state)
 - [Others](#others)
 
 ## Syntax
@@ -78,7 +78,8 @@ tags: [terraform] # TAG names should always be lowercase
      `~ password = (sensitive)`
    - However some values may be considered as sensitive by provider, they will be printed as\
      `~ password = (sensitive value)`
-   - Nonetheless you should always mark sensitive values appropriately to make sure they won't be disclosed e.g. when referencing them in other locations.
+   - Nonetheless you should always mark sensitive values appropriately to make sure they won't be disclosed e.g. when
+     referencing them in other locations.
    - It is advised to keep such variables in a separate file and exclude it from version control.
 3. Terraform will raise an error when detects some sensitive may be exposed.
 
@@ -94,13 +95,16 @@ tags: [terraform] # TAG names should always be lowercase
 3. It is common to have all resources tagged in a some way to track them.
    - You can enforce this by using locals in combination with variables such as project name or environment.
 4. Reusing locals may simplify configuration, but it can add complexity to resource lifecycle
-5. Locals can help avoid repeating the same values or expressions, but it make it harder to read configurations as actual values won't be clearly visible
-6. It's good to use locals in moderation, when a single value or result is used in many places and it is likely to change in the future.
+5. Locals can help avoid repeating the same values or expressions, but it make it harder to read configurations as
+   actual values won't be clearly visible
+6. It's good to use locals in moderation, when a single value or result is used in many places and it is likely to
+   change in the future.
 7. Locals main use case is to easily change a value in a central place.
 
 ## Outputs
 
-1. Outputs can export structured data about resources, which can also be used e.g. to configure other parts of infrastructure with automation tools.
+1. Outputs can export structured data about resources, which can also be used e.g. to configure other parts of
+   infrastructure with automation tools.
    - They can also act as a data source for another Terraform workspaces.
    - They can also expose data from a child module to a root module.
 2. Outputs are stored in the state file.
@@ -111,15 +115,17 @@ tags: [terraform] # TAG names should always be lowercase
    - `terraform output -raw prod_url`
 6. You can use `-json` flag to make outputs JSONs.
    1. Warning! Sensitives won't be redacted in this case!
-7. In general, Terraform **will** redact sensitive outputs when invoking `plan`, `apply`, `destroy` or `terraform output`
+7. In general, Terraform **will** redact sensitive outputs when invoking `plan`, `apply`, `destroy` or
+   `terraform output`
    - Terraform **will not** redact in any other case, like:
-     - querying single output by name
-     - querying all outputs into a JSON
-     - using outputs from a child module in the root module
+      - querying single output by name
+      - querying all outputs into a JSON
+      - using outputs from a child module in the root module
 
 ## Data sources
 
-1. Data sources allow to fetch data from APIs or other Terraform state backends. Examples are machine image IDs from cloud provider or Terraform outputs from other configurations.
+1. Data sources allow to fetch data from APIs or other Terraform state backends. Examples are machine image IDs from
+   cloud provider or Terraform outputs from other configurations.
 
 ## Dynamic expressions
 
@@ -138,7 +144,8 @@ tags: [terraform] # TAG names should always be lowercase
 ### count
 
 1. Count replicates resource/module a given number of times with an incrementing counter
-2. The name of resource/module like `aws_instance.app` refers to all instances then. To reference the individual one, use indexing notation like `aws_instance.app[0]`
+2. The name of resource/module like `aws_instance.app` refers to all instances then. To reference the individual one,
+   use indexing notation like `aws_instance.app[0]`
 3. You can create a list of all values with a `*`
 
    - `aws_instance.app.*.id` will be a list of all IDs of instances
@@ -165,7 +172,8 @@ tags: [terraform] # TAG names should always be lowercase
 1. A module is a collection of configuration files
 2. Modules let you group a set of resources and reuse them later
 3. The root module is the one where other modules and resources are instantiated
-4. Define the reusable code within a module, so that any change you make to the module will be reflected across all the environments that you plan to reuse
+4. Define the reusable code within a module, so that any change you make to the module will be reflected across all the
+   environments that you plan to reuse
 
 ## State
 
@@ -189,8 +197,10 @@ tags: [terraform] # TAG names should always be lowercase
 
 ## Others
 
-1. When running terraform with a local state file, it's stored in `terraform.tfstate` in **plaintext**. It's required to be able to compare if secret values changed.
-   - Therefore marking variables as sensitive may be not enough to protect them. You have to secure them also e.g. while passing into Terraform configuration. You may use e.g. Vault for secret management.
+1. When running terraform with a local state file, it's stored in `terraform.tfstate` in **plaintext**. It's required to
+   be able to compare if secret values changed.
+   - Therefore marking variables as sensitive may be not enough to protect them. You have to secure them also e.g.
+     while passing into Terraform configuration. You may use e.g. Vault for secret management.
 2. Dependency graph
    - `terraform graph | dot -Tsvg > graph.svg`
 3. Refreshing state
