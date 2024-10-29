@@ -1,8 +1,7 @@
 ---
-title: Legend icons
-date: 2024-01-21 00:00:00 +0100
-categories: [blog]
-tags: [legend, blog, komidawi] # TAG names should always be lowercase
+layout: default
+icon: fas fa-tags
+order: 5
 ---
 
 ❗ - highly important information
