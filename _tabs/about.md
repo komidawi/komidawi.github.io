@@ -31,9 +31,12 @@ order: 1
 
 ## Featured blog posts
 
-- [linux/shell]({% post_url 2024-03-26-LinuxShell %}) - interesting commands and features of zsh + oh-my-zsh + Powerlevel10k combo and other Linux stuff
-- [terraform]({% post_url 2024-03-29-Terraform %}) - cheatsheet of syntax, descriptions of features, best practices - notes from terraform course
-- [microservices]({% post_url 2024-03-28-microservices %}) - notes taken during reading _Building Microservices_ book from O'Reilly, a detailed summary with my comments
+- [linux/shell]({% post_url learning/shell/2024-03-26-LinuxShell %}) - interesting commands and features of zsh +
+  oh-my-zsh + Powerlevel10k combo and other Linux stuff
+- [terraform]({% post_url learning/devops/2024-03-29-Terraform %}) - cheatsheet of syntax, descriptions of features,
+  best practices - notes from terraform course
+- [microservices]({% post_url learning/engineering/2024-03-28-microservices %}) - notes taken during reading _Building
+  Microservices_ book from O'Reilly, a detailed summary with my comments
 
 <br />
 <hr>

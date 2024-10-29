@@ -87,7 +87,7 @@ tags: [ gcp, gcloud ] # TAG names should always be lowercase
 
 ## Storage Options
 
-See separate article [here]({% post_url 2024-03-21-GoogleCloud-Storage %}).
+See separate article [here]({% post_url learning/devops/2024-03-21-GoogleCloud-Storage %}).
 
 ## Database concepts
 
