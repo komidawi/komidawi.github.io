@@ -1,19 +1,21 @@
 ---
-layout: default
+layout: post
 icon: fas fa-tags
 order: 5
 ---
 
-❗ - highly important information
+# Symbols used
 
-⚠️ - important information
+❗ highly important information
 
-📝 - useful/practical information
+⚠️ important information
 
-🔨 - hands-on instructions
+📝 useful/practical information
 
-💡 - tips, good practices
+🔨 hands-on instructions
 
-🛠️ - troubleshooting
+💡 tips, good practices
+
+🛠️ troubleshooting
 
 <!-- 💠✔️💭💬🗨️✏️📝📋📌✂️📐🚩🧹🧷👁️‍🗨️ -->
