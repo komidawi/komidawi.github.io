@@ -8,7 +8,6 @@ tags: [ linux, shell, zsh, bash ] # TAG names should always be lowercase
 ## Table of Contents
 
 - [Table of Contents](#table-of-contents)
-- [Behavior](#behavior)
 - [Zsh + Oh-my-zsh + Powerlevel10k](#zsh--oh-my-zsh--powerlevel10k)
 - [All Terminals](#all-terminals)
 - [Nano](#nano)
