@@ -15,23 +15,51 @@ tags: [ linux, shell, zsh, bash ] # TAG names should always be lowercase
 - [Top](#top)
 - [Man pages](#man-pages)
 
-## Behavior
+## Bash
 
-1. Make `.sh` script fail on error, not continue like nothing happened!
-    1. `set -euo pipefail`
-        1. `-e`
-            1. exit immediately on error
-        2. `-u`
-            1. fail on unset variables
-        3. `-o pipefail`
-            1. fail on failed pipes
-        4. `-x`
-            1. before executing it command print it with arguments to stderr
-    2. More info:  
-       https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html
-2. `wget`
-    1. `wget -q0 - `
-        1. `-q`
+1. Make `.sh` script fail on error (and not continue like nothing happened)!
+    - `set -euo pipefail`
+        - `-e`
+            - exit immediately on error
+        - `-u`
+            - fail on unset variables
+        - `-o pipefail`
+            - fail on failed pipes
+        - `-x`
+            - before executing it command print it with arguments to stderr (like debug mode)
+    - More info:  
+      https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html
+2. Complex alias
+    - In general:
+         ```bash
+         aliasname() {
+             command --firstParam --secondParam
+         }
+         ```
+        - Example:
+            ```bash
+            getaks() {
+                az aks list -g $1 -o $2
+            }
+            ```
+    - Pass all arguments to alias
+        - Use `$@`
+        - Example:
+            - ```bash
+              maven() {
+                mvn -T1C "$@"
+              }
+              ```
+        - Effect: `maven install -DskipTests` -> `mvn -T1C install -DskipTests`
+3. Function arguments
+    - List:
+        - `$@` - stores all the arguments in a list of string
+        - `$*` - stores all the arguments as a single string
+        - `$#` - stores the number of arguments
+        - `"$@"` is actually not a list of strings, but a list of arguments.
+    - `$@` expands to the arguments passed from the caller to a function or a script.
+        - Inside a function, it expands to the arguments passed to such function.
+        - If used in a script (outside a function), it expands to the arguments passed to such script.
 
 ## Zsh + Oh-my-zsh + Powerlevel10k
 
@@ -39,22 +67,17 @@ tags: [ linux, shell, zsh, bash ] # TAG names should always be lowercase
     - `cd /h/k/.s/`\
       -> `cd /home/komidawi/.ssh`
 2. History search by starting fragment
-
     - Example:
-
         ```bash
         nano /home/komidawi/.ssh/known_hosts
         nano /etc/hosts
 
         nano /h<UP>
         ```
-
       will auto-complete into
-
         ```bash
         nano /home/komidawi/.ssh/known_hosts
         ```
-
 3. Expand envs
     - `$USER<TAB>`\
       -> `komidawi`
@@ -104,22 +127,9 @@ tags: [ linux, shell, zsh, bash ] # TAG names should always be lowercase
       -> search only files
     - `ls **/*(/)`
       -> search only folders
-13. Complex alias
-    1. In general:
-        ```bash
-        aliasname() {
-            command $firstParam $secondParam
-        }
-        ```
-    2. Example:
-        ```bash
-        getaks() {
-            az aks list -g $1 -o $2
-        }
-        ```
-14. List recently open directories
+13. List recently open directories
     1. `d`
-15. Copy to clipboard (WSL2)
+14. Copy to clipboard (WSL2)
     1. `command | clip.exe`
 
 ## All Terminals
