@@ -7,6 +7,14 @@ tags: [ mixed-tools, mixed-software, mixed-knowledge, tools, software, knowledge
 
 Content too short to constitute a separate entry.
 
+## Git
+
+- Push commits up to given commit:
+
+```shell
+git push origin {commitid}:{branch}
+```
+
 ## Powershell
 
 - `Out-File` is bash `>` equivalent:
