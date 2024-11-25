@@ -23,3 +23,14 @@ references
 4. https://www.javadude.com/posts/20040522-import-on-demand-is-evil/
 5. https://stackoverflow.com/a/147461/10699128
 
+## Faster Git on WSL
+
+- https://markentier.tech/posts/2020/10/faster-git-under-wsl2/
+
+## Git auto-crlf
+
+> Never turn autocrlf on, it causes nothing but headaches and sorrows.
+
+TL;DR Set `autocrlf=false` and `eol=lf` and don't bother with sh*t.
+
+- https://markentier.tech/posts/2021/10/autocrlf-true-considered-harmful/

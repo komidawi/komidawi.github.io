@@ -28,7 +28,6 @@ It binds work `.gitconfig` with company's git remote URIs, and uses private`.git
 	name = Name Surname
 	email = private@mail.com
 ```
-
 {: file=".gitconfig-private" }
 
 ```bash
@@ -36,7 +35,6 @@ It binds work `.gitconfig` with company's git remote URIs, and uses private`.git
 	name = Name Surname
 	email = work@company.com
 ```
-
 {: file=".gitconfig-company" }
 
 ```bash
@@ -48,7 +46,6 @@ It binds work `.gitconfig` with company's git remote URIs, and uses private`.git
 [includeIf "hasconfig:remote.*.url:git@company.com*/**"]
     path = .gitconfig-company
 ```
-
 {: file=".gitconfig" }
 
 And that's all.
@@ -58,6 +55,11 @@ No more private commits in company repo :)
 #### Credits
 
 _Solution is based on https://stackoverflow.com/a/77728201/10699128._
+
+#### Resources
+
+- https://markentier.tech/posts/2021/02/github-with-multiple-profiles-gpg-ssh-keys/
+    - Some more extended tutorial with different SSH keys
 
 ---
 
