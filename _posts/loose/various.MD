@@ -1,5 +1,3 @@
-
-
 ##
 
 How to deep dive into compatibility in Java / Maven / POM.
@@ -14,22 +12,6 @@ references
 <!--  Spring-Boot target version  -->
 <spring-boot-version>2.4.5</spring-boot-version>
 ```
-
-## GitLab CI/CD
-
-### gitlab-ci-local
-
-1. Don't download artifacts every time for Maven
-    1. ```yaml
-       variables:
-            MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
-       ```
-
-###
-
-Examples
-
-https://gitlab.com/gitlab-org/gitlab-foss/-/blob/master/lib/gitlab/ci/templates/Maven.gitlab-ci.yml
 
 ## Codestyle
 
