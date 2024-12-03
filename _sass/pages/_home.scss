@@ -58,6 +58,10 @@
         color: var(--text-muted-color) !important;
       }
 
+      %more-muted {
+        color: var(--text-more-muted-color) !important;
+      }
+
       .card-text {
         @include bp.md {
           display: inherit !important;
@@ -76,7 +80,7 @@
       }
 
       .post-meta {
-        @extend %muted;
+        @extend %more-muted;
 
         i {
           &:not(:first-child) {
