@@ -15,13 +15,6 @@ Content too short to constitute a separate entry.
 git push origin {commitid}:{branch}
 ```
 
-## Powershell
-
-- `Out-File` is bash `>` equivalent:
-    - ```powershell
-      dir | Out-File -FilePath .\output.txt
-      ```
-
 ## Excel
 
 - Select Column
