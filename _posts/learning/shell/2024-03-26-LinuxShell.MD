@@ -8,6 +8,7 @@ tags: [ linux, zsh, bash ] # TAG names should always be lowercase
 ## Table of Contents
 
 * [Table of Contents](#table-of-contents)
+* [Interesting threads](#interesting-threads)
 * [Bash](#bash)
 * [Zsh + Oh-my-zsh + Powerlevel10k](#zsh--oh-my-zsh--powerlevel10k)
 * [All Terminals](#all-terminals)
@@ -30,49 +31,67 @@ tags: [ linux, zsh, bash ] # TAG names should always be lowercase
 
 ## Bash
 
-1. Make `.sh` script fail on error (and not continue like nothing happened)!
-    - `set -euo pipefail`
-        - `-e`
-            - exit immediately on error
-        - `-u`
-            - fail on unset variables
-        - `-o pipefail`
-            - fail on failed pipes
-        - `-x`
-            - before executing it command print it with arguments to stderr (like debug mode)
-    - More info:  
-      https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html
-2. Complex alias
-    - In general:
-         ```bash
-         aliasname() {
-             command --firstParam --secondParam
-         }
-         ```
-        - Example:
-            ```bash
-            getaks() {
-                az aks list -g $1 -o $2
-            }
-            ```
-    - Pass all arguments to alias
-        - Use `$@`
-        - Example:
-            - ```bash
-              maven() {
-                mvn -T1C "$@"
-              }
-              ```
-        - Effect: `maven install -DskipTests` -> `mvn -T1C install -DskipTests`
-3. Function arguments
-    - List:
-        - `$@` - stores all the arguments in a list of string
-        - `$*` - stores all the arguments as a single string
-        - `$#` - stores the number of arguments
-        - `"$@"` is actually not a list of strings, but a list of arguments.
-    - `$@` expands to the arguments passed from the caller to a function or a script.
-        - Inside a function, it expands to the arguments passed to such function.
-        - If used in a script (outside a function), it expands to the arguments passed to such script.
+**Make `.sh` script fail on error (and not continue like nothing happened)!**
+
+- `set -euo pipefail`
+    - `-e`
+        - exit immediately on error
+    - `-u`
+        - fail on unset variables
+    - `-o pipefail`
+        - fail on failed pipes
+    - `-x`
+        - before executing it command print it with arguments to stderr (like debug mode)
+- More info:  
+  https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html
+
+**Complex alias**
+
+In general
+
+ ```bash
+ aliasname() {
+     command --firstParam --secondParam
+ }
+ ```
+
+Example
+
+```bash
+getaks() {
+    az aks list -g $1 -o $2
+}
+```
+
+Pass all arguments to alias
+- Use `$@`
+
+```bash
+maven() {
+  mvn -T1C "$@"
+}
+```
+
+effect: `maven install -DskipTests`  
+becomes: `mvn -T1C install -DskipTests`
+
+**Function arguments**
+- List:
+    - `$@` - stores all the arguments in a list of string
+    - `$*` - stores all the arguments as a single string
+    - `$#` - stores the number of arguments
+    - `"$@"` is actually not a list of strings, but a list of arguments.
+- `$@` expands to the arguments passed from the caller to a function or a script.
+    - Inside a function, it expands to the arguments passed to such function.
+    - If used in a script (outside a function), it expands to the arguments passed to such script.
+
+**Check if file exists**
+
+```shell
+if ! [ -f ./resources/$ARCHIVE ]; then
+  curl --output ./resources localhost:8080/archive.zip
+fi
+```
 
 ## Zsh + Oh-my-zsh + Powerlevel10k
 
