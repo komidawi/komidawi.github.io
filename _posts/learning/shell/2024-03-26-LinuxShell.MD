@@ -1,18 +1,32 @@
 ---
 title: Linux/Shell
 date: 2024-03-26 00:00:00 +0100
-categories: [ linux ]
-tags: [ linux, shell, zsh, bash ] # TAG names should always be lowercase
+categories: [ linux, shell ]
+tags: [ linux, zsh, bash ] # TAG names should always be lowercase
 ---
 
 ## Table of Contents
 
-- [Table of Contents](#table-of-contents)
-- [Zsh + Oh-my-zsh + Powerlevel10k](#zsh--oh-my-zsh--powerlevel10k)
-- [All Terminals](#all-terminals)
-- [Nano](#nano)
-- [Top](#top)
-- [Man pages](#man-pages)
+* [Table of Contents](#table-of-contents)
+* [Bash](#bash)
+* [Zsh + Oh-my-zsh + Powerlevel10k](#zsh--oh-my-zsh--powerlevel10k)
+* [All Terminals](#all-terminals)
+* [Nano](#nano)
+* [Top](#top)
+* [Man pages](#man-pages)
+
+## Interesting threads
+
+- https://stackoverflow.com/a/42082956/10699128
+    - "Difference between single and double quotes in Bash"
+    - Comprehensive explanation of variable evaluation
+    - `""`, `''`, `$`, `\`
+
+
+- https://unix.stackexchange.com/a/444949/379903
+    - "How can we run a command stored in a variable?"
+    - Comprehensive explanation of functions
+    - definition, evaluation, arguments
 
 ## Bash
 
@@ -77,10 +91,12 @@ tags: [ linux, shell, zsh, bash ] # TAG names should always be lowercase
         ```bash
         nano /home/komidawi/.ssh/known_hosts
         ```
-3. Expand envs
+3. Show `n` last history entries (`0` shows all)
+    - `history n`
+4. Expand envs
     - `$USER<TAB>`\
       -> `komidawi`
-4. Print parameters help
+5. Print parameters help
    `cat -<TAB>`\
     ```
     --help                  -- display help and exit
@@ -89,29 +105,29 @@ tags: [ linux, shell, zsh, bash ] # TAG names should always be lowercase
     --show-all          -A  -- equivalent to -vET
     --show-ends         -E  -- display $ at end of each line
     ```
-5. Use `take` to `mkdir` and `cd` into it
+6. Use `take` to `mkdir` and `cd` into it
     - `take folder/subfolder/finish`
     - it also works with zip archives, git repos and url downloads
-6. Command history
+7. Command history
     - `Ctrl + R`
     - Press again for next occurrence
-7. Quick `cd`
+8. Quick `cd`
     - You can move into folders by name of the folder without `cd`
-8. List last visited dirs
+9. List last visited dirs
     1. `d` (shortcut for `dirs -v`)
-9. Command parking
+10. Command parking
     - Press `Ctrl + Q` to hide current command
     - After invoking another command, the first one comes back
-10. Open command in editor
+11. Open command in editor
     - `Ctrl + X`, `Ctrl + E`
     - Opens in default editor (`$EDITOR`)
     - Useful for long commands
-11. cd shortcuts
+12. cd shortcuts
     - `cd ....` \
       -> moves 4 levels up
     - `cd -`\
       -> jumps to previous path
-12. Extensive search
+13. Extensive search
     - `ls *.txt`\
       -> text files
     - `ls **/*.txt`\
@@ -126,9 +142,9 @@ tags: [ linux, shell, zsh, bash ] # TAG names should always be lowercase
       -> search only files
     - `ls **/*(/)`
       -> search only folders
-13. List recently open directories
+14. List recently open directories
     1. `d`
-14. Copy to clipboard (WSL2)
+15. Copy to clipboard (WSL2)
     1. `command | clip.exe`
 
 ## All Terminals
