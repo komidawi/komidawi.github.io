@@ -5,6 +5,8 @@ categories: [ shell ]
 tags: [ windows, powershell ] # TAG names should always be lowercase
 ---
 
+## Basics
+
 **Set Output**
 
 `Out-File` (bash `>`)
@@ -35,9 +37,20 @@ Copy-Item `
   -PassThru
 ```
 
-**Enable debugging**
+**Remove file**
 
-`Set-PSDebug -Trace 1`
+`Remove-Item` (bash `rm`)
+
+```powershell
+Remove-Item ./file.txt
+```
+
+**String interpolation**
+
+```powershell
+$VERSION = "2.1.1-SNAPSHOT"
+$jarFile = "myapp-$VERSION.jar"
+```
 
 **Download File**
 
@@ -54,6 +67,33 @@ Alternative
 ```powershell
 iwr localhost:8080/archive.zip -o logs.zip
 ```
+
+## Various
+
+**Check if file exists**
+
+```powershell
+if (Test-Path -Path $TARGET_FILE -PathType Leaf)
+{
+    # ...
+}
+```
+
+## Shell behavior config
+
+**Enable debugging**
+
+`Set-PSDebug -Trace 1` (bash `set -x`)
+
+**Stop execution on first error**
+
+`$ErrorActionPreference` (bash `set -e`)
+
+```powershell
+$ErrorActionPreference = "Stop"
+```
+
+## PowerShell Profile
 
 **Get location of PowerShell Profile**
 
