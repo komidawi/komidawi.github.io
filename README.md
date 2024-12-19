@@ -2,18 +2,43 @@
 
 ## Install
 
-- Node
-    - \[Linux] `nvm` is fine
-    - \[Windows] `nvm-for-windows` is fine
-- Ruby + Jekyll
-    - \[Linux] `rbenv` is fine
-    - \[Windows] don't use `rbenv-for-windows` - it's bugged
-        - Use RubyInstaller - see [Official Jekyll Guide](https://jekyllrb.com/docs/installation/windows/)
+### Prerequisites
+
+#### Node
+- \[Linux] `nvm` is fine
+- \[Windows] `nvm-for-windows` is fine
+
+```shell
+nvm -v
+```
+
+#### Ruby + Jekyll
+- \[Linux] `rbenv` is fine
+- \[Windows] don't use `rbenv-for-windows` - it's bugged
+    - Use RubyInstaller - see [Official Jekyll Guide](https://jekyllrb.com/docs/installation/windows/)
+
+```shell
+ruby -v
+```
+
+### Installation
+
+```shell
+gem install jekyll bundler
+bundle exec jekyll -v
+```
 
 ## Run
 
-- `bundle exec jekyll start`
-    - or shorter: `bundle exec jekyll s`
+```shell
+bundle exec jekyll serve
+```
+
+or shorter:
+
+```shell
+bundle exec jekyll s
+```
 
 Remember to add `bundle exec` before all `jekyll` commands ([docs](https://jekyllrb.com/docs/usage/)).
 
