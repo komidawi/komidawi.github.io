@@ -22,9 +22,9 @@ At the end add a brief summary.
 
 ## Git
 
-### Config
+### ⚠️ Auto CRLF ️⚠️
 
-Auto CRLF is EVIL. Absolutely set it to FALSE.
+Auto CRLF is **EVIL**. Absolutely set it to FALSE!
 
 ```shell
 git config --global core.autocrlf false
@@ -39,6 +39,9 @@ Or directly in `.gitconfig`:
   eol = lf
 ```
 {: file=".gitconfig" }
+
+For curious ones - some background behind CRLF:  
+[https://markentier.tech/posts/2021/10/autocrlf-true-considered-harmful/](https://markentier.tech/posts/2021/10/autocrlf-true-considered-harmful/)
 
 ## Repository
 
@@ -60,10 +63,18 @@ Or directly in `.gitconfig`:
 *.{bat,[bB][aA][tT]} text eol=crlf
 ```
 
-### `.gitignore`
+### .gitignore
 
 [Download file](/assets/configs/gitignore.txt)
 
-### `.editorconfig`
+### .editorconfig
 
 [Download file](/assets/configs/editorconfig.txt)
+
+### agnoster.zsh-theme
+
+[Download file](/assets/configs/agnoster.zsh-theme.txt)
+
+### Windows Terminal settings
+
+[Download file](/assets/configs/settings.json)
