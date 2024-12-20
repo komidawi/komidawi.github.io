@@ -2,12 +2,27 @@
 title: Configuration Templates
 date: 2024-10-25 00:00:00 +0100
 categories: [ config ]
-tags: [ config, config-templates, repository, git ] # TAG names should always be lowercase
+tags: [ templates, repository, git, gitignore, editorconfig, ai, gitattributes ] # TAG names should always be lowercase
 ---
 
-# Git
+## AI
 
-## Config
+### Custom AI
+
+```text
+Response as a Senior Software Engineer.
+Unless otherwise instructed, answer concisely.
+Prefer to use CLI tools to solve the asked problems. Use long-form command arguments.
+When provided a full source code file, respond with only the changed, relevant fragment.
+When asked to generate code, create simple, neat and correct solution.
+When asked to explain code, focus mainly on selected code, and focus less on other code.
+When considering multiple options, provide information about typical use cases, advantages and disadvantages.
+At the end add a brief summary.
+```
+
+## Git
+
+### Config
 
 Auto CRLF is EVIL. Absolutely set it to FALSE.
 
@@ -45,39 +60,10 @@ Or directly in `.gitconfig`:
 *.{bat,[bB][aA][tT]} text eol=crlf
 ```
 
+### `.gitignore`
+
+[Download file](/assets/configs/gitignore.txt)
+
 ### `.editorconfig`
 
-```editorconfig
-root = true
-
-# Globals
-[*]
-charset = utf-8
-end_of_line = lf
-indent_style = space
-
-insert_final_newline = true
-trim_trailing_whitespace = true
-
-# TypeScript
-[{*.ats,*.cts,*.mts,*.ts}]
-quote_type = single
-ij_typescript_spaces_within_imports = true
-ij_typescript_spaces_within_object_literal_braces = true
-ij_typescript_keep_simple_methods_in_one_line = true
-
-# Markdown
-[{*.markdown,*.md}]
-max_line_length = off
-trim_trailing_whitespace = false
-ij_markdown_force_one_space_after_blockquote_symbol = false
-
-# Bugged options - you have to set them in IntelliJ Options
-# ij_markdown_min_lines_around_block_elements = 0
-# ij_markdown_max_lines_around_block_elements = 1
-
-# Properties (Spring)
-[{*.properties,spring.handlers,spring.schemas}]
-ij_properties_keep_blank_lines = true
-```
-{: file=".editorconfig" }
+[Download file](/assets/configs/editorconfig.txt)
