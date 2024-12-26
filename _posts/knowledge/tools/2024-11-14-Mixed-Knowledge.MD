@@ -30,3 +30,13 @@ git push origin {commitid}:{branch}
 
 1. Non-greedy matching - `?`
 
+## Gradle
+
+To be able to run Kotlin Gradle project with `./gradlew run`, add into `build.gradle.kts`
+
+```groovy
+application {
+    // assuming main file is Main.kt
+    mainClass.set("it.komidawi.MainKt")
+}
+```
