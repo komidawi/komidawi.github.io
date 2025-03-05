@@ -15,6 +15,41 @@ Content too short to constitute a separate entry.
 git push origin {commitid}:{branch}
 ```
 
+## OpenRewrite
+
+### Usage
+
+Add desired recipe into root `pom.xml`, e.g.:
+
+```xml
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.openrewrite.maven</groupId>
+            <artifactId>rewrite-maven-plugin</artifactId>
+            <version>6.2.2</version>
+            <configuration>
+                <exportDatatables>true</exportDatatables>
+                <activeRecipes>
+                    <recipe>org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_2</recipe>
+                </activeRecipes>
+            </configuration>
+            <dependencies>
+                <dependency>
+                    <groupId>org.openrewrite.recipe</groupId>
+                    <artifactId>rewrite-spring</artifactId>
+                    <version>6.2.0</version>
+                </dependency>
+            </dependencies>
+        </plugin>
+    </plugins>
+</build>
+```
+
+If `mvn rewrite:run` didn't work, open IntelliJ Maven menu and there find
+
+PROJECT: Main -> Plugins -> rewrite -> `rewrite:run`
+
 ## Excel
 
 - Select Column
@@ -28,7 +63,8 @@ git push origin {commitid}:{branch}
 
 ## Regex
 
-1. Non-greedy matching - `?`
+1. `?`
+   - Non-greedy matching 
 
 ## Gradle
 
