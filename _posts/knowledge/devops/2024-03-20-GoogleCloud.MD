@@ -89,7 +89,7 @@ My knowledge about GCP (Google Cloud Platform), gained mostly while learning fro
 
 ## Storage Options
 
-See separate article [here]({% post_url learning/devops/2024-03-21-GoogleCloud-Storage %}).
+See separate article [here]({% post_url knowledge/devops/2024-03-21-GoogleCloud-Storage %}).
 
 ## Database concepts
 
