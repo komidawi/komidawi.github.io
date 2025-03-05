@@ -5,6 +5,8 @@ categories: [ devops ]
 tags: [ gcp, gcloud ] # TAG names should always be lowercase
 ---
 
+My knowledge about GCP (Google Cloud Platform), gained mostly while learning from official Cloud Skill Boost courses.
+
 ## Google Cloud
 
 - [Google Cloud](#google-cloud)

@@ -5,6 +5,8 @@ categories: [devops]
 tags: [terraform] # TAG names should always be lowercase
 ---
 
+Knowledge I managed to gather about Terraform technology.
+
 ## Table of contents
 
 - [Table of contents](#table-of-contents)

@@ -5,6 +5,8 @@ categories: [ frontend ]
 tags: [ jekyll, liquid ] # TAG names should always be lowercase
 ---
 
+Knowledge, commands, configurations, guides and everything helpful while using Jekyll and Liquid.
+
 ## Liquid
 
 ### Escape Liquid

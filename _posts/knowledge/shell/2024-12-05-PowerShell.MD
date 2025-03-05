@@ -5,6 +5,8 @@ categories: [ shell ]
 tags: [ windows, powershell ] # TAG names should always be lowercase
 ---
 
+Knowledge, commands, configurations, guides and everything helpful when working with PowerShell in Windows.
+
 ## Basics
 
 **Set Output**

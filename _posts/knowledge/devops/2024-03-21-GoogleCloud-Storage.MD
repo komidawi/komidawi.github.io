@@ -1,9 +1,11 @@
 ---
 title: Google Cloud Storage Comparison
 date: 2024-03-21 00:00:00 +0100
-categories: [devops]
-tags: [gcp, gcloud] # TAG names should always be lowercase
+categories: [ devops ]
+tags: [ gcp, gcloud ] # TAG names should always be lowercase
 ---
+
+Comparison of various Google Cloud Platform storage solutions.
 
 ## Storage comparison
 

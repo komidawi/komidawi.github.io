@@ -5,6 +5,8 @@ categories: [ config ]
 tags: [ templates, repository, git, gitignore, editorconfig, ai, gitattributes ] # TAG names should always be lowercase
 ---
 
+Examples of ready-to-use handy configurations for various tools like Git, EditorConfig, Windows Terminal themes etc.
+
 ## AI
 
 ### Custom AI

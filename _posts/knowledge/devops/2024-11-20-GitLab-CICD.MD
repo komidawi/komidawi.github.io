@@ -5,6 +5,9 @@ categories: [ devops ]
 tags: [ gitlab, cicd ] # TAG names should always be lowercase
 ---
 
+Knowledge, commands, parameters, configurations, guides, settings and everything relevant when using GitLab CI/CD
+pipelines.
+
 ## Links
 
 1. **[docs.gitlab.com/ee/ci/examples](https://docs.gitlab.com/ee/ci/examples/)**

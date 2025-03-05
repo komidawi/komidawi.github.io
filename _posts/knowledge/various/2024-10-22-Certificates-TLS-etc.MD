@@ -5,6 +5,8 @@ categories: [ security ]
 tags: [ certificates, TLS, cryptography ] # TAG names should always be lowercase
 ---
 
+Knowledge related with certificates, cryptography and similar topics.
+
 1. Private Key
     - Should never ever leave machine on which it was generated
     - No transmitting private key in any form

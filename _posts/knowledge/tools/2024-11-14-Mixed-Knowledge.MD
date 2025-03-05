@@ -5,7 +5,7 @@ categories: [ mixed-tools, mixed-software, mixed-knowledge, tools, software, kno
 tags: [ mixed-tools, mixed-software, mixed-knowledge, tools, software, knowledge ] # TAG names should always be lowercase
 ---
 
-Content too short to constitute a separate entry.
+Everything that is too short to constitute a separate entry.
 
 ## Git
 

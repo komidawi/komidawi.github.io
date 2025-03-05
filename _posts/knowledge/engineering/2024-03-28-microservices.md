@@ -5,6 +5,8 @@ categories: [ engineering ]
 tags: [ microservices ] # TAG names should always be lowercase
 ---
 
+Highly elaborate notes from lecture of "Building Microservices: Designing Fine-Grained Systems" book by Sam Newman.
+
 ## Table of Contents
 
 - [Table of Contents](#table-of-contents)

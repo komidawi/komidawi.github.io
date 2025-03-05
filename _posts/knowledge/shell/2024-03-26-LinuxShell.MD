@@ -5,6 +5,8 @@ categories: [ linux, shell ]
 tags: [ linux, zsh, bash ] # TAG names should always be lowercase
 ---
 
+Knowledge, commands, configurations, guides and everything helpful when working with shell.
+
 ## Table of Contents
 
 * [Table of Contents](#table-of-contents)

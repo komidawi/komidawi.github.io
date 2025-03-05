@@ -1,9 +1,11 @@
 ---
 title: Cassandra
 date: 2024-03-30 00:00:00 +0100
-categories: [databases]
-tags: [cassandra] # TAG names should always be lowercase
+categories: [ databases ]
+tags: [ cassandra ] # TAG names should always be lowercase
 ---
+
+Knowledge I managed to gather about Cassandra NoSQL Database technology.
 
 ## Table of Contents
 
@@ -57,7 +59,7 @@ tags: [cassandra] # TAG names should always be lowercase
     - When creating Keyspace you must provide replication parameters
     -
    `CREATE KEYSPACE <keyspace> WITH REPLICATION = { 'class': '<replication>', 'replication_factor': <replication_factor> }`
-   - e.g. `CREATE KEYSPACE killrvideo WITH REPLICATION = { 'class': 'SimpleStrategy', 'replication_factor': 1 }`
+    - e.g. `CREATE KEYSPACE killrvideo WITH REPLICATION = { 'class': 'SimpleStrategy', 'replication_factor': 1 }`
 3. Set Keyspace
     - `USE <keyspace>;`
 4. Show Keyspaces
