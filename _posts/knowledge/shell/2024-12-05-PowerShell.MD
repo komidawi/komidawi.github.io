@@ -1,13 +1,28 @@
 ---
-title: PowerShell
+title: PowerShell (and cmd by the way)
 date: 2024-12-05 00:00:00 +0100
 categories: [ shell ]
-tags: [ windows, powershell ] # TAG names should always be lowercase
+tags: [ windows, powershell, cmd, ps ] # TAG names should always be lowercase
 ---
 
 Knowledge, commands, configurations, guides and everything helpful when working with PowerShell in Windows.
 
 ## Basics
+
+**Comments**
+
+* `#` 
+  * Use hashtag for comments in PowerShell
+
+**`Get-Item`**
+
+Primarily used to retrieve a specific item at a given location like: file, folder, registry key (or other objects
+supported by PowerShell providers).
+
+* `Get-Item .`
+  * Get object of current directory
+* `gi .`
+  * Shortcut for `Get-Item`
 
 **Set Output**
 
@@ -81,6 +96,54 @@ if (Test-Path -Path $TARGET_FILE -PathType Leaf)
 }
 ```
 
+### Environmental Variables (envs)
+
+**Show Env**
+
+```powershell
+# Short way
+$env:EnvName
+
+# Full way
+[System.Environment]::GetEnvironmentVariable("VariableName", "User")
+```
+
+**Show Envs**
+
+```powershell
+# Available scopes: User, Machine, Process
+[System.Environment]::GetEnvironmentVariables([System.EnvironmentVariableTarget]::User)
+```
+
+**Show Envs by name**
+
+```powershell
+# Normal way
+Get-Item env:EnvName*
+
+# Shortcut way
+gi env:EnvName*
+```
+
+**Set Env (temporarily)**
+
+```powershell
+# Replace variable
+$env:VariableName = "VariableValue"
+
+# Append variable
+$env:VariableName += ";VariableValue"
+
+# Add to the beginning
+$env:VariableName = 'VariableValue;' + $env:VariableName 
+```
+
+**Set Env (permanently)**
+
+```powershell
+[Environment]::SetEnvironmentVariable('VariableName','VariableValue')
+```
+
 ## Shell behavior config
 
 **Enable debugging**
@@ -113,3 +176,18 @@ $PROFILE
 New-Item -path $PROFILE -type File -force
 ```
 
+---
+
+## Command Prompt (cmd)
+
+**Set variable**
+
+```
+set VariableName = VariableValue
+```
+
+**Set env**
+
+```
+setx VariableName VariableValue /m
+```
