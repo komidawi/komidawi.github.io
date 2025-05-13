@@ -1,6 +1,9 @@
-# EditorConfig (komidawi) v1.0.0
+# EditorConfig (komidawi) v1.1.0
 
 # Changelog
+
+# v1.1.0
+# TS: doble quotes, semicolon; JS: quote, double quotes, semicolon
 
 # v1.0.0
 # First version covering: charset, EOL, indent, newlines, TS quotes, Markdown, Spring Properties
@@ -17,12 +20,23 @@ indent_style = space
 insert_final_newline = true
 trim_trailing_whitespace = true
 
+
 # TypeScript
 [{*.ats,*.cts,*.mts,*.ts}]
 quote_type = single
 ij_typescript_spaces_within_imports = true
 ij_typescript_spaces_within_object_literal_braces = true
 ij_typescript_keep_simple_methods_in_one_line = true
+ij_typescript_use_double_quotes = false
+ij_typescript_use_semicolon_after_statement = false
+
+
+# JavaScript
+[{*.cjs,*.js}]
+quote_type = single
+ij_javascript_use_double_quotes = false
+ij_javascript_use_semicolon_after_statement = false
+
 
 # Markdown
 [{*.markdown,*.md}]
