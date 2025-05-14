@@ -5,18 +5,32 @@ categories: [ guides ]
 tags: [ obstacles, problems, issues, troubleshooting, problem-solving, solutions, practices ] # TAG names should always be lowercase
 ---
 
-When something is not yes
+> _"When something is not yes_"
 
-- Just wait
-  - Sometimes things that hand or stuck will just resume in a (longer) moment
-  - So try to get involved in something else and come back when you finish
-- Refresh
-  - Especially in browsers
-- Hard refresh
-  - Don't forget about this option
-- Restart
-  - I know that everything knows that, but not every single time it is performed!
-  - Restart App
-  - Restart Service
-  - Restart OS
+## Just wait
+- Sometimes things that hang or stuck will just resume in a (longer) moment
+- So try to get involved in something else and come back when you finish
+
+### Examples
+
+```powershell
+langstream docker run test -app https://github.com/LangStream/langstream/tree/main/examples/applications/openai-completions -s https://github.com/LangStream/langstream/blob/main/examples/secrets/secrets.yaml
+```
+
+It took a massive amount lot of time - but it had to.  
+And it eventually succeeded.
+
+## Refresh (F5)
+- Especially in browsers
+
+### Hard refresh (Ctrl + F5)
+- Don't forget about this option
+
+## Restart
+
+I know that everything knows that (including me, of course), but not every single time it is performed!
+
+- Restart App
+- Restart Service
+- Restart OS
 
