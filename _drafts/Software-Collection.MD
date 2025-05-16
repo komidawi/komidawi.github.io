@@ -18,7 +18,6 @@
         - Snyk / GitHub Code Scanning
 - Secret management
     - Vault by HashiCorp
-- explainshell.com
 - OpenRewrite
 - SonarLint / SonarQube
 
@@ -47,10 +46,6 @@
     - Jak Dependabot
         - "We used to use Dependabot, but that wasn’t as reliable. Renovate has made it so easy for us. It’s simple and it just works."
     - Znajduje aktualizacje bibliotek i tworzy automatyczne PR
-
----
-- **explainshell.com**
-    - explain bash scripts
 
 ---
 
