@@ -1,11 +1,9 @@
 ---
-title: Postman
+title: How to use Postman without need to register
 date: 2024-11-13 00:00:00 +0100
-categories: [ tools ]
+categories: [ tools, guides ]
 tags: [ postman ] # TAG names should always be lowercase
 ---
-
-## How to use Postman without need to register
 
 Install Postman `10.13.6` - the last version before account requirement.
 
