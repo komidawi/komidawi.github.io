@@ -32,5 +32,7 @@ I know that everything knows that (including me, of course), but not every singl
 
 - Restart App
 - Restart Service
+- Restart K8s
+    - target pod
+    - all pods
 - Restart OS
-
