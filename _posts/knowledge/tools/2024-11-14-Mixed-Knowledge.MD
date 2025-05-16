@@ -7,14 +7,6 @@ tags: [ mixed-tools, mixed-software, mixed-knowledge, tools, software, knowledge
 
 Everything that is too short to constitute a separate entry.
 
-## Git
-
-- Push commits up to given commit:
-
-```shell
-git push origin {commitid}:{branch}
-```
-
 ## OpenRewrite
 
 ### Usage
@@ -50,6 +42,54 @@ If `mvn rewrite:run` didn't work, open IntelliJ Maven menu and there find
 
 PROJECT: Main -> Plugins -> rewrite -> `rewrite:run`
 
+
+## Git
+
+### Push commits up to given commit:
+
+```shell
+git push origin {commitid}:{branch}
+```
+
+### Git LFS
+
+Draft notes of work with Git LFS
+
+```text
+https://rehansaeed.com/gitattributes-best-practices/
+
+git lfs track "*.exe"
+
+TODO: how multiple add one command?
+
+
+but better i guess:
+
+LFS gitattributes
+*.exe filter=lfs diff=lfs merge=lfs -text
+*.dll filter=lfs diff=lfs merge=lfs -text
+
+git add .gitattributes
+
+git rm --cached .\lib\*
+
+git rm --cached ./\*.dll
+git rm --cached ./\*.exe
+
+git lfs status
+git lfs ls-files
+
+
+if encounter
+
+Remote "origin" does not support the Git LFS locking API. Consider disabling it with:
+$ git config lfs.https://github.com/komidawi/Anki.git/info/lfs.locksverify false
+git@github.com: Permission denied (publickey).: exit status 255
+
+then
+start-ssh-agent
+```
+
 ## Excel
 
 - Select Column
@@ -60,11 +100,13 @@ PROJECT: Main -> Plugins -> rewrite -> `rewrite:run`
     - `Shift + Backspace`
 - Strikethrough
     - `Ctrl + 5`
+- Get value from last column
+    - `=CHOOSEROWS(TOCOL(A:A; 1); -1)`
 
 ## Regex
 
 1. `?`
-   - Non-greedy matching 
+    - Non-greedy matching
 
 ## Gradle
 
@@ -76,3 +118,15 @@ application {
     mainClass.set("it.komidawi.MainKt")
 }
 ```
+
+## Espanso
+
+Cursor position
+
+Using them is very simple, just insert $|$ where you want the cursor to be positioned, in this case:
+
+```yaml
+  -   trigger: :div
+      replace: <div>$|$</div>
+```
+
