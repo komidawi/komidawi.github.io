@@ -1,6 +1,9 @@
-# EditorConfig (komidawi) v1.1.0
+# EditorConfig (komidawi) v1.2.0
 
 # Changelog
+
+# v1.2.0
+# Java: Disable wildcard imports
 
 # v1.1.0
 # TS: doble quotes, semicolon; JS: quote, double quotes, semicolon
@@ -37,6 +40,11 @@ quote_type = single
 ij_javascript_use_double_quotes = false
 ij_javascript_use_semicolon_after_statement = false
 
+# Java
+[*.java]
+wildcard_import_limit = 9999
+ij_java_class_count_to_use_import_on_demand = 9999
+ij_java_names_count_to_use_import_on_demand = 9999
 
 # Markdown
 [{*.markdown,*.md}]
