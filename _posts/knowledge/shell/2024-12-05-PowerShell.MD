@@ -11,8 +11,8 @@ Knowledge, commands, configurations, guides and everything helpful when working 
 
 **Comments**
 
-* `#` 
-  * Use hashtag for comments in PowerShell
+* `#`
+    * Use hashtag for comments in PowerShell
 
 **`Get-Item`**
 
@@ -20,9 +20,9 @@ Primarily used to retrieve a specific item at a given location like: file, folde
 supported by PowerShell providers).
 
 * `Get-Item .`
-  * Get object of current directory
+    * Get object of current directory
 * `gi .`
-  * Shortcut for `Get-Item`
+    * Shortcut for `Get-Item`
 
 **Set Output**
 
@@ -141,7 +141,7 @@ $env:VariableName = 'VariableValue;' + $env:VariableName
 **Set Env (permanently)**
 
 ```powershell
-[Environment]::SetEnvironmentVariable('VariableName','VariableValue')
+[Environment]::SetEnvironmentVariable('VariableName', 'VariableValue')
 ```
 
 ## Shell behavior config
@@ -175,6 +175,26 @@ $PROFILE
 ```powershell
 New-Item -path $PROFILE -type File -force
 ```
+
+### Customize Profile
+
+Open profile e.g. by invoking `code $PROFILE`
+
+#### Add aliases
+
+**`git status` shortcut**
+
+<!-- @formatter:off -->
+```powershell
+function Get-GitStatus { git status }
+Set-Alias -Name gs -Value Get-GitStatus
+```
+<!-- @formatter:on -->
+
+Note: Function name starts with `Get-`, because cmdlets have to use "approved verbs" (`UseApprovedVerbs` rule).  
+You can list all approved verbs by `Get-Verb`
+([source](https://learn.microsoft.com/en-us/powershell/utility-modules/psscriptanalyzer/rules/useapprovedverbs?view=ps-modules)).
+
 
 ---
 
