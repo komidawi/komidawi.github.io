@@ -1,6 +1,29 @@
-# GitIgnore (komidawi) v1.1.0
+# .gitignore of komidawi v1.1.1
+
+# "One solution to rule them all."
+
+# One .gitignore that you just copy into new project and don't have to wonder about any OS, coding language, shell etc.
+# Currently covers:
+# Angular
+# Git
+# Gradle
+# Java
+# JetBrains
+# Kotlin
+# Linux
+# MacOS
+# Maven
+# Node
+# Terraform
+# VS Code
+# Windows
+# Yarn
+# zsh
 
 # Changelog
+
+# v1.1.1
+# Add: Description, list of covered topics
 
 # v1.1.0
 # Add: Java, Kotlin
