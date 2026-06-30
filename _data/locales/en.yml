@@ -15,6 +15,8 @@ tabs:
   tags: Tags
   archives: Archives
   about: About
+  posts: Posts
+  legend: Legend
 
 # the text displayed in the search bar & search results
 search:
