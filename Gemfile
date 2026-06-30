@@ -2,6 +2,11 @@
 
 source "https://rubygems.org"
 
+# Ruby 3.4 removed these from the default gems; Jekyll/its deps still require them.
+gem "csv"
+gem "base64"
+gem "bigdecimal"
+
 gem "jekyll-theme-chirpy", "~> 7.6"
 
 gem "html-proofer", "~> 5.0", group: :test
