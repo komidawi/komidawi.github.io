@@ -22,6 +22,39 @@ When considering multiple options, provide information about typical use cases, 
 At the end add a brief summary.
 ```
 
+### Claude Code
+
+#### Don't touch `.env`
+
+Go to `~/.claude/settings.json` and specify:
+```json
+{
+    "permissions": {
+        "deny": [
+            "Bash(**/.env)",
+            "Read(**/.env)",
+            "Write(**/.env)"
+        ]
+    }
+}
+```
+
+#### Run in safer environment
+
+Use built-in sandbox
+
+```shell
+/sandbox
+```
+
+Or use separate docker
+
+```shell
+docker sandbox run claude
+```
+
+Therefore using `--dangerously-skip-permissions` should be more safe.
+
 ## Git
 
 ### ⚠️ Auto CRLF ️⚠️

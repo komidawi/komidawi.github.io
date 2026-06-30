@@ -5,11 +5,10 @@
 ### Prerequisites
 
 #### Node
-- \[Linux] `nvm` is fine
-- \[Windows] `nvm-for-windows` is fine
+- Fast Node Manager (fnm)
 
 ```shell
-nvm -v
+fnm -V
 ```
 
 #### Ruby + Jekyll

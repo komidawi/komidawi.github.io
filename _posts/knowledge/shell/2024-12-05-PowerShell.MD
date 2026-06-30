@@ -176,9 +176,11 @@ $PROFILE
 New-Item -path $PROFILE -type File -force
 ```
 
-### Customize Profile
+### Edit Profile
 
-Open profile e.g. by invoking `code $PROFILE`
+```powershell
+Invoke-Item $profile
+```
 
 #### Add aliases
 

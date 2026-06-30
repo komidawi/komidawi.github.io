@@ -400,11 +400,18 @@ It will be than a single unit of deployment - **everything** must be deployed to
 ### What makes a good Microservice boundary?
 
 1. Information hiding
+    - _The connections between modules are the assumptions which the modules make about each other._
 2. Cohesion (strong)
     - _The code that changes together, stays together_
 3. Coupling (loose)
+    - A loosely coupled service knows as little as it needs to about the services with which it collaborates.
 
 ### Types of coupling
+
+> _A structure is stable if cohesion is strong and coupling is low._
+
+**Cohesion** is about relationship between things **inside** a boundary (like a microservice).   
+**Coupling** is about relationship between things **across** a boundary.
 
 #### Domain Coupling
 
@@ -451,7 +458,7 @@ Ways to fix it:
 
 More than one service makes use of the same data
 
-- Example: shared database
+- Example: shared database or filesystem
 - The main problem is change in data structure may impact many, if not all, clients at once
 - Shared data, by its nature, is hard to change due to quantity of clients
 - It's somehow less problematic when data
