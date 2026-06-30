@@ -7,37 +7,59 @@ title: Home
 
 ### I'm komidawi, and I'm flattered you came here :)
 
-<br />
 <hr>
 
 ## About me
 
-<img src="/assets/img/avatar-komidawi-circle.png" alt="komidawi-avatar" width="100px" height="auto" style="float: left; margin-right: 35px;"/>
+- Computer Science and Software Engineering enthusiast
+- JVM ecosystem fan: I enjoy Java and Kotlin is my all-time favorite
+- Passionate about sharing and exchanging technical knowledge
+- AGH in Cracow CS B.Sc. graduate, large appreciation for this university
+- Always looking forward to learn something new, not only in the scope of IT
 
-- I'm a Computer Science and Programming enthusiast
-- JVM languages fan: Java liker, Kotlin lover 😉
-- 4+ years of commercial experience, mostly in backend
-- Computer Science BSc graduate (AGH, Cracow, Poland)
-
-<sub>Java, Kotlin, Spring, Spring Boot, Hibernate, SQL, PostgreSQL, PL/pgSQL, Ktor, Maven, Gradle, Android, Python, Kotest, JUnit, Spock, Mockito, TDD, BDD, Unit Testing, Integration Testing, Docker, Jenkins, CI/CD, ELK, Kafka, REST API, OpenAPI, Clean Code, Clean Architecture, SOLID, DRY, YAGNI, KISS, POLA, DDD, Hexagonal Architecture / Ports and Adapters, Git, GitHub, GitLab, Bitbucket, Unix, Linux, Ubuntu, Windows, Functional Programming, IntelliJ IDEA, SCRUM, JIRA, Confluence, Microservices</sub>
 <br />
 
-<p style="text-align: right;"><sub>last edit: 15.12.2023</sub></p>
+### Experience
+
+- 5+ years of experience in Java/Kotlin and Spring Boot in e-commerce and fintech ranging from maintaining a public API
+  with ~20k RPM in a 900+ microservice landscape to architectural audit for a bank serving ~2M clients.
+- Comfortable with end‑to‑end delivery: requirements, modeling, implementation, QA, deployments, observability, support.
+- Increasing team effectiveness by improving automations, tooling, processes and proactively sharing knowledge.
+- Actively using modern tech for AI assisted development with appropriate caution and human-in-the-loop approach.
+
 <br />
 
-<hr>
+### Familiar with
+
+Technologies I know well (or at least have some commercial experience with):
+
+<sub>Java, Kotlin, Spring Boot, Hibernate, JPA, Maven, Gradle, Groovy, Lombok, SQL, PostgreSQL, PL/pgSQL, MySQL, H2,
+MongoDB, Liquibase, Flyway, REST API, OpenAPI/Swagger, SOAP, JSON, XML, JWT, Kafka, Schema Registry, Jackson, TDD, BDD,
+JUnit, Spock, Mockito, Spring MVC, JMeter, Kotest, Docker, Kubernetes, Terraform, Jenkins, GCP, Grafana, Service Mesh,
+Elastic Stack (ELK), Microservices, Hexagonal Architecture, Design Patterns, DDD, SOLID, DRY, KISS, YAGNI, POLA, Clean
+Code, LLM, Claude Code, Prompt Engineering, Cursor, Agents, Local Models, Git, Linux, IntelliJ, GitHub Actions, GitLab
+CI/CD, Bitbucket, JIRA, Confluence, Scrum/Agile, Angular, TypeScript, Android, Python, Ktor
+</sub>
+
+<p style="text-align: right;"><sub>last edit: 30.06.2026</sub></p>
+
+<br />
 
 ## Featured blog posts
 
-- [linux/shell]({% post_url knowledge/shell/2024-03-26-LinuxShell %}) - interesting commands and features of zsh +
-  oh-my-zsh + Powerlevel10k combo and other Linux stuff
-- [terraform]({% post_url knowledge/devops/2024-03-29-Terraform %}) - cheatsheet of syntax, descriptions of features,
-  best practices - notes from terraform course
-- [microservices]({% post_url knowledge/engineering/2024-03-28-microservices %}) - notes taken during reading _Building
-  Microservices_ book from O'Reilly, a detailed summary with my comments
+These are my most in-depth knowledge entries. <br />
+All content written manually to solidify understanding and remember it better.
+
+- [Microservices]({% post_url knowledge/engineering/2024-03-28-microservices %}) - notes taken during reading _Building Microservices_ from O'Reilly, detailed summary
+- [Linux/shell]({% post_url knowledge/shell/2024-03-26-LinuxShell %}) - interesting features of zsh + oh-my-zsh + Powerlevel10k combo and other Linux stuff
+- [Docker]({% post_url knowledge/devops/2024-05-28-Docker %}) - commands, images, networking, volumes and Dockerfile
+- [Terraform]({% post_url knowledge/devops/2024-03-29-Terraform %}) - cheatsheet of syntax, descriptions of features, best practices
+- [Google Cloud]({% post_url knowledge/devops/2024-03-20-GoogleCloud %}) - GCP services, gcloud commands and comparison of available solutions
+- [Frontend]({% post_url knowledge/frontend/2024-03-22-frontend %}) - all around frontend - HTML, CSS, VS Code tooling. Warm-up before Angular.
+- [Angular]({% post_url knowledge/frontend/2024-03-23-Angular %}) - components, directives, dependency injection, testing, patterns and hands-on snippets
+- [Cassandra]({% post_url knowledge/database/2024-03-30-Cassandra %}) - architecture, CQL, replication and consistency explained
 
 <br />
-<hr>
 
 ## My Projects/Repositories
 
@@ -52,8 +74,6 @@ This is so far the biggest non-commercial project I've taken part in. It is a co
 
 **Technologies**: `Kotlin`, `Ktor`, `Ktor-OpenAPI-Generator`, `Kotest`, `Mockk`, `JWT`, `RAPTOR`, `Jackson`, `Gradle`
 
-<br />
-
 ### [PizzaCostCalculator](https://github.com/komidawi/PizzaCostCalculator)
 
 **Handy Android app which helps to make an optimal decision when choosing pizza size and shape.**<br />
@@ -62,8 +82,6 @@ Project focused on high code quality and proper coding and Android architecture 
 I wanted this project be the one without any deadlines. It was supposed to answer the question: "If I had unlimited amount of time, how would the code look like then?"<br />
 
 **Technologies**: `Kotlin`, `Room`, `JUnit`, `Mockito`, `Espresso`, `Gradle`, `Bitrise`, `SonarQube`, `CodeCov`
-
-<br />
 
 ## Smaller ones
 
@@ -75,15 +93,11 @@ Initially started in Java and legacy, later converted to modern Kotlin Fragments
 
 **Technologies**: `Android`, `Kotlin`, `Gradle`, `Fuel`, `Gson`
 
-<br />
-
 ### [PostgreSQL-Classes](https://github.com/komidawi/PostgreSQL-Classes)
 
 **Database exercises of `PostgreSQL` and `PL/pgSQL`**. <br />
 
 Although it's not a project, this repository is a valuable source of knowledge still helpful in my everyday programmer life. Even after years I use it as a straightforward reference showing usage of queries or functions.
-
-<br />
 
 ### [PlatformPythonGame](https://github.com/komidawi/Platform-Python-Game)
 
