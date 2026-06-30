@@ -106,6 +106,3 @@ Although it's not a project, this repository is a valuable source of knowledge s
 It was the first project I have ever made. Although it's mostly just modified tutorial code, I like it as it's memento of my start with the "real IT world" adventure.<br />
 
 **Technologies**: `Python`, `PyGame`, `tilemap`
-
-<br />
-<hr>
