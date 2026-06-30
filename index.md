@@ -1,8 +1,5 @@
 ---
-# the default layout is 'page'
-icon: fas fa-info-circle
 layout: default
-order: 1
 ---
 
 # Welcome, Dear Visitor!
