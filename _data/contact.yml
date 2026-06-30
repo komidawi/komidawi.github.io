@@ -10,15 +10,6 @@
   icon: "fas fa-envelope"
   noblank: true # open link in current tab
 
-- type: linkedin
-  icon: 'fab fa-linkedin'   # icons powered by <https://fontawesome.com/>
-  url: 'https://linkedin.com/in/dawidkomisarczuk/'                  # Fill with your Linkedin homepage
-
-  # Fill with your stackoverflow homepage
-- type: stack-overflow
-  icon: 'fab fa-stack-overflow'
-  url: 'https://stackoverflow.com/users/10699128/komidawi'
-
   #- type: rss
 #  icon: "fas fa-rss"
 #  noblank: true
@@ -28,3 +19,22 @@
 #   icon: 'fab fa-mastodon'   # icons powered by <https://fontawesome.com/>
 #   url:  ''                  # Fill with your Mastodon account page, rel="me" will be applied for verification
 #
+- type: linkedin
+  icon: 'fab fa-linkedin'   # icons powered by <https://fontawesome.com/>
+  url:  'https://linkedin.com/in/dawidkomisarczuk/'                  # Fill with your Linkedin homepage
+#
+- type: stack-overflow
+  icon: 'fab fa-stack-overflow'
+  url:  'https://stackoverflow.com/users/10699128/komidawi'                  # Fill with your stackoverflow homepage
+#
+# - type: bluesky
+#   icon: 'fa-brands fa-bluesky'
+#   url: ''                   # Fill with your Bluesky profile link
+#
+# - type: reddit
+#   icon: 'fa-brands fa-reddit'
+#   url: ''                   # Fill with your Reddit profile link
+#
+# - type: threads
+#   icon: 'fa-brands fa-threads'
+#   url: ''                   # Fill with your Threads profile link

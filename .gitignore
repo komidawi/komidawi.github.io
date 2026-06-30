@@ -5,6 +5,7 @@ Gemfile.lock
 
 # Jekyll cache
 .jekyll-cache
+.jekyll-metadata
 _site
 
 # RubyGems
@@ -143,6 +144,7 @@ build-iPhoneSimulator/
 ### VisualStudioCode ###
 .vscode/*
 !.vscode/settings.json
+!.vscode/extensions.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
@@ -160,3 +162,12 @@ build-iPhoneSimulator/
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/jekyll,ruby,visualstudiocode,git,linux
+
+# Misc
+_sass/vendors
+assets/js/dist
+
+# Hidden system files
+*~
+.DS_Store
+Thumbs.db
