@@ -31,7 +31,7 @@ title: Home
 
 ### Familiar with
 
-Technologies I know well (or at least have some commercial experience with):
+Technologies I know well (or at least have some experience with):
 
 <sub>Java, Kotlin, Spring Boot, Hibernate, JPA, Maven, Gradle, Groovy, Lombok, SQL, PostgreSQL, PL/pgSQL, MySQL, H2,
 MongoDB, Liquibase, Flyway, REST API, OpenAPI/Swagger, SOAP, JSON, XML, JWT, Kafka, Schema Registry, Jackson, TDD, BDD,
