@@ -1,0 +1,36 @@
+---
+---
+
+/* This section is taken from main theme repository file.
+If origin gets modified in future versions of theme, this section may require reflect it.
+`bundle show jekyll-theme-chirpy → assets/css/jekyll-theme-chirpy.scss` */
+@use 'abstracts/variables' with (
+  $theme: '{{ site.theme_mode }}'
+);
+
+/* prettier-ignore */
+@use 'main
+{%- if jekyll.environment == 'production' -%}
+  .bundle
+{%- endif -%}
+';
+
+/* append your custom style below */
+/* Brighter fonts in dark mode (+ an extra "more muted" tone for post meta). */
+:root[data-bs-theme='dark'] {
+  --text-color: rgb(216 216 216);
+  --text-muted-color: rgb(152 152 152);
+  --text-more-muted-color: rgb(134 134 134);
+  --site-title-color: rgb(146 146 146);
+  --sidebar-muted-color: rgb(142 142 142);
+}
+
+/* Brighter post tags (use full text color instead of the muted tone). */
+.post-tag {
+  color: var(--text-color);
+}
+
+/* More-muted post meta on the home list. */
+#post-list .post-preview .post-meta {
+  color: var(--text-more-muted-color) !important;
+}
