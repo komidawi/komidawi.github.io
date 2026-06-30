@@ -34,3 +34,27 @@ If origin gets modified in future versions of theme, this section may require re
 #post-list .post-preview .post-meta {
   color: var(--text-more-muted-color) !important;
 }
+
+/* Collapsible Disqus comments (see _includes/comments/disqus.html). */
+.comments-collapsible {
+  margin: 2.5rem 0 1rem;
+}
+
+.comments-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Chevron points up when the panel is open; the transition now actually applies. */
+.comments-toggle-icon {
+  transition: transform 0.2s ease;
+}
+
+.comments-toggle[aria-expanded='true'] .comments-toggle-icon {
+  transform: rotate(180deg);
+}
+
+.comments-panel {
+  margin-top: 1rem;
+}
