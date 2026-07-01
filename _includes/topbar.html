@@ -47,8 +47,8 @@ If origin gets modified in future versions of theme, this section may require re
     </button>
 
     <div id="topbar-title">
-      {% if page.layout == 'home' or page.url == '/' %}
-        {{- site.data.locales[include.lang].tabs.home | capitalize -}}
+      {% if page.layout == 'home' %}
+        {{- site.data.locales[include.lang].tabs.home | capitalize | default: site.title -}}
       {% elsif page.collection == 'tabs' or page.layout == 'page' %}
         {%- capture tab_key -%}{{ page.url | split: '/' }}{%- endcapture -%}
         {{- site.data.locales[include.lang].tabs[tab_key] | default: page.title -}}

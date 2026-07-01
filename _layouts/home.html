@@ -1,0 +1,9 @@
+---
+layout: default
+---
+
+<!-- The stock chirpy `home` layout renders an auto-generated post list and ignores
+`{{ content }}` entirely. This site's homepage is a custom About-style page, so this
+override just passes the content through, while still resolving as `page.layout == 'home'`
+for the rest of the theme (title tag, asset loading, sidebar/topbar highlighting, etc.). -->
+{{ content }}
