@@ -45,7 +45,17 @@ CI/CD, Bitbucket, JIRA, Confluence, Scrum/Agile, Angular, TypeScript, Android, P
 
 <br />
 
-## Featured blog posts
+## Blog posts
+
+### Advantages
+
+Comparing to other options of obtaining relevant information, this blog has some qualities:
+
+1. **Instant search** - page is statically compiled along with indexing. Just type a few letters and immediately search results will come up. Infinitely faster than regular web search or LLM inference.
+2. **Tailored information** - as posts were written during learning and/or practical experience, they contain relevant information useful in real daily work. I treat this as unofficial documentation for technologies.
+3. **Ready to use snippets** - handy especially when setting up new workstations, initializing projects or expanding scripts. For me it also acts as some kind of available everywhere backup.
+
+### Featured
 
 These are my most in-depth knowledge entries. <br />
 All content written manually to solidify understanding and remember it better.
@@ -59,6 +69,8 @@ All content written manually to solidify understanding and remember it better.
 - [Angular]({% post_url knowledge/frontend/2024-03-23-Angular %}) - components, directives, dependency injection, testing, patterns and hands-on snippets
 - [Cassandra]({% post_url knowledge/database/2024-03-30-Cassandra %}) - architecture, CQL, replication and consistency explained
 
+
+Posts use a consistent set of symbols to flag certain types of content - see the [legend](/legend/) page for the full list.
 <br />
 
 ## My Projects/Repositories
