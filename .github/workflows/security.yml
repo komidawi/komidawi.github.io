@@ -38,6 +38,24 @@ jobs:
       - name: zizmor
         uses: zizmorcore/zizmor-action@v0.1.0
 
+  # Checks the locked Ruby gems against known CVEs.
+  bundler-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.4
+          bundler-cache: true
+
+      - name: Audit Ruby dependencies
+        run: |
+          gem install bundler-audit
+          bundle-audit check --update
+
   # Scans the full git history for committed secrets.
   gitleaks:
     runs-on: ubuntu-latest

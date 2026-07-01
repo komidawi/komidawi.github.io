@@ -55,11 +55,6 @@ jobs:
           ruby-version: 3.4
           bundler-cache: true
 
-      - name: Audit Ruby dependencies
-        run: |
-          gem install bundler-audit
-          bundle-audit check --update
-
       - name: Build site
         run: bundle exec jekyll b -d "_site${{ steps.pages.outputs.base_path }}"
         env:
