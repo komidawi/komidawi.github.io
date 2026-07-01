@@ -8,3 +8,7 @@ updates:
     directory: "/"
     schedule:
       interval: weekly
+  - package-ecosystem: npm               # ESLint dev tooling
+    directory: "/"
+    schedule:
+      interval: weekly

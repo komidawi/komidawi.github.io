@@ -1,0 +1,53 @@
+name: "Security"
+on:
+  push:
+    branches:
+      - '**'
+    paths-ignore:
+      - .gitignore
+      - README.md
+      - LICENSE
+  workflow_dispatch:
+
+# Least privilege by default; jobs opt into more where needed.
+permissions:
+  contents: read
+
+jobs:
+  # Lints workflow files for bugs and shell-injection patterns.
+  actionlint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: actionlint
+        uses: raven-actions/actionlint@v2
+
+  # GitHub Actions security auditor (unpinned actions, injection, over-broad perms).
+  zizmor:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      security-events: write   # upload SARIF to code scanning
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: zizmor
+        uses: zizmorcore/zizmor-action@v0.1.0
+
+  # Scans the full git history for committed secrets.
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history so gitleaks can scan past commits
+
+      - name: gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
