@@ -33,7 +33,7 @@ jobs:
       security-events: write   # upload SARIF to code scanning
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: zizmor
         uses: zizmorcore/zizmor-action@v0.5.7

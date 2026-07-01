@@ -1,0 +1,47 @@
+name: "Scorecard"
+on:
+  # Re-run when branch protection rules change (a scored check).
+  branch_protection_rule:
+  # Weekly, plus on push to the default branch.
+  schedule:
+    - cron: "20 7 * * 1"
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+# Least privilege at the top; the job opts into what it needs.
+permissions: read-all
+
+jobs:
+  analysis:
+    name: Scorecard analysis
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write   # upload SARIF to code scanning
+      id-token: write          # publish results to the OpenSSF API
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Run analysis
+        uses: ossf/scorecard-action@v2.4.3
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          # Publishes the score to the public OpenSSF API (public repos only).
+          publish_results: true
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SARIF file
+          path: results.sarif
+          retention-days: 5
+
+      - name: Upload to code scanning
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif
