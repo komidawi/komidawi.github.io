@@ -34,6 +34,17 @@ jobs:
           # If using the 'assets' git submodule from Chirpy Starter, uncomment above
           # (See: https://github.com/cotes2020/chirpy-starter/tree/main/assets)
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Lint custom JavaScript
+        run: |
+          npm ci
+          npm run lint
+
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v6
@@ -43,6 +54,11 @@ jobs:
         with:
           ruby-version: 3.4
           bundler-cache: true
+
+      - name: Audit Ruby dependencies
+        run: |
+          gem install bundler-audit
+          bundle-audit check --update
 
       - name: Build site
         run: bundle exec jekyll b -d "_site${{ steps.pages.outputs.base_path }}"

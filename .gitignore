@@ -13,7 +13,7 @@ _site
 
 # NPM dependencies
 node_modules
-package-lock.json
+# package-lock.json is committed so CI `npm ci` gets reproducible installs
 
 # IDE configurations
 .idea

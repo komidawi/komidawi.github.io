@@ -1,0 +1,15 @@
+{
+  "name": "komidawi-blog-scripts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lint tooling for the blog's hand-written JavaScript (assets/js).",
+  "scripts": {
+    "lint": "eslint assets/js"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.18.0",
+    "eslint": "^9.18.0",
+    "eslint-plugin-no-unsanitized": "^4.1.2",
+    "globals": "^15.14.0"
+  }
+}
