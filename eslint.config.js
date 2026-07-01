@@ -2,13 +2,14 @@
 
 const js = require('@eslint/js');
 const nounsanitized = require('eslint-plugin-no-unsanitized');
+const security = require('eslint-plugin-security');
 const globals = require('globals');
 
 module.exports = [
   js.configs.recommended,
   {
     files: ['assets/js/**/*.js'],
-    plugins: { 'no-unsanitized': nounsanitized },
+    plugins: { 'no-unsanitized': nounsanitized, security },
     languageOptions: {
       ecmaVersion: 2021,
       sourceType: 'script',
@@ -20,6 +21,8 @@ module.exports = [
       },
     },
     rules: {
+      // Broader Node-style security checks (unsafe regex, eval-with-expression, etc.).
+      ...security.configs.recommended.rules,
       // DOM-based XSS guards: flag innerHTML/insertAdjacentHTML/document.write
       // and similar sinks when fed anything other than a constant string.
       'no-unsanitized/property': 'error',
