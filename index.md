@@ -82,7 +82,12 @@ Posts use a consistent set of symbols to flag certain types of content - see the
 **System for optimizing seat allocation on trains**<br />
 _Bachelor of Science Thesis Project, AGH, 2021_
 
-This is so far the biggest non-commercial project I've taken part in. It is a configurable system to optimize seat allocation on passenger trains - a use case example would be passenger seating restrictions associated with the COVID-19 pandemic. Another important functionality is optimization of the seat assignment process for efficient use of logistical resources and increased passenger comfort.<br />
+A configurable system that addresses real-world limitations of ticketing platforms.\
+It enables unavailable end-to-end journeys to be split into bookable combinations of sub-tickets.\
+Instead of receiving an uncomfortable standing ticket (especially while actually there _are_ empty seats),\
+a passenger can now be assigned to multiple seats throughout a journey.\
+This approach improves comfort and maximizes seat utilization at any given time.
+<br />
 
 **Technologies**: `Kotlin`, `Ktor`, `Ktor-OpenAPI-Generator`, `Kotest`, `Mockk`, `JWT`, `RAPTOR`, `Jackson`, `Gradle`
 
