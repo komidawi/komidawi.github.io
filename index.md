@@ -75,6 +75,13 @@ Posts use a consistent set of symbols to flag certain types of content - see the
 
 ## My Projects/Repositories
 
+> Note: While these projects are several years old and may _seem_ less relevant today, I still consider them valuable.\
+> They reflect my earlier focus on (just) writing high-quality code.\
+> Over time, however, through professional experience in Software Engineering, 
+> my role shifted from sheer coding to system integration and architecture.
+> The scope also grew - from monolithic apps to complex microservice ecosystems.\
+> As a result, instead of writing `code`, I now focus on writing `texts` on this blog.
+
 ## Bigger ones
 
 ### [AGH.Train-thesis-project](https://gitlab.com/komidawi/Agh-Train)
