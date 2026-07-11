@@ -88,10 +88,13 @@ This is so far the biggest non-commercial project I've taken part in. It is a co
 
 ### [PizzaCostCalculator](https://github.com/komidawi/PizzaCostCalculator)
 
-**Handy Android app which helps to make an optimal decision when choosing pizza size and shape.**<br />
+**Handy Android app to help make an optimal decision when choosing pizza size.**<br />
 
-Project focused on high code quality and proper coding and Android architecture practices. Much code written with TDD, high coverage levels. Unit tests, integration tests, e2e tests. CI/CD made with Bitrise. SonarQube and CodeCov for metrics.<br />
-I wanted this project be the one without any deadlines. It was supposed to answer the question: "If I had unlimited amount of time, how would the code look like then?"<br />
+Allows to calculate pizza price/area ratio (also including delivery costs).\
+Project focused on high quality and proper Android architecture practices.\
+Most code written using TDD, high coverage levels. Unit tests, integration tests, e2e tests.\
+CI/CD made with Bitrise. SonarQube and CodeCov for metrics.\
+Functionality is just a background of this project, yet still working and helpful.
 
 **Technologies**: `Kotlin`, `Room`, `JUnit`, `Mockito`, `Espresso`, `Gradle`, `Bitrise`, `SonarQube`, `CodeCov`
 
