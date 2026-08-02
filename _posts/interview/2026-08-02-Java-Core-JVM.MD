@@ -58,11 +58,11 @@ Think of `volatile` as a **memory-visibility tool**, **not a lock**. The JVM and
 class ConfigHolder {
     private volatile Config config;
 
-    void reload(Config newConfig) {
+    void setConfig(Config newConfig) {
         config = newConfig;
     }
 
-    Config current() {
+    Config getConfig() {
         return config;
     }
 }
