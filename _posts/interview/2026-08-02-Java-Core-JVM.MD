@@ -8,15 +8,14 @@ tags: [ java, jvm ] # TAG names should always be lowercase
 
 <!-- @formatter:off -->
 
-> Note: This article contains mainly LLM generated content, but only such that has been human reviewed. Nonetheless, it is still possible that something wasn't caught or simply I made a mistake. If you see anything wrong or missing the point, please let me know in the comments.
+> Note: This article contains mainly LLM generated content, but only such that has been human reviewed. 
+> Nonetheless, it is still possible that something wasn't caught or simply I made a mistake. 
+> If you see anything wrong or missing the point, please let me know in the comments.
 {: .prompt-info }
 
-> This article has multiple issues. Please help improve it or discuss these issues in the comments.  
-> ⚠️ `hashCode()` does not always require overriding `equals()`  
-> ⚠️ `volatile` can be an alternative to locking for visibility-only designs  
-> ℹ️ `volatile` is not limited to one writer  
-> ℹ️ Double-checked locking needs specific conditions  
-> ℹ️ JPA entities and repositories have distinct roles  
+> This article may contain some simplifications (maybe even oversimplifications).
+> Treat it like a cheat sheet with important information, not an exhaustive research paper
+> with all nuances and edge cases.
 {: .prompt-warning }
 
 ## Fundamentals
@@ -66,6 +65,28 @@ tags: [ java, jvm ] # TAG names should always be lowercase
   - Example: a base class `A` compares only an `id`, while a subclass `B` adds more fields, and then `a.equals(b)` differs from `b.equals(a)`
 - In JPA/Hibernate entities, using a generated database ID in `hashCode()` before persistence can be dangerous
   - if the ID is `null` when the entity enters a hash-based collection and becomes non-null later - this way the hash code changes after insertion
+
+### `ArrayList` vs `LinkedList`
+
+#### What's the difference between ArrayList and LinkedList
+
+`ArrayList<E>` stores elements in a resizable contiguous array
+
+`LinkedList<E>` stores nodes connected by `next`/`previous` references.
+
+| Operation                                  | `ArrayList<E>`   | `LinkedList<E>`                      |
+|--------------------------------------------|------------------|--------------------------------------|
+| `get(index)`                               | $O(1)$           | $O(n)$                               |
+| Append `add(value)`                        | Amortized $O(1)$ | $O(1)$                               |
+| Insert/remove at index                     | $O(n)$ shifting  | $O(n)$ traversal, then $O(1)$ relink |
+| Insert/remove via iterator already at node | $O(n)$ shifting  | $O(1)$                               |
+| Memory/cache efficiency                    | High             | Low                                  |
+
+`ArrayList<E>` is backed by an `Object[]`: indexing is cheap because the JVM computes the array offset directly. 
+Its cost appears when capacity grows or when inserting/removing in the middle, because remaining elements must be copied.
+
+`LinkedList<E>` is a doubly linked list: each element is wrapped in a node holding the item plus two references. 
+It avoids array shifting after you reach a position, but reaching an arbitrary index still requires walking node-by-node.
 
 ## Concurrency
 

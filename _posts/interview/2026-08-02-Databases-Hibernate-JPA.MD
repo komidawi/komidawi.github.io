@@ -13,12 +13,9 @@ tags: [ databases, hibernate, jpa, java ] # TAG names should always be lowercase
 > If you see anything wrong or missing the point, please let me know in the comments.
 {: .prompt-info }
 
-> This article has multiple issues. Please help improve it or discuss these issues in the comments.  
-> ⚠️ WARNING — MVCC snapshot scope is stated too broadly  
-> ⚠️ WARNING — “Later readers” do not always see the new version  
-> ⚠️ WARNING — Application validation alone does not guarantee consistency  
-> ℹ️ INFO — Isolation wording can name the specific anomalies controlled  
-> ℹ️ INFO — MVCC is not the only PostgreSQL isolation mechanism  
+> This article may contain some simplifications (maybe even oversimplifications).
+> Treat it like a cheat sheet with important information, not an exhaustive research paper
+> with all nuances and edge cases.
 {: .prompt-warning }
 
 ## General
