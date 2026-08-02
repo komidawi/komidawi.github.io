@@ -13,12 +13,13 @@ tags: [ databases, hibernate, jpa, java ] # TAG names should always be lowercase
 > If you see anything wrong or missing the point, please let me know in the comments.
 {: .prompt-info }
 
-> This article has multiple issues. Please help improve it or discuss these issues in the comments.
-> ⚠️ WARNING — MVCC snapshot scope is stated too broadly
-> ⚠️ WARNING — “Later readers” do not always see the new version
-> ⚠️ WARNING — Application validation alone does not guarantee consistency
+> This article has multiple issues. Please help improve it or discuss these issues in the comments.  
+> ⚠️ WARNING — MVCC snapshot scope is stated too broadly  
+> ⚠️ WARNING — “Later readers” do not always see the new version  
+> ⚠️ WARNING — Application validation alone does not guarantee consistency  
+> ℹ️ INFO — Isolation wording can name the specific anomalies controlled  
+> ℹ️ INFO — MVCC is not the only PostgreSQL isolation mechanism  
 {: .prompt-warning }
-
 
 ## General
 
@@ -80,7 +81,7 @@ PostgreSQL relies on write-ahead logging (WAL): its recovery process can redo co
 while MVCC is primarily about concurrent visibility rather than durability.
 
 [^durability]: Under a database’s fully durable commit mode, once COMMIT successfully returns, 
-the committed transaction must be recoverable after a crash or power loss. 
-Modes such as delayed/asynchronous durability may acknowledge the commit before it is durable.
+    the committed transaction must be recoverable after a crash or power loss. 
+    Modes such as delayed/asynchronous durability may acknowledge the commit before it is durable.
 
 <!-- @formatter:on -->
