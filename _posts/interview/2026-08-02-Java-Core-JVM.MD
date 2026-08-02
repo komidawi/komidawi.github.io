@@ -20,16 +20,14 @@ tags: [ java, jvm ] # TAG names should always be lowercase
 
 
 - IF `x.equals(y)` → THEN MUST `x.hashCode() == y.hashCode()`
-- IF `@Override` `equals()` → THEN MUST `@Override` `hashCode()`
-
 
 - Collections first use `hashCode()` to choose a bucket and then `equals()` to find exact match
-- Equal objects must have the same `hashCode()` and both methods should use the same **immutable identity fields**, otherwise hash-based collections may not work properly
+- Equal objects must have the same `hashCode()` and both methods should use fields that remain unchanged when using hash-related collections - good idea is to use the same **immutable identity fields**[^hashcode]
+- If you `@Override` `equals()` then you should also `@Override` `hashCode()` (and vice versa)
 
 #### `hashCode()`
 
 - used in hash-based collections like `HashMap`, `HashSet`
-- should be deterministic
 - may collide
   - especially if bad implementation → decreased performance
 - if not overridden along with `equals()` 
@@ -97,11 +95,11 @@ is guaranteed to see `data == 42` after it sees `ready == true`.
 
 Use `volatile` when one thread writes, other threads read, and you only need a simple signal or state flag. 
 
-Typical examples are `initialized`, or a shutdown flag in a worker loop. A volatile write by one thread happens before a later volatile read of the same variable by another thread, so the reader sees the latest value and the memory effects before that write.
+Typical examples are `initialized`, or a shutdown flag in a worker loop. A volatile write by one thread happens before a later volatile read of the same variable by another thread, so the reader sees the value and the memory effects before that write.
 
 Be aware that `volatile` is weaker than `synchronized`, it's not an alternative.  
 It gives **visibility** and **ordering**, but **not mutual exclusion** and **not atomicity**.  
-So it is good for a boolean flag, but bad for counters, lazy initialization with multiple steps, or any `read-modify-write` sequence.
+So it is good for a boolean flag, but bad for counters, lazy initialization with multiple steps (but valid for double-checked locking), or any `read-modify-write` sequence.
 
 Think of `volatile` as a **memory-visibility tool**, **not a lock**. The JVM and CPU may cache values or reorder instructions for performance, but a write to a `volatile` variable happens before subsequent reads of that same variable.
 
@@ -158,5 +156,9 @@ In a typical Spring Boot app:
 - `@Repository` / JPA entities – persistence details
 - `@RestController` – handles HTTP, status codes, mapping
 - Aspects/filters – logging, auth, metric
+
+## Footnotes
+
+[^hashcode]: Actually, `hashCode()` may use a subset of equality fields. It must not use a field that can differ for objects considered equal by `equals()`, but it may use the same fields as `equals()` or a subset of them.
 
 <!-- @formatter:on -->
