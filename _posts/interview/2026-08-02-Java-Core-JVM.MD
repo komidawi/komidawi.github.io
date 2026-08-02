@@ -2,6 +2,7 @@
 title: "[Interview] Java Core and JVM"
 description: Interview questions and answers about Java language and JVM details
 date: 2026-08-02 00:00:00 +0100
+math: true
 categories: [ interview ]
 tags: [ java, jvm ] # TAG names should always be lowercase
 ---
@@ -74,13 +75,13 @@ tags: [ java, jvm ] # TAG names should always be lowercase
 
 `LinkedList<E>` stores nodes connected by `next`/`previous` references.
 
-| Operation                                  | `ArrayList<E>`   | `LinkedList<E>`                      |
-|--------------------------------------------|------------------|--------------------------------------|
-| `get(index)`                               | $O(1)$           | $O(n)$                               |
-| Append `add(value)`                        | Amortized $O(1)$ | $O(1)$                               |
-| Insert/remove at index                     | $O(n)$ shifting  | $O(n)$ traversal, then $O(1)$ relink |
-| Insert/remove via iterator already at node | $O(n)$ shifting  | $O(1)$                               |
-| Memory/cache efficiency                    | High             | Low                                  |
+| Operation                                  | `ArrayList<E>`     | `LinkedList<E>`                          |
+|--------------------------------------------|--------------------|------------------------------------------|
+| `get(index)`                               | $$O(1)$$           | $$O(n)$$                                 |
+| Append `add(value)`                        | Amortized $$O(1)$$ | $$O(1)$$                                 |
+| Insert/remove at index                     | $$O(n)$$ shifting  | $$O(n)$$ traversal, then $$O(1)$$ relink |
+| Insert/remove via iterator already at node | $$O(n)$$ shifting  | $$O(1)$$                                 |
+| Memory/cache efficiency                    | High               | Low                                      |
 
 `ArrayList<E>` is backed by an `Object[]`: indexing is cheap because the JVM computes the array offset directly. 
 Its cost appears when capacity grows or when inserting/removing in the middle, because remaining elements must be copied.

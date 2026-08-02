@@ -1,7 +1,7 @@
 ---
 title: "[Interview] Microservices and distributed systems"
 description: Interview questions and answers about microservices and distributed systems.
-date: 2026-08-02 23:00:00 +0100
+date: 2026-08-02 20:00:00 +0100
 categories: [ interview ]
 tags: [ microservices, integration, api ] # TAG names should always be lowercase
 ---

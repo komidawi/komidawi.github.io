@@ -1,7 +1,7 @@
 ---
 title: "[Interview] REST API, API design, integrations "
 description: Interview questions and answers about REST API, API design and integrations..
-date: 2026-08-02 23:00:00 +0100
+date: 2026-08-02 21:00:00 +0100
 categories: [ interview ]
 tags: [ api, restapi, integration] # TAG names should always be lowercase
 ---
