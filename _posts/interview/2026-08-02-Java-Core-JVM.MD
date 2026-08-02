@@ -1,6 +1,6 @@
 ---
 title: "[Interview] Java Core and JVM"
-description: TODO.
+description: Interview questions and answers about Java language and JVM details
 date: 2026-08-02 00:00:00 +0100
 categories: [ interview ]
 tags: [ java, jvm ] # TAG names should always be lowercase
@@ -16,7 +16,7 @@ tags: [ java, jvm ] # TAG names should always be lowercase
 ### ⭐ `equals()` and `hashCode()`
 
 - `equals()` defines **logical** equality
-- `hashCode()` gives bucket-friendly integer (used e.g. by hash-based collections))
+- `hashCode()` returns an `int` used by hash-based collections
 
 
 - IF `x.equals(y)` → THEN MUST `x.hashCode() == y.hashCode()`
@@ -24,7 +24,7 @@ tags: [ java, jvm ] # TAG names should always be lowercase
 
 
 - Collections first use `hashCode()` to choose a bucket and then `equals()` to find exact match
-- Equal objects must have the same `hashCode()` and both methods should use the same **immutable identity fields**, otherwise hash-based collections will not work properly
+- Equal objects must have the same `hashCode()` and both methods should use the same **immutable identity fields**, otherwise hash-based collections may not work properly
 
 #### `hashCode()`
 
@@ -37,7 +37,7 @@ tags: [ java, jvm ] # TAG names should always be lowercase
 
 #### `equals()`
 
-- returns `true`/`false` or `null`
+- returns `true`/`false`
 - bad implementation can break correctness
   - → by allowing duplicates, failed lookups, failed removals, inconsistent key replacement
 
@@ -67,11 +67,14 @@ tags: [ java, jvm ] # TAG names should always be lowercase
 
 #### Basic
 
-`volatile` means: updates to that field are **visible** to other threads **immediately**.
+`volatile` ensures that a write to the field is visible to another thread that subsequently reads that same field.   
+It provides a happens-before relationship, not a real-time “immediate” delivery guarantee.
 
-`volatile` creates a kind of memory barrier:
-- **Before** a `volatile` **write** → **earlier writes** in that thread must stay **before** it.
-- **After** a `volatile` **read** → **later reads/writes** in that thread must stay **after** it.
+- `volatile` **read** → prevents later reads/writes from being reordered **before** that read. 
+- `volatile` **write** → prevents earlier reads/writes from being reordered **after** that write.
+- 
+- **Before** a `volatile` **write** → **earlier writes** in that thread are ordered **before** it.
+- **After** a `volatile` **read** → **later reads/writes** in that thread are ordered **after** it.
 
 If you do:
 
@@ -96,7 +99,7 @@ Use `volatile` when one thread writes, other threads read, and you only need a s
 
 Typical examples are `initialized`, or a shutdown flag in a worker loop. A volatile write by one thread happens before a later volatile read of the same variable by another thread, so the reader sees the latest value and the memory effects before that write.
 
-Be aware that `volatile` is weaker than `synchronized`, not it's alternative.  
+Be aware that `volatile` is weaker than `synchronized`, it's not an alternative.  
 It gives **visibility** and **ordering**, but **not mutual exclusion** and **not atomicity**.  
 So it is good for a boolean flag, but bad for counters, lazy initialization with multiple steps, or any `read-modify-write` sequence.
 
@@ -106,15 +109,15 @@ Think of `volatile` as a **memory-visibility tool**, **not a lock**. The JVM and
 #### Example
 
 ```java
-class ConfigHolder {
-    private volatile Config config;
+class Class {
+    private volatile Object object;
 
-    void setConfig(Config newConfig) {
-        config = newConfig;
+    void setObject(Object newObject) {
+        object = newObject;
     }
 
-    Config getConfig() {
-        return config;
+    Object getObject() {
+        return object;
     }
 }
 ```
