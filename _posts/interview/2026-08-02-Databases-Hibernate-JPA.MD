@@ -72,13 +72,30 @@ while later readers see the new committed version.
 
 #### Durability
 
-Durability means success reported after `COMMIT` remains recoverable after a database crash.[^durability]
+Durability means success reported after `COMMIT` remains recoverable after a database crash.
 
 PostgreSQL relies on write-ahead logging (WAL): its recovery process can redo committed changes from the log, 
 while MVCC is primarily about concurrent visibility rather than durability.
 
-[^durability]: Under a database’s fully durable commit mode, once COMMIT successfully returns, 
-    the committed transaction must be recoverable after a crash or power loss. 
-    Modes such as delayed/asynchronous durability may acknowledge the commit before it is durable.
+### Pessimistic Locking
+
+`Pessimistic locking` means you lock a row or resource **before** updating it, 
+so other transactions cannot acquire conflicting locks or perform conflicting modifications until the lock is released.
+
+This is useful for things like balances, inventory, reservations, or any workflow where two writers must not race.
+
+#### Standard
+
+In practice, this is a database concurrency strategy that favors **preventing** conflicts over detecting them later.
+
+In JPA, it commonly appears as `LockModeType` of `PESSIMISTIC_READ`, `PESSIMISTIC_WRITE`, or `PESSIMISTIC_FORCE_INCREMENT`
+to hold a lock until the transaction commits or rolls back.\
+A common SQL equivalent is `SELECT ... FOR UPDATE` for exclusive locking.
+
+#### Advanced
+
+The main tradeoff is **simplicity vs throughput**: pessimistic locking reduces lost updates, but it also increases blocking, 
+lock wait time, and deadlock risk. It is usually a better fit when contention is high or when a failed retry would be costly, 
+while optimistic locking is often better when conflicts are rare.
 
 <!-- @formatter:on -->
