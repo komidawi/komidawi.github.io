@@ -125,4 +125,35 @@ class ConfigHolder {
 
 If you need atomic increments, use `AtomicInteger`, `LongAdder`, or locking depending on the use case.
 
+## OOP and Code Design
+
+### Coupling, cohesion, separation of concerns, and modularity
+
+- **Coupling** → how much one module/class knows about or depends on another.
+- **Cohesion** → how closely related the responsibilities inside a single module/class are.
+- **Separation of concerns (SoC)** → splitting the system that each part handles one kind of responsibility.
+- **Modularity** → structuring the system as distinct, replaceable modules with clear boundaries and interfaces.
+
+
+#### Cohesion
+
+- **Cohesion** is about how focused a single module/class is.
+- **Low cohesion**: a class does many unrelated things (logging, DB access, HTTP calls, business rules, formatting).
+
+#### Separation of Concerns
+
+Different kinds of responsibilities should live in different parts of the system:
+
+- **Business logic** (rules, calculations, invariants)
+- **Persistence** (DB schema, queries, ORM mappings)
+- **Presentation / API** (HTTP endpoints, request/response mapping)
+- **Cross-cutting** (logging, metrics, security, transactions)
+
+In a typical Spring Boot app:
+
+- `@Service` – business rules
+- `@Repository` / JPA entities – persistence details
+- `@RestController` – handles HTTP, status codes, mapping
+- Aspects/filters – logging, auth, metric
+
 <!-- @formatter:on -->
