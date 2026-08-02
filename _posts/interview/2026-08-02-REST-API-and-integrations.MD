@@ -1,0 +1,102 @@
+---
+title: "[Interview] REST API, API design, integrations "
+description: Interview questions and answers about REST API, API design and integrations..
+date: 2026-08-02 23:00:00 +0100
+categories: [ interview ]
+tags: [ api, restapi, integration] # TAG names should always be lowercase
+---
+
+<!-- @formatter:off -->
+
+> Note: This article contains mainly LLM generated content, but only such that has been human reviewed. 
+> Nonetheless, it is still possible that something wasn't caught or simply I made a mistake. 
+> If you see anything wrong or missing the point, please let me know in the comments.
+{: .prompt-info }
+
+> This article may contain some simplifications (maybe even oversimplifications).
+> Treat it like a cheat sheet with important information, not an exhaustive research paper
+> with all nuances and edge cases.
+{: .prompt-warning }
+
+## Basics
+
+### HTTP Status Codes
+
+#### 1xx Informational
+
+- `100 Continue` → Client may continue sending the request body because the server indicated it is ready to receive it.
+- `101 Switching Protocols` → Server agrees to switch to a different protocol requested by the client, such as `WebSocket`.
+- `102 Processing` → Server has accepted the request and is still processing it, with no final response yet.
+- `103 Early Hints` → Server sends preliminary headers so the client can start loading resources before the final response arrives.
+
+#### 2xx Success
+
+- `200 OK` → Request succeeded and the server returned the response.
+- `201 Created` → Request succeeded and created a new resource.
+- `202 Accepted` → Request was accepted for processing, but the processing has not finished yet.
+- `203 Non-Authoritative Information` → Request succeeded, but returned metadata was modified or came from a non-origin source.
+- `204 No Content` → Request succeeded and there is no response body to return.
+- `205 Reset Content` → Request succeeded and the client should reset the current document view, such as clearing a form.
+- `206 Partial Content` → Server is returning only the part of the resource requested via a range request.
+- `207 Multi-Status` → Response contains separate status results for multiple resources or operations, mainly in `WebDAV`.
+- `208 Already Reported` → Response indicates that members of a `DAV` binding were already listed earlier in the same response.
+- `226 IM Used` → Server fulfilled the request using instance manipulations such as delta encoding.
+
+#### 3xx Redirection
+
+- `300 Multiple Choices` → Resource has multiple possible representations or endpoints.
+- `301 Moved Permanently` → Resource has been assigned a new permanent URI, normally provided in the `Location` header; clients may redirect to it.
+- `302 Found` → Resource is temporarily available at a different URI.
+- `303 See Other` → Server directs the client to another URI, usually in `Location`, where it may perform `GET` or `HEAD` to obtain a representation.
+- `304 Not Modified` → Cached resource is still valid, so the client should reuse its stored copy.
+- `305 Use Proxy` → Requested resource must be accessed through a proxy, though this status is deprecated.
+- `306 (Unused)` → Status code is reserved and no longer used.
+- `307 Temporary Redirect` → Resource is temporarily at another URI, and the client must preserve the original HTTP method.
+- `308 Permanent Redirect` → Resource has permanently moved to another URI, and the client must preserve the original HTTP method.
+
+#### 4xx Client Errors
+
+- `400 Bad Request` → Server cannot process the request because it is malformed or invalid.
+- `401 Unauthorized` → Request requires authentication or the provided authentication failed.
+- `402 Payment Required` → Status is reserved for future use, originally intended for payment-related flows.
+- `403 Forbidden` → Server understood the request but refuses to authorize it.
+- `404 Not Found` → Requested resource does not exist on the server (or server is unwilling to disclose that one exists).
+- `405 Method Not Allowed` → HTTP method used is not allowed for the target resource, respond with `Allow` header listing supported methods.
+- `406 Not Acceptable` → Server cannot produce a response matching the client's `Accept` headers.
+- `407 Proxy Authentication Required` → Client must authenticate with the proxy before the request can proceed.
+- `408 Request Timeout` → Server timed out while waiting for the client's request.
+- `409 Conflict` → Request conflicts with the current state of the target resource.
+- `410 Gone` → Resource was intentionally removed and is no longer available.
+- `411 Length Required` → Server requires a `Content-Length` header and did not receive one.
+- `412 Precondition Failed` → One or more request preconditions in headers evaluated to false.
+- `413 Payload Too Large` → Request body is larger than the server is willing or able to process.
+- `414 URI Too Long` → Request URI is longer than the server is willing to interpret.
+- `415 Unsupported Media Type` → Server does not support the request payload format.
+- `416 Range Not Satisfiable` → Requested byte range cannot be fulfilled for the target resource.
+- `417 Expectation Failed` → Server cannot meet the requirements of the `Expect` header.
+- `418 I'm a Teapot` → Joke status code indicating the server refuses to brew coffee because it is a teapot.
+- `421 Misdirected Request` → Request was sent to a server that cannot produce a response for the target resource.
+- `422 Unprocessable Entity` → Server understood the request syntax but could not process its semantic content.
+- `423 Locked` → Target resource is locked, mainly in `WebDAV`.
+- `424 Failed Dependency` → The method could not be performed because it depended on another action that failed (like a request).
+- `425 Too Early` → Server is unwilling to process a request that might be replayed.
+- `426 Upgrade Required` → Client must switch to a different protocol to complete the request.
+- `428 Precondition Required` → Server requires the request to be conditional, often to prevent lost updates.
+- `429 Too Many Requests` → Client sent too many requests in a given amount of time.
+- `431 Request Header Fields Too Large` → Server refuses the request because header fields are too large.
+- `451 Unavailable For Legal Reasons` → Resource is unavailable due to legal restrictions or takedown demands.
+
+#### 5xx Server Errors
+
+- `500 Internal Server Error` → Server encountered an unexpected condition and could not complete the request.
+- `501 Not Implemented` → Server does not support the functionality required to fulfill the request.
+- `502 Bad Gateway` → Server acting as a gateway received an invalid response from an upstream server.
+- `503 Service Unavailable` → Server is temporarily unable to handle the request, often due to overload or maintenance.
+- `504 Gateway Timeout` → Server acting as a gateway did not receive a timely response from an upstream server.
+- `505 HTTP Version Not Supported` → Server does not support the HTTP version used in the request.
+- `506 Variant Also Negotiates` → Server found a configuration problem in content negotiation that caused a circular reference.
+- `507 Insufficient Storage` → Server cannot store the representation needed to complete the request.
+- `508 Loop Detected` → Server detected an infinite loop while processing the request, mainly in `WebDAV`.
+- `510 Not Extended` → (Obsolete) Historically indicated that the request needed a mandatory HTTP extension unsupported or not declared by the client.
+- `511 Network Authentication Required` → Client must authenticate to gain network access, such as through a captive portal.
+
