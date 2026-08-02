@@ -100,3 +100,51 @@ tags: [ api, restapi, integration] # TAG names should always be lowercase
 - `510 Not Extended` → (Obsolete) Historically indicated that the request needed a mandatory HTTP extension unsupported or not declared by the client.
 - `511 Network Authentication Required` → Client must authenticate to gain network access, such as through a captive portal.
 
+### REST API Good Practices
+
+- Use **resource-oriented** URLs → **nouns**, not verbs
+  - `/users/123/orders`, not `/getUserOrders`.
+- Keep HTTP methods semantic
+  - `GET` for read, `POST` for create, `PUT/PATCH` for update, `DELETE` for remove.
+- Return correct status codes 
+  - e.g.: `200`, `201`, `204`, `400`, `401`, `403`, `404`, `409`, `422`, `500`.
+- Design stateless endpoints 
+  - every request should contain everything needed to process it.
+- Use consistent request/response schemas
+  - with predictable field names, types, and nesting.
+- Support pagination, filtering, sorting, and searching for list endpoints.
+- Validate input strictly
+  - reject bad data early with clear error messages.
+- Make error responses machine-readable and stable.
+- Version APIs carefully when breaking changes are unavoidable.
+- Secure by default
+  - authentication, authorization, rate limiting, HTTPS, least privilege.
+- Document with OpenAPI/Swagger
+  - so consumers can integrate safely.
+- Make idempotency explicit for operations that may be retried.
+- Think about observability
+  - logs, metrics, trace IDs, and auditability.
+
+#### Practical checklist
+
+- **Resources** are named as nouns.
+- **HTTP method** matches intent.
+- **Status codes** are accurate.
+- **Error format** is consistent.
+- **Pagination** is defined.
+- **Auth** is required where needed.
+- **Input** is validated server-side.
+- **Backward compatibility** is preserved.
+- **Contracts** are documented.
+- **Timeouts and retries** are considered.
+
+#### Common Pitfalls
+
+- Using `POST` for everything.
+- Returning `200` for failures.
+- Leaking internal stack traces to clients.
+- Changing schema in a breaking manner without versioning.
+- Creating endpoints that do too many things.
+- Ignoring idempotency for retries.
+- Missing pagination on large collections.
+
