@@ -11,6 +11,6 @@
     "eslint": "^10.6.0",
     "eslint-plugin-no-unsanitized": "^4.1.2",
     "eslint-plugin-security": "^4.0.1",
-    "globals": "^17.7.0"
+    "globals": "^17.9.0"
   }
 }
