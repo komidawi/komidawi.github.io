@@ -141,6 +141,16 @@ tags: [ api, restapi, integration] # TAG names should always be lowercase
 - Ignoring idempotency for retries.
 - Missing pagination on large collections.
 
+### HTTP 1 vs 2 vs 3
+
+- `HTTP/1.1` is old text-based single request protocol
+- `HTTP/2` adds binary framing, multiplexing, `HPACK` header compression and prioritization to fix
+many `HTTP/1.1` performance problems
+- `HTTP/3` keeps HTTP semantics but moves transport to `QUIC`/`UDP`, uses `QPACK` and `QUIC` features
+(`0-RTT`, connection migration) and removes `TCP` head-of-line blocking while adding
+new operational and security tradeoffs.
+
+
 ## Authentication and Authorization
 
 ### JWT
