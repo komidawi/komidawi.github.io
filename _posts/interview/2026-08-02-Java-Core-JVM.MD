@@ -180,4 +180,33 @@ In a typical Spring Boot app:
 - `@RestController` – handles HTTP, status codes, mapping
 - Aspects/filters – logging, auth, metric
 
+
+### AOP (Aspect-Oriented Programming)
+
+AOP (Aspect-Oriented Programming) is a paradigm that isolates cross-cutting concerns
+(logging, transactions, security, metrics) into reusable modules called _aspects_,
+so core business code stays focused and uncluttered.
+
+Key concepts are:
+- **Aspect** (module of cross-cutting behavior)
+- **Join point** (place in execution like a method call)
+- **Pointcut** (expression that selects join points)
+- **Advice** (code run at a join point: before/after/around)
+- **Weaving** (applying advice to code)
+
+In Java ecosystems the usual implementation are Spring AOP (proxy-based, runtime, integrates with Spring IoC)
+and AspectJ (full language weaving with compile/load-time options)
+
+Typical uses:
+- declarative transactions
+- centralized logging/tracing
+- security checks
+- metrics
+- retry/backoff
+- feature toggles
+
+AOP may support SRP by moving cross-cutting code out of domain classes.
+
+
+
 <!-- @formatter:on -->
