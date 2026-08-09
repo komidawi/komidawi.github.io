@@ -1,22 +1,15 @@
 ---
-title: "[Interview] REST API, API design, integrations "
+title: "Draft: [Interview] REST API, API design, integrations "
 description: Interview questions and answers about REST API, API design and integrations..
-date: 2026-08-02 21:00:00 +0100
+date: 2026-08-04 21:00:00 +0100
 categories: [ interview ]
 tags: [ api, restapi, integration] # TAG names should always be lowercase
 ---
 
 <!-- @formatter:off -->
 
-> Note: This article contains mainly LLM generated content, but only such that has been human reviewed. 
-> Nonetheless, it is still possible that something wasn't caught or simply I made a mistake. 
-> If you see anything wrong or missing the point, please let me know in the comments.
-{: .prompt-info }
-
-> This article may contain some simplifications (maybe even oversimplifications).
-> Treat it like a cheat sheet with important information, not an exhaustive research paper
-> with all nuances and edge cases.
-{: .prompt-warning }
+> This article is an unreviewed draft and may contain incorrect information.
+{: .prompt-danger }
 
 ## Basics
 
