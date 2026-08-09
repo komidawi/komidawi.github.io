@@ -141,3 +141,21 @@ tags: [ api, restapi, integration] # TAG names should always be lowercase
 - Ignoring idempotency for retries.
 - Missing pagination on large collections.
 
+## Authentication and Authorization
+
+### JWT
+
+- `JWT` (JSON Web Token) is a compact, signed token format used to transmit claims (like user identity and roles) 
+between parties, most often for stateless authentication in APIs and Web Apps.
+- `JWT` is a string with three `base64url` dot-separated parts: `header.payload.signature`
+- It is digitally signed (`HMAC` or `RSA`/`ECDSA`), so you can verify integrity and authenticity without
+storing session state server-side.
+- It typically represents "who the user is" and "what is allowed to do" and is sent on each request
+  (e.g. in `Authorization: Bearer <token>`)
+
+**Structure:**
+
+- `header`: token type (`typ: "JWT"`) and signing algorithm (`alg: "HS256"`, `RS256`, etc.).
+- `payload`: claims like `sub` (user id), `exp` (expiry), `iat` (issued-at), `iss` (issuer), custom fields.
+- `signature`: `HMAC` or public-key signature over `base64url(header) + "." + base64url(payload)` using the private key
+
