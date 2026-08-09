@@ -159,3 +159,34 @@ storing session state server-side.
 - `payload`: claims like `sub` (user id), `exp` (expiry), `iat` (issued-at), `iss` (issuer), custom fields.
 - `signature`: `HMAC` or public-key signature over `base64url(header) + "." + base64url(payload)` using the private key
 
+## API Design
+
+### Idempotency
+
+Idempotency mean that repeating the same logical request has the same intended server-side effect as executing it once.
+
+For example, a payment request retried 3 times must create **one** charge, not three.
+
+HTTP defines following idempotent methods:
+- `GET`
+- `HEAD`
+- `PUT`
+- `DELETE`
+- `OPTIONS`
+- `TRACE`
+
+It means that `POST` and `PATCH` are not guaranteed to be idempotent.
+
+#### Standard
+
+Idempotency does not mean the same response for each request. 
+For example `DELETE /resource/:id` may return `204 No Content` at first, then `404 Not Found` later, 
+while still being idempotent because the resource remains deleted.
+
+For risky `POST` actions like payment, bookings, provisioning, sending an external command use an `Idempotency-Key` header.
+The client generates one key **once per logical operation** and reuses it only for retires of that operation.
+
+`Idempotency-Key: 1f5e70b9-6866-4ee7-8af2-dd84e5edbe69`
+
+Server should store request fingerprint with information like `clientId`, `endpoint`, `idempotency key` 
+and verify them before taking action.
