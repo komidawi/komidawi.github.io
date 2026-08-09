@@ -70,6 +70,26 @@ Durability means success reported after `COMMIT` remains recoverable after a dat
 PostgreSQL relies on write-ahead logging (WAL): its recovery process can redo committed changes from the log, 
 while MVCC is primarily about concurrent visibility rather than durability.
 
+### Optimistic Locking
+
+`Optimistic locking` is a concurrency control strategy that assumes conflicts are rare, 
+so it does **not** block other writers while you read or edit data.
+
+In practice, it detects a conflict at save/commit time, usually with a version field like `@Version` in JPA/Hibernate, 
+and then fails the transaction if someone else changed the row first.
+
+Typical flow:
+
+- Transaction **A** reads row `X` with version `7`.
+- Transaction **B** reads the same row `X` with version `7`.
+- **B** updates and commits first, version becomes `8`.
+- **A** tries to update using expected version `7`.
+- Update affects `0` rows, so the ORM throws `OptimisticLockException` or equivalent.
+
+This is the usual default for business data where collisions are possible but not constant. 
+It fits CRUD screens, admin panels, user profiles, shopping carts, 
+and any workflow where you prefer **detect-and-retry** over blocking other requests.
+
 ### Pessimistic Locking
 
 `Pessimistic locking` means you lock a row or resource **before** updating it, 
