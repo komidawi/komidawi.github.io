@@ -225,3 +225,26 @@ Reverse Proxy is used for:
 - caching static responses
 - routing requests
 - protecting origins (WAF, IP Obfuscation)
+
+
+## Tech
+
+### Istio
+
+`Istio` is an open-source **service mesh** that transparently adds networking, security, traffic management
+and observability to microservices without changing application code.
+
+It uses `Envoy` for sidecars and a control plane (`Istiod`) to provide mTLS, routing, telemetry and policy enforcement
+across services.
+
+### Envoy
+
+`Envoy` is a high-performance, open-source **edge and service proxy** (L3/L4 with strong L7 features)
+originally built at Lyft and now part of CNCF.
+
+Used as an edge gateway, sidecar service proxy (service-mesh data plane), and API gateway for traffic management,
+security and observability in cloud-native systems.
+
+Common deployments are:
+- edge/ingress proxy (gateway) handling north-south traffic
+- sidecar service proxy inside each pod for east-west microservice traffic (service mesh data plane)
