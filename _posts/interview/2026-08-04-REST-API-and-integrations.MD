@@ -190,3 +190,28 @@ The client generates one key **once per logical operation** and reuses it only f
 
 Server should store request fingerprint with information like `clientId`, `endpoint`, `idempotency key` 
 and verify them before taking action.
+
+### Proxy and Reverse Proxy
+
+#### Basic
+
+**Forward Proxy (Client Proxy)** - sits between Client and the Internet to act on behalf of Client
+(privacy, filtering, caching).  
+
+**Reverse Proxy (Server Proxy)** - sits in front of one or more servers and handles incoming Client requests
+(load-balancing, SSL termination, caching, WAF).
+
+#### Standard
+
+Forward Proxy is used for:
+- privacy/anonimity
+- corporate web filtering
+- outbound caching
+- bypassing geo-restrictions
+
+Reverse Proxy is used for:
+- load-balancing
+- TLS termination
+- caching static responses
+- routing requests
+- protecting origins (WAF, IP Obfuscation)
