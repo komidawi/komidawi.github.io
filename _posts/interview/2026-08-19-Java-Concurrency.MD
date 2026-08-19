@@ -344,3 +344,35 @@ methodB() {
 }
 ```
 
+### `ReadWriteLock`
+
+- Used when resource is **read heavy**
+- **Many** `Threads` can `read`
+- **Only one** `Thread` can `write`
+- It contains two separate `Locks` - one for `Readers`, one for `Writer`
+- Only one of these `Locks` can be active at a given time
+- `Threads` are in Priority Queue and writers won't be starved
+
+```java
+ReadWriteLock lock =
+    new ReentrantReadWriteLock();
+
+writeValue() {
+    lock.writeLock.lock();
+    try {
+        value++;
+    } finally {
+        lock.writeLock().unlock();
+    }
+}
+
+getValue() {
+    lock.readLock.lock();
+    try {
+        sout(value);
+    } finally {
+        lock.readLock.unlock();
+    }
+}
+```
+
