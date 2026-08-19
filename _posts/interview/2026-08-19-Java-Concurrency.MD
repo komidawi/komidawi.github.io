@@ -12,11 +12,13 @@ tags: [ java, jvm, concurrency ] # TAG names should always be lowercase
 > This article is an unreviewed draft and may contain incorrect information.
 {: .prompt-danger }
 
+
 ## Fundamentals
 
 ### Basic Info
 
 - one Java `Thread` is one OS Thread
+
 
 ### Methods
 
@@ -27,6 +29,7 @@ tags: [ java, jvm, concurrency ] # TAG names should always be lowercase
   - give lock back away and wait for `notify()` call
 - `notify()`
   - notifies the waiting one to wake up
+
 
 ### Producer Consumer
 
@@ -52,9 +55,15 @@ consume:
         lock.wait()
 ```
 
-### `ExecutorService`
+### `volatile`
 
-#### `SingleThreadExecutor`
+- `volatile` - makes CPU read/write from common memory (like L3 Cache) and not is own registry
+
+
+## `ExecutorService`
+
+
+### `SingleThreadExecutor`
 
 ```java
 try(ExecutorService service = 
@@ -62,7 +71,9 @@ try(ExecutorService service =
     // service.execute(Runnable runnable)    
 }
 ```
-#### `FixedThreadPool`
+
+
+### `FixedThreadPool`
 
 ```java
 try(ExecutorService service = 
@@ -71,7 +82,8 @@ try(ExecutorService service =
 }
 ```
 
-#### `CachedThreadPool`
+
+### `CachedThreadPool`
 
 some kind of "autoscaling" `Pool` (60s idle → terminate Thread)
 
@@ -82,7 +94,8 @@ try(ExecutorService service =
 }
 ```
 
-#### `ScheduledExecutor`
+
+### Scheduled execution
 
 Turn on
 
@@ -117,6 +130,7 @@ try {
 }
 ```
 
+
 ### `Callable` and `Future`
 
 - `future.get()`
@@ -142,9 +156,11 @@ Future<Response> response =
 );
 ```
 
-### Synchronized Collections
 
-#### Manual
+## Synchronized Collections
+
+
+### Manual
 
 ```java
 List<Integer> list = 
@@ -158,29 +174,6 @@ List<Integer> list =
 - no fail-fast Iterators (e.g. not throwing `InterruptedException`)
 - performance overhead (lock acquisition/release overhead)
 
-### `CountDownLatch`
- 
-- `CountDownLatch` is **single use**, cannot be reused
-
-```java
-CountDownLatch latch = 
-    new CountDownLatch(int count);
-
-// e.g. for count = 3:
-Runnable runnable = (latch) -> {
-    Thread.sleep(random);
-    // decrease latch
-    latch.countDown();
-};
-
-new Thread(runnable).start();
-new Thread(runnable).start();
-new Thread(runnable).start();
-
-// blocks and awaits for all 3 `countDown()` calls
-latch.await();
-
-```
 
 ### `BlockingQueue`
 
@@ -217,6 +210,75 @@ Implementations:
 - `ConcurrentLinkedHashMap`
 - `ConcurrentNavigableMap`
 
+
+### `CopyOnWriteArray`
+
+- writers won't interfere with readers
+- some like `Git` branching
+
+```java
+List<Integer> list = 
+    new CopyOnWriteArrayList<>();
+
+// Thread1 can read
+sout(list);
+// Thread2 can write
+list.set(index, value);
+```
+
+
+## Atomic Variables
+
+### `read-modify-write` cycle
+
+`count++` is actually:
+
+1. Load count value
+2. Increment loaded value
+3. Set value to variable
+
+Basic Operations
+
+- `get()`
+- `set()`
+- `compareAndSet(expected, updated)` - if (expected) then → update
+- `getAndIncrement()` / `incrementAndGet()`
+- `getAndDecrement()` / `decrementAndGet()`
+
+### Implementations
+
+- `AtomicInteger`
+- `AtomicBoolean`
+- `AtomicLong`
+
+
+## Mutexes
+
+
+### `CountDownLatch`
+ 
+- `CountDownLatch` is **single use**, cannot be reused
+
+```java
+CountDownLatch latch = 
+    new CountDownLatch(int count);
+
+// e.g. for count = 3:
+Runnable runnable = (latch) -> {
+    Thread.sleep(random);
+    // decrease latch
+    latch.countDown();
+};
+
+new Thread(runnable).start();
+new Thread(runnable).start();
+new Thread(runnable).start();
+
+// blocks and awaits for all 3 `countDown()` calls
+latch.await();
+```
+
+
 ### `CyclicBarrier`
 
 E.g. used for multiple checkpoints during a play when we have to wait for all players to reach given point to proceed
@@ -230,6 +292,7 @@ CyclicBarrier barrier =
 
 barrier.await();
 ```
+
 
 ### `Exchanger`
 
@@ -248,22 +311,8 @@ String dataFromThread1 =
     exchanger.exchange("DataToFlow: Thread2 → Thread1"); // exchange takes place in this step
 ```
 
-### `CopyOnWriteArray`
 
-- writers won't interfere with readers
-- some like `Git` branching
-
-```java
-List<Integer> list = 
-    new CopyOnWriteArrayList<>();
-
-// Thread1 can read
-sout(list);
-// Thread2 can write
-list.set(index, value);
-```
-
-### Condition on Locks
+### `Condition`
 
 - `Condition` can be e.g. `Queue` being full → `await()`
 - when `Condition` is met, there goes signal → `signal()
@@ -300,6 +349,7 @@ try {
     lock.unlock(); // don't forget
 }
 ```
+
 
 ### `ReentrantLock`
 
@@ -344,6 +394,7 @@ methodB() {
 }
 ```
 
+
 ### `ReadWriteLock`
 
 - Used when resource is **read heavy**
@@ -376,11 +427,26 @@ getValue() {
 }
 ```
 
-### Visibility Problem
 
-- `volatile` - makes CPU read/write from common memory (like L3 Cache) and not is own registry
+### `Semaphore`
 
-### Deadlocks
+- `acquire() / acquire(permits)` - acquires permit(s)
+- `release() / release(permits)` - release permit(s)
+- `tryAcquire()`
+- `tryAcquire(timeout)`
+- `availablePermits()`
+
+```java
+Semaphore semaphore =
+    new Semaphore(int permits, boolean fair);
+
+semaphore.acquire();
+// ...
+semaphore.release();
+```
+
+
+## Deadlocks
 
 `Deadlock` is lock release dependency cycle
 
@@ -398,7 +464,8 @@ ThreadInfo[] threadInfo =
     mxBean.getThreadInfo(threadIds);
 ```
 
-#### How to prevent Deadlocks
+
+### How to prevent Deadlocks
 
 - Use Timeouts
 - Take care of Global Ordering of the Locks
@@ -406,48 +473,8 @@ ThreadInfo[] threadInfo =
 - Avoid nesting Locks
 - Use Thread-Safe alternatives
 
-### Atomic Variables
 
-#### `read-modify-write` cycle
-
-`count++` is actually:
-
-1. Load count value
-2. Increment loaded value
-3. Set value to variable
-
-Basic Operations
-
-- `get()`
-- `set()`
-- `compareAndSet(expected, updated)` - if (expected) then → update
-- `getAndIncrement()` / `incrementAndGet()`
-- `getAndDecrement()` / `decrementAndGet()`
-
-Atomic Variables
-
-- `AtomicInteger`
-- `AtomicBoolean`
-- `AtomicLong`
-
-### Semaphores
-
-- `acquire() / acquire(permits)` - acquires permit(s)
-- `release() / release(permits)` - release permit(s)
-- `tryAcquire()`
-- `tryAcquire(timeout)`
-- `availablePermits()`
-
-```java
-Semaphore semaphore =
-    new Semaphore(int permits, boolean fair);
-
-semaphore.acquire();
-// ...
-semaphore.release();
-```
-
-### `ForkJoinPool`
+## `ForkJoinPool`
 
 - similar to `ExecutorService`
 - `ForkJoin` can have subtasks
@@ -455,4 +482,3 @@ semaphore.release();
 - utilization of multi-core processors
 - simplified parallelism
 - efficient work stealing algorithms
-
