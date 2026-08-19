@@ -149,6 +149,8 @@ class Class {
 
 If you need atomic increments, use `AtomicInteger`, `LongAdder`, or locking depending on the use case.
 
+### 
+
 ## OOP and Code Design
 
 ### Coupling, cohesion, separation of concerns, and modularity
