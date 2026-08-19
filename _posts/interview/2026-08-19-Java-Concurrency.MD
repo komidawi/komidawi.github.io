@@ -163,3 +163,25 @@ latch.await();
 
 ```
 
+### `BlockingQueue`
+
+- taking from empty → `wait`
+- adding to full → `wait`
+
+
+- `put(E e)` - put or `wait` if full
+- `take(): E` - take or `wait` if empty
+- `offer(E e): boolean` - `true`: element added / `false`: queue full
+- `poll(): E?` - take from head / `null`: if empty
+- `peek(): E?` - get item without taking / `null` if empty
+
+
+- `BlockingQueue`
+  - `BlockingDeque` - double-ended queue (_deck_)
+  - `TransferQueue` - allows `Producer` to directly transfer to waiting `Consumer`
+  - `ArrayBlockingQueue` - bounded queue, backed by `ArrayList`
+  - `LinkedBlockingQueue` - (un)bounded queue, backed by `LinkedList`
+  - `PriorityBlockingQueue` - orders items by `Comparator`
+  - `DelayQueue` - only expired delay items can te taken
+  - `SynchronousQueue` - zero capacity, only direct transfers
+
