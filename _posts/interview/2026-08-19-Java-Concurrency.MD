@@ -301,3 +301,46 @@ try {
 }
 ```
 
+### `ReentrantLock`
+
+- `ReentrantLock` enables the same `Thread` to `lock()` multiple times without preceding `unlock()`
+- It has count how many times lock has been acquired by a given `Thread`
+- Release takes place when counter reaches 0
+- Fairness makes `Threads` waiting most time higher in the Priority Queue
+- Without Fairness result is non-deterministic
+
+Methods
+
+- `getHoldCount(): int` - count of current `Thread`
+- `tryLock(): boolean` - `true` if successfully acquired / `false` if not acquired
+- `tryLock(timeout, timeUnit): boolean` - similar with timeout
+- `isHeldByCurrentThread(): boolean`
+- `getQueueLength()`
+- `newCondition()`
+
+Example
+
+```java
+Lock lock = 
+    new ReentrantLock(boolean fair);
+
+methodA() {
+    lock.lock();
+    try {
+        value++;
+        methodB();
+    } finally {
+        lock.unlock();
+    }
+}
+
+methodB() {
+    lock.lock();
+    try {
+        value--;
+    } finally {
+        lock.unlock();
+    }
+}
+```
+

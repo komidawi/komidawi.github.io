@@ -21,7 +21,7 @@ title: Home
 
 ### Experience
 
-- 5+ years of experience in Java/Kotlin and Spring Boot in e-commerce and fintech ranging from maintaining a public API
+- ~6 years of experience in Java/Kotlin and Spring Boot in e-commerce and fintech ranging from maintaining a public API
   with ~20k RPM in a 900+ microservice landscape to architectural audit for a bank serving ~2M clients.
 - Comfortable with end‑to‑end delivery: requirements, modeling, implementation, QA, deployments, observability, support.
 - Increasing team effectiveness by improving automations, tooling, processes and proactively sharing knowledge.
