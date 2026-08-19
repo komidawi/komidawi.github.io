@@ -127,5 +127,39 @@ Future<Response> response = service.submit(
 );
 ```
 
+### Synchronized Collections
 
-<!-- @formatter:on -->
+#### Manual
+
+```java
+List<Integer> list = Collections.synchronizedList(new ArrayList());
+```
+
+- coarse-grained locking (single `Lock` for everything)
+- limited functionality (no additional methods for locking)
+- no fail-fast Iterators (e.g. not throwing `InterruptedException`)
+- performance overhead (lock acquisition/release overhead)
+
+### `CountDownLatch`
+ 
+- `CountDownLatch` is **single use**, cannot be reused
+
+```java
+CountDownLatch latch = new CountDownLatch(int count);
+
+// e.g. for count = 3:
+Runnable runnable = (latch) -> {
+    Thread.sleep(random);
+    // decrease latch
+    latch.countDown();
+};
+
+new Thread(runnable).start();
+new Thread(runnable).start();
+new Thread(runnable).start();
+
+// blocks and awaits for all 3 `countDown()` calls
+latch.await();
+
+```
+
