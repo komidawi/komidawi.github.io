@@ -57,14 +57,16 @@ consume:
 #### `SingleThreadExecutor`
 
 ```java
-try(ExecutorService service = Executors.newSingleThreadExecutor()) {
+try(ExecutorService service = 
+        Executors.newSingleThreadExecutor()) {
     // service.execute(Runnable runnable)    
 }
 ```
 #### `FixedThreadPool`
 
 ```java
-try(ExecutorService service = Executors.newFixedThreadPool(int nThreads)) {
+try(ExecutorService service = 
+        Executors.newFixedThreadPool(int nThreads)) {
     // service.execute(Runnable runnable)
 }
 ```
@@ -74,7 +76,8 @@ try(ExecutorService service = Executors.newFixedThreadPool(int nThreads)) {
 some kind of "autoscaling" `Pool` (60s idle → terminate Thread)
 
 ```java
-try(ExecutorService service = Executors.newCachedThreadPool()) {
+try(ExecutorService service = 
+        Executors.newCachedThreadPool()) {
     // service.execute(Runnable runnable)    
 }
 ```
@@ -85,7 +88,12 @@ Turn on
 
 ```java
 try(ExecutorService service = Executors.newSingleThreadExecutor()) {
-    service.scheduleAtFixedRate(Runnable task, long firstDelay, long period, TimeUnit timeUnit);    
+    service.scheduleAtFixedRate(
+        Runnable task, 
+        long firstDelay, 
+        long period, 
+        TimeUnit timeUnit
+    );
 }
 ```
 
@@ -94,7 +102,13 @@ Shut down
 ```java
 try {
     // true: executor terminated / false: timeout elapsed
-    (if (!service.awaitTermination(long timeout, TimeUnit timeUnit))) {
+    boolean succeeded = 
+        service.awaitTermination(
+            long timeout, 
+            TimeUnit timeUnit
+        );
+    
+    if (!succeeded) {
         // force shutdown
         service.shutdownNow();  // shutdown() would be graceful
     } catch (InterruptedException e) {
@@ -117,13 +131,14 @@ try {
 - `future.isDone()`
 
 ```java
-Future<Response> response = service.submit(
-    new Callable<Response>() {
-        @Override
-        public Response call() throws Exception {
-            return someRequest.invoke();
+Future<Response> response = 
+    service.submit(
+        new Callable<Response>() {
+            @Override
+            public Response call() throws Exception {
+                return someRequest.invoke();
+            }
         }
-    }
 );
 ```
 
@@ -132,7 +147,10 @@ Future<Response> response = service.submit(
 #### Manual
 
 ```java
-List<Integer> list = Collections.synchronizedList(new ArrayList());
+List<Integer> list = 
+    Collections.synchronizedList(
+        new ArrayList()
+    );
 ```
 
 - coarse-grained locking (single `Lock` for everything)
@@ -145,7 +163,8 @@ List<Integer> list = Collections.synchronizedList(new ArrayList());
 - `CountDownLatch` is **single use**, cannot be reused
 
 ```java
-CountDownLatch latch = new CountDownLatch(int count);
+CountDownLatch latch = 
+    new CountDownLatch(int count);
 
 // e.g. for count = 3:
 Runnable runnable = (latch) -> {
@@ -165,9 +184,12 @@ latch.await();
 
 ### `BlockingQueue`
 
+General behavior:
+
 - taking from empty → `wait`
 - adding to full → `wait`
 
+Methods:
 
 - `put(E e)` - put or `wait` if full
 - `take(): E` - take or `wait` if empty
@@ -175,13 +197,107 @@ latch.await();
 - `poll(): E?` - take from head / `null`: if empty
 - `peek(): E?` - get item without taking / `null` if empty
 
+Implementations:
 
-- `BlockingQueue`
-  - `BlockingDeque` - double-ended queue (_deck_)
-  - `TransferQueue` - allows `Producer` to directly transfer to waiting `Consumer`
-  - `ArrayBlockingQueue` - bounded queue, backed by `ArrayList`
-  - `LinkedBlockingQueue` - (un)bounded queue, backed by `LinkedList`
-  - `PriorityBlockingQueue` - orders items by `Comparator`
-  - `DelayQueue` - only expired delay items can te taken
-  - `SynchronousQueue` - zero capacity, only direct transfers
+- `BlockingDeque` - double-ended queue (_deck_)
+- `TransferQueue` - allows `Producer` to directly transfer to waiting `Consumer`
+- `ArrayBlockingQueue` - bounded queue, backed by `ArrayList`
+- `LinkedBlockingQueue` - (un)bounded queue, backed by `LinkedList`
+- `PriorityBlockingQueue` - orders items by `Comparator`
+- `DelayQueue` - only expired delay items can te taken
+- `SynchronousQueue` - zero capacity, only direct transfers
+
+
+### `ConcurrentMap`
+
+Implementations:
+
+- `ConcurrentHashMap`
+- `ConcurrentSkipListMap`
+- `ConcurrentLinkedHashMap`
+- `ConcurrentNavigableMap`
+
+### `CyclicBarrier`
+
+E.g. used for multiple checkpoints during a play when we have to wait for all players to reach given point to proceed
+
+```java
+CyclicBarrier barrier = 
+    new CyclicBarrier(
+        int cycle, 
+        Runnable action // what to do when releasing
+)
+
+barrier.await();
+```
+
+### `Exchanger`
+
+- synchronization point at which `Threads` can pair and swap elements within concurrent environment
+- e.g. used if you create pipeline for adjacent steps
+
+```java
+Exchanger<String> exchanger =
+    new Exchanger<>();
+
+// Thread1: calls
+String dataFromThread2 = 
+    exchanger.exchange("DataToFlow: Thread1 → Thread2"); // waiting for another `Thread`
+// Thread2: calls
+String dataFromThread1 = 
+    exchanger.exchange("DataToFlow: Thread2 → Thread1"); // exchange takes place in this step
+```
+
+### `CopyOnWriteArray`
+
+- writers won't interfere with readers
+- some like `Git` branching
+
+```java
+List<Integer> list = 
+    new CopyOnWriteArrayList<>();
+
+// Thread1 can read
+sout(list);
+// Thread2 can write
+list.set(index, value);
+```
+
+### Condition on Locks
+
+- `Condition` can be e.g. `Queue` being full → `await()`
+- when `Condition` is met, there goes signal → `signal()
+
+```java
+Lock lock = new ReentrantLock();
+
+// Conditions are not programmable, we have to use them properly
+// so naming is very important!
+Condition bufferNotFull = lock.newCondition();
+Condition bufferNotEmpty = lock.newCondition();
+
+// Producer:
+lock.lock();
+try {
+    while(buffer.size() == MAX_SIZE) {
+        bufferNotFull.await(); // wait for condition to be met
+    }
+    buffer.offer(item);
+    bufferNotEmpty.signal(); // signal that condition is now met
+} finally {
+    lock.unlock(); // don't forget to unlock
+}
+
+// Consumer:
+lock.lock();
+try {
+    while(buffer.size() == 0) {
+        bufferNotEmpty.await(); // wait until buffer is not empty
+    }
+    buffer.poll();
+    bufferNotFull.signal() // let them know buffer is not full anymore
+} finally {
+    lock.unlock(); // don't forget
+}
+```
 
