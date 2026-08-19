@@ -430,3 +430,20 @@ Atomic Variables
 - `AtomicBoolean`
 - `AtomicLong`
 
+### Semaphores
+
+- `acquire() / acquire(permits)` - acquires permit(s)
+- `release() / release(permits)` - release permit(s)
+- `tryAcquire()`
+- `tryAcquire(timeout)`
+- `availablePermits()`
+
+```java
+Semaphore semaphore =
+    new Semaphore(int permits, boolean fair);
+
+semaphore.acquire();
+// ...
+semaphore.release();
+```
+
