@@ -447,3 +447,12 @@ semaphore.acquire();
 semaphore.release();
 ```
 
+### `ForkJoinPool`
+
+- similar to `ExecutorService`
+- `ForkJoin` can have subtasks
+- work stealing
+- utilization of multi-core processors
+- simplified parallelism
+- efficient work stealing algorithms
+
