@@ -15,10 +15,14 @@ tags: [ java, jvm, concurrency ] # TAG names should always be lowercase
 
 ## Fundamentals
 
-### Basic Info
+### Thread Lifecycle
 
-- one Java `Thread` is one OS Thread
-
+- `NEW`
+- `RUNNABLE`
+- `BLOCKED`
+- `WAITING`
+- `TIMED_WAITING`
+- `TERMINATED`
 
 ### Methods
 
@@ -33,31 +37,37 @@ tags: [ java, jvm, concurrency ] # TAG names should always be lowercase
 
 ### Producer Consumer
 
-- Producer `produces >= 1` && Consumer `consumes >=1` && `common_buffer`
+- `Producer` `produces >= 1` && `Consumer` `consumes >=1` && `common_buffer`
 
 Simple pseudocode:
 
-```python
-produce:
-    if buffer < max:
-        buffer.add()
-        lock.notify()
-    else
-        lock.wait()
+```java
+// produce
+synchronized (this) {
+    while (buffer == MAX) {
+        wait()
+    }
+    buffer.add()
+    notifyAll()
+}
 ```
 
-```python
-consume:
-    if buffer > 0:
-        buffer.take()
-        lock.notify()
-    else
-        lock.wait()
+```java
+// consume
+synchronized (this) {
+    while (buffer == 0) {
+        wait()
+    }
+    buffer.take()
+    notify()
+}
 ```
 
 ### `volatile`
 
-- `volatile` - makes CPU read/write from common memory (like L3 Cache) and not is own registry
+- used for main-memory visibility guarantees in JVM
+- affects happens-before ordering
+- makes CPU read/write from common memory e.g. L3 Cache and not its own register
 
 
 ## `ExecutorService`
@@ -100,7 +110,7 @@ try(ExecutorService service =
 Turn on
 
 ```java
-try(ExecutorService service = Executors.newSingleThreadExecutor()) {
+try(ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor()) {
     service.scheduleAtFixedRate(
         Runnable task, 
         long firstDelay, 
@@ -124,9 +134,9 @@ try {
     if (!succeeded) {
         // force shutdown
         service.shutdownNow();  // shutdown() would be graceful
-    } catch (InterruptedException e) {
-        service.shutdownNow();
     }
+} catch (InterruptedException e) {
+    service.shutdownNow();
 }
 ```
 
@@ -156,11 +166,38 @@ Future<Response> response =
 );
 ```
 
+### `CompletableFuture`
+
+- `Future<T>` answers: 
+  - "Has this submitted task finished, and can I obtain its result?" 
+  - Usually you call `get()`, which waits.
+
+- `CompletableFuture<T>` answers: 
+  - "When this finishes, what should happen next?" 
+  - You attach continuations such as `thenApply()`, `thenCompose()`, and `handle()` instead of blocking immediately.
+
+```java
+ExecutorService ioExecutor = Executors.newFixedThreadPool(32);
+
+CompletableFuture<OrderSummary> summaryFuture =
+    CompletableFuture
+        .supplyAsync(() -> customerClient.getCustomer(customerId), ioExecutor)
+        .thenCompose(customer -> CompletableFuture.supplyAsync(() -> orderClient.findRecentOrders(customer.id()), ioExecutor))
+        .thenApply(orders -> OrderSummary.from(orders))
+        .exceptionally(ex -> { 
+            log.warn("Unable to build order summary for {}", customerId, ex);
+            return OrderSummary.unavailable();
+        });
+```
 
 ## Synchronized Collections
 
 
 ### Manual
+
+- coarse-grained locking (single `Lock` for everything)
+- limited functionality (no additional methods for locking)
+- performance overhead (lock acquisition/release overhead)
 
 ```java
 List<Integer> list = 
@@ -168,11 +205,6 @@ List<Integer> list =
         new ArrayList()
     );
 ```
-
-- coarse-grained locking (single `Lock` for everything)
-- limited functionality (no additional methods for locking)
-- no fail-fast Iterators (e.g. not throwing `InterruptedException`)
-- performance overhead (lock acquisition/release overhead)
 
 
 ### `BlockingQueue`
@@ -194,10 +226,10 @@ Implementations:
 
 - `BlockingDeque` - double-ended queue (_deck_)
 - `TransferQueue` - allows `Producer` to directly transfer to waiting `Consumer`
-- `ArrayBlockingQueue` - bounded queue, backed by `ArrayList`
-- `LinkedBlockingQueue` - (un)bounded queue, backed by `LinkedList`
+- `ArrayBlockingQueue` - bounded queue, backed by fixed array
+- `LinkedBlockingQueue` - (un)bounded queue, backed by linked nodes
 - `PriorityBlockingQueue` - orders items by `Comparator`
-- `DelayQueue` - only expired delay items can te taken
+- `DelayQueue` - only expired delay items can be taken
 - `SynchronousQueue` - zero capacity, only direct transfers
 
 
@@ -207,11 +239,9 @@ Implementations:
 
 - `ConcurrentHashMap`
 - `ConcurrentSkipListMap`
-- `ConcurrentLinkedHashMap`
-- `ConcurrentNavigableMap`
 
 
-### `CopyOnWriteArray`
+### `CopyOnWriteArrayList`
 
 - writers won't interfere with readers
 - some like `Git` branching
@@ -250,9 +280,12 @@ Basic Operations
 - `AtomicInteger`
 - `AtomicBoolean`
 - `AtomicLong`
+- `AtomicReference`
+- `LongAdder`
+- `DoubleAdder`
 
 
-## Mutexes
+## Locks & Synchronizers
 
 
 ### `CountDownLatch`
@@ -264,7 +297,7 @@ CountDownLatch latch =
     new CountDownLatch(int count);
 
 // e.g. for count = 3:
-Runnable runnable = (latch) -> {
+Runnable runnable = () -> {
     Thread.sleep(random);
     // decrease latch
     latch.countDown();
@@ -315,7 +348,7 @@ String dataFromThread1 =
 ### `Condition`
 
 - `Condition` can be e.g. `Queue` being full → `await()`
-- when `Condition` is met, there goes signal → `signal()
+- when `Condition` is met, there goes signal → `signal()`
 
 ```java
 Lock lock = new ReentrantLock();
@@ -402,14 +435,14 @@ methodB() {
 - **Only one** `Thread` can `write`
 - It contains two separate `Locks` - one for `Readers`, one for `Writer`
 - Only one of these `Locks` can be active at a given time
-- `Threads` are in Priority Queue and writers won't be starved
+- `Threads` are in Priority Queue and with fairness writers won't be starved
 
 ```java
 ReadWriteLock lock =
     new ReentrantReadWriteLock();
 
 writeValue() {
-    lock.writeLock.lock();
+    lock.writeLock().lock();
     try {
         value++;
     } finally {
@@ -418,11 +451,11 @@ writeValue() {
 }
 
 getValue() {
-    lock.readLock.lock();
+    lock.readLock().lock();
     try {
         sout(value);
     } finally {
-        lock.readLock.unlock();
+        lock.readLock().unlock();
     }
 }
 ```
@@ -444,6 +477,18 @@ semaphore.acquire();
 // ...
 semaphore.release();
 ```
+
+
+### `StampedLock`
+
+TODO
+optimistic-read alternative to `ReadWriteLock`
+
+
+### `Phaser`
+
+TODO
+more flexible multi-phase alternative to `CyclicBarrier`
 
 
 ## Deadlocks
@@ -482,3 +527,6 @@ ThreadInfo[] threadInfo =
 - utilization of multi-core processors
 - simplified parallelism
 - efficient work stealing algorithms
+
+- `RecursiveTask`
+- `RecursiveAction`
