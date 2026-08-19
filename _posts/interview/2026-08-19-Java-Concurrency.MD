@@ -376,3 +376,57 @@ getValue() {
 }
 ```
 
+### Visibility Problem
+
+- `volatile` - makes CPU read/write from common memory (like L3 Cache) and not is own registry
+
+### Deadlocks
+
+`Deadlock` is lock release dependency cycle
+
+- `jps -l` - list processes running Java
+- `kill -3 <PID>` - kill with Thread Dump
+
+```java
+ThreadMXBean mxBean = 
+    ManagementFactory.getThreadMXBean();
+
+long[] threadIds =
+    mxBean.findDeadlockedThreads();
+
+ThreadInfo[] threadInfo =
+    mxBean.getThreadInfo(threadIds);
+```
+
+#### How to prevent Deadlocks
+
+- Use Timeouts
+- Take care of Global Ordering of the Locks
+  - e.g. always Lock in ascending order (LockA, LockB, LockC)
+- Avoid nesting Locks
+- Use Thread-Safe alternatives
+
+### Atomic Variables
+
+#### `read-modify-write` cycle
+
+`count++` is actually:
+
+1. Load count value
+2. Increment loaded value
+3. Set value to variable
+
+Basic Operations
+
+- `get()`
+- `set()`
+- `compareAndSet(expected, updated)` - if (expected) then → update
+- `getAndIncrement()` / `incrementAndGet()`
+- `getAndDecrement()` / `decrementAndGet()`
+
+Atomic Variables
+
+- `AtomicInteger`
+- `AtomicBoolean`
+- `AtomicLong`
+
