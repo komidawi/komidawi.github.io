@@ -250,4 +250,20 @@ I use pessimistic row locking with a bounded lock wait.
 I keep the transaction small, acquire resources in a stable order, 
 monitor lock waits and deadlocks, and make retries idempotent.”_
 
+#### Alternatives
+
+Avoiding read-then-write cycle and explicit locking using single atomic statement.  
+If it returns no row, the reservation did not happen. 
+It is often the simplest and highest-throughput solution for a counter-like invariant.
+
+```postgresql
+UPDATE product_inventory
+SET available_quantity = available_quantity - :quantity,
+    version = version + 1
+WHERE id = :id
+  AND available_quantity >= :quantity
+RETURNING id, available_quantity, version;
+```
+
+
 <!-- @formatter:on -->
