@@ -92,6 +92,8 @@ and any workflow where you prefer **detect-and-retry** over blocking other reque
 
 #### Examples
 
+##### SQL
+
 ```sql
 CREATE TABLE product_inventory (
     id                  BIGINT PRIMARY KEY,
@@ -133,6 +135,43 @@ WHERE id = 42
     - inventory is insufficient 
   - re-read and decide whether to retry, return a conflict, or report insufficient stock
 
+##### Java/Hibernate
+
+```java
+@Entity
+@Table(name = "product_inventory")
+public class ProductInventory {
+
+    @Id
+    private Long id;
+
+    @Column(name = "available_quantity", nullable = false)
+    private int availableQuantity;
+
+    @Version
+    private long version;
+
+    public void reserve(int quantity) {
+        if (quantity <= 0 || availableQuantity < quantity) {
+            throw new IllegalArgumentException("Insufficient inventory");
+        }
+        availableQuantity -= quantity;
+    }
+}
+```
+
+```java
+@Transactional
+public void reserve(Long productId, int quantity) {
+    ProductInventory inventory = repository.findById(productId)
+        .orElseThrow(() -> new NoSuchElementException("Product not found"));
+
+    inventory.reserve(quantity);
+    // At flush/commit, Hibernate checks and increments `version`.
+    // A conflicting modification results in an optimistic-lock exception.
+}
+```
+
 ### Pessimistic Locking
 
 `Pessimistic locking` means you lock a row or resource **before** updating it, 
@@ -140,7 +179,15 @@ so other transactions cannot acquire conflicting locks or perform conflicting mo
 
 This is useful for things like balances, inventory, reservations, or any workflow where two writers must not race.
 
+#### Limitations
+
+Pessimistic locking creates deadlock risk when transactions lock multiple rows in inconsistent orders. 
+Mitigate this by locking rows in a consistent order, keeping transactions short, setting sensible timeouts, 
+and treating deadlock/serialization errors as retryable only when the operation is idempotent.
+
 #### Example
+
+##### SQL
 
 ```sql
 BEGIN;
@@ -158,6 +205,28 @@ WHERE id = 42
 COMMIT;
 ```
 
+##### Java/Hibernate
+
+```java
+public interface ProductInventoryRepository
+        extends JpaRepository<ProductInventory, Long> {
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT p FROM ProductInventory p WHERE p.id = :id")
+    Optional<ProductInventory> findByIdForUpdate(@Param("id") Long id);
+}
+```
+
+```java
+@Transactional
+public void reserveWithLock(Long productId, int quantity) {
+    ProductInventory inventory = repository.findByIdForUpdate(productId)
+        .orElseThrow(() -> new NoSuchElementException("Product not found"));
+
+    inventory.reserve(quantity);
+}
+```
+
 #### Standard
 
 In practice, this is a database concurrency strategy that favors **preventing** conflicts over detecting them later.
@@ -171,5 +240,14 @@ A common SQL equivalent is `SELECT ... FOR UPDATE` for exclusive locking.
 The main tradeoff is **simplicity vs throughput**: pessimistic locking reduces lost updates, but it also increases blocking, 
 lock wait time, and deadlock risk. It is usually a better fit when contention is high or when a failed retry would be costly, 
 while optimistic locking is often better when conflicts are rare.
+
+#### Short Answer
+
+_I default to an atomic conditional update or optimistic locking when conflicts are relatively rare, 
+because it preserves throughput and avoids holding locks across remote calls.  
+If concurrent updates to the same record are frequent and the critical section is short, 
+I use pessimistic row locking with a bounded lock wait. 
+I keep the transaction small, acquire resources in a stable order, 
+monitor lock waits and deadlocks, and make retries idempotent.”_
 
 <!-- @formatter:on -->
