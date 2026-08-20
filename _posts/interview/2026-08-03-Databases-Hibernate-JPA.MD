@@ -70,6 +70,196 @@ Durability means success reported after `COMMIT` remains recoverable after a dat
 PostgreSQL relies on write-ahead logging (WAL): its recovery process can redo committed changes from the log, 
 while MVCC is primarily about concurrent visibility rather than durability.
 
+
+### Isolation Levels
+
+#### Core anomalies
+
+- **Dirty read**
+  - Transaction `A` sees a change made by `B` **before** `B` commits. 
+- **Non-repeatable read**
+  - `A` reads a row **twice**; `B` commits an update **between** the reads, so `A` gets two **different** values.
+- **Phantom read**
+  - `A` runs the same predicate **query twice**; `B` **commits** an insert/delete that **changes which rows match**.
+- **Write skew / serialization anomaly**
+  - Two transactions each read a **shared condition**, **update different rows**, and jointly violate a business rule. 
+  - This can happen without either transaction updating the same row.
+
+
+#### ANSI SQL
+
+| Level              | Dirty reads | Non-repeatable reads | Phantom reads  | Typical meaning                                                    |
+|--------------------|-------------|----------------------|----------------|--------------------------------------------------------------------|
+| `READ UNCOMMITTED` | ❌          | ❌                   | ❌             | May read another transaction’s uncommitted work                    |
+| `READ COMMITTED`   | ✅          | ❌                   | ❌             | Each statement sees only data committed when that statement begins |
+| `REPEATABLE READ`  | ✅          | ✅                   | ❌ by standard | Rows already read remain stable for the transaction                |
+| `SERIALIZABLE`     | ✅          | ✅                   | ✅             | Outcome must be equivalent to some one-at-a-time ordering          |
+
+#### PostgreSQL
+
+`PostgreSQL` isolation levels control what one transaction can observe 
+while other transactions are reading or writing the same data. 
+PostgreSQL uses MVCC (multi-version concurrency control), 
+so readers generally do not block writers and vice versa.
+
+| Requested level    | PostgreSQL behavior                        | Snapshot scope                                       | Main anomalies still possible                                                             |
+|--------------------|--------------------------------------------|------------------------------------------------------|-------------------------------------------------------------------------------------------|
+| `READ UNCOMMITTED` | Treated as `READ COMMITTED`                | Per statement                                        | Non-repeatable reads, serialization anomalies                                             |
+| `READ COMMITTED`   | Default                                    | Each SQL statement gets a new view of committed data | Non-repeatable reads, phantoms, write skew                                                |
+| `REPEATABLE READ`  | Transaction-consistent snapshot            | First query/data-change through transaction end      | Serialization anomalies; PostgreSQL prevents phantom reads despite the SQL-standard table |
+| `SERIALIZABLE`     | Strongest; as if one transaction at a time | Transaction-consistent snapshot & conflict detection | None if transactions succeed; one may be aborted and must be retried                      |
+
+
+#### Examples
+
+```sql
+CREATE TABLE accounts (
+  id        INTEGER PRIMARY KEY,
+  balance   INTEGER NOT NULL
+);
+
+INSERT INTO accounts VALUES
+  (1, 100),
+  (2, 100);
+```
+
+##### Read Commited
+
+`READ COMMITTED`: each statement sees new commits
+
+This is PostgreSQL’s default.   
+Each statement sees rows committed **before** that statement begins.
+
+Session A read
+
+```sql
+BEGIN;  -- default: READ COMMITTED
+
+SELECT balance FROM accounts WHERE id = 1;
+-- 100
+```
+
+Session B update
+
+```sql
+UPDATE accounts
+SET balance = 80
+WHERE id = 1;
+
+COMMIT;
+```
+
+Session A update
+
+```sql
+SELECT balance FROM accounts WHERE id = 1;
+-- 80: a later statement sees B's committed update
+
+COMMIT;
+```
+
+##### Repeatable Read
+
+`REPEATABLE READ`: a stable transaction snapshot
+
+Under `REPEATABLE READ`, every statement sees the database as it stood 
+when the transaction’s **first query** or **data-modification statement** ran.
+
+Session A read
+
+```sql
+BEGIN ISOLATION LEVEL REPEATABLE READ;
+
+SELECT balance FROM accounts WHERE id = 1;
+-- 100
+```
+
+Session B update
+
+```sql
+UPDATE accounts
+SET balance = 80
+WHERE id = 1;
+
+COMMIT;
+```
+
+Session A update
+
+```sql
+SELECT balance FROM accounts WHERE id = 1;
+-- Still 100
+
+COMMIT;
+```
+
+##### Serializable
+
+`SERIALIZABLE`: enforce business invariants
+
+Suppose at least one doctor must remain on call:
+
+```sql
+CREATE TABLE on_call (
+  doctor text PRIMARY KEY,
+  on_duty boolean NOT NULL
+);
+
+INSERT INTO on_call VALUES
+  ('Ava', true),
+  ('Ben', true);
+```
+
+Two concurrent `REPEATABLE READ` transactions can both observe two doctors on duty, 
+each turn off a different doctor, and leave nobody on duty.  
+`SERIALIZABLE` detects that unsafe combination.
+
+Session A
+
+```sql
+BEGIN ISOLATION LEVEL SERIALIZABLE;
+
+SELECT count(*) FROM on_call WHERE on_duty;
+-- 2
+
+UPDATE on_call
+SET on_duty = false
+WHERE doctor = 'Ava';
+
+COMMIT;
+```
+
+Session B
+
+```sql
+BEGIN ISOLATION LEVEL SERIALIZABLE;
+
+SELECT count(*) FROM on_call WHERE on_duty;
+-- 2
+
+UPDATE on_call
+SET on_duty = false
+WHERE doctor = 'Ben';
+
+COMMIT;
+-- One transaction may instead fail:
+-- ERROR: could not serialize access due to read/write dependencies among transactions
+```
+
+#### Choice
+
+- `READ COMMITTED`
+  - for most OLTP application code; it is the PostgreSQL default.
+- `REPEATABLE READ`
+  - when several reads must agree on one consistent snapshot
+  - such as a report or multi-step calculation
+- `SERIALIZABLE`
+  - when correctness depends on cross-row or predicate-based invariants, 
+  - such as scheduling, inventory reservations, limits, or financial rules.
+
+At `REPEATABLE READ` or `SERIALIZABLE`, implement bounded retry handling for `SQLSTATE 40001`. 
+`PostgreSQL` explicitly requires applications using those levels to be prepared for serialization-related retries.
+
 ### Optimistic Locking
 
 `Optimistic locking` is a concurrency control strategy that assumes conflicts are rare, 
