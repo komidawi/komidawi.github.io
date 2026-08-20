@@ -72,6 +72,12 @@ synchronized (this) {
 
 ## `ExecutorService`
 
+- `execute(Runnable)` - Schedules a `Runnable`; does not return a result handle.
+- `submit(Runnable)` - Schedules a `Runnable` and returns a `Future<?>` to track completion or failure.
+- `submit(Callable<T>)` - Schedules a value-returning task and returns a `Future<T>`. 
+- `shutdown()` - Stops accepting new tasks and lets already submitted tasks finish.
+- `shutdownNow()` - Attempts to stop active tasks by interrupting workers and returns tasks that never started.
+- `awaitTermination(timeout, unit)` - Blocks until termination, timeout, or interruption.
 
 ### `SingleThreadExecutor`
 
@@ -235,6 +241,15 @@ Implementations:
 
 ### `ConcurrentMap`
 
+Basic Operations
+
+- `putIfAbsent(key, value)`
+- `computeIfAbsent(key, fn)`
+- `compute()`
+- `merge(key, value, fn)` - inserts a value if absent; otherwise combines old and new values atomically.
+- `replace(key, value)` - replaces only when the existing value equals oldValue.
+- `remove(key, value)` - removes only when the current value equals the supplied value.
+
 Implementations:
 
 - `ConcurrentHashMap`
@@ -245,6 +260,14 @@ Implementations:
 
 - writers won't interfere with readers
 - some like `Git` branching
+
+- `add(element)` - appends an element by creating and publishing a new backing-array snapshot.
+- `addIfAbsent(element)` - adds the element only when it is not already present.
+- `set(index, element)` - replaces an element by copying and publishing a new array.
+- `remove(element)` - removes the first matching element by creating a new array.
+- `remove(index)` - removes the element at the index by creating a new array.
+- `get(index)` - reads an element without copying the array.
+- `contains(element)` - checks whether an element exists in the current snapshot.
 
 ```java
 List<Integer> list = 
@@ -394,6 +417,8 @@ try {
 
 Methods
 
+- `lock()`
+- `unlock()`
 - `getHoldCount(): int` - count of current `Thread`
 - `tryLock(): boolean` - `true` if successfully acquired / `false` if not acquired
 - `tryLock(timeout, timeUnit): boolean` - similar with timeout
@@ -436,6 +461,9 @@ methodB() {
 - It contains two separate `Locks` - one for `Readers`, one for `Writer`
 - Only one of these `Locks` can be active at a given time
 - `Threads` are in Priority Queue and with fairness writers won't be starved
+
+- `readLock()`
+- `writeLock()`
 
 ```java
 ReadWriteLock lock =
