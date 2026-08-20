@@ -90,12 +90,73 @@ This is the usual default for business data where collisions are possible but no
 It fits CRUD screens, admin panels, user profiles, shopping carts, 
 and any workflow where you prefer **detect-and-retry** over blocking other requests.
 
+#### Examples
+
+```sql
+CREATE TABLE product_inventory (
+    id                  BIGINT PRIMARY KEY,
+    available_quantity  INTEGER NOT NULL CHECK (available_quantity >= 0),
+    version             BIGINT NOT NULL DEFAULT 0
+);
+
+INSERT INTO product_inventory (id, available_quantity)
+VALUES (42, 10);
+```
+
+```sql
+-- Read the row
+SELECT id, available_quantity, version
+FROM product_inventory
+WHERE id = 42;
+```
+
+| id | available_quantity | version |
+| -- | ------------------ | ------- |
+| 42 | 10                 | 7       |
+
+```sql
+-- Update the row
+UPDATE product_inventory
+SET available_quantity = available_quantity - 2,
+    version = version + 1
+WHERE id = 42
+  AND version = 7
+  AND available_quantity >= 2;
+```
+
+- `1` row updated
+  - reservation succeeded
+- `0` rows updated
+  - it may indicate that:
+    - another transaction changed the row first 
+    - the record no longer exists
+    - inventory is insufficient 
+  - re-read and decide whether to retry, return a conflict, or report insufficient stock
+
 ### Pessimistic Locking
 
 `Pessimistic locking` means you lock a row or resource **before** updating it, 
 so other transactions cannot acquire conflicting locks or perform conflicting modifications until the lock is released.
 
 This is useful for things like balances, inventory, reservations, or any workflow where two writers must not race.
+
+#### Example
+
+```sql
+BEGIN;
+
+SELECT id, available_quantity
+FROM product_inventory
+WHERE id = 42
+    FOR UPDATE;
+
+UPDATE product_inventory
+SET available_quantity = available_quantity - 2
+WHERE id = 42
+  AND available_quantity >= 2;
+
+COMMIT;
+```
 
 #### Standard
 
