@@ -60,14 +60,14 @@ Comparing to other options of obtaining relevant information, this blog has some
 These are my most in-depth knowledge entries. <br />
 All content written manually to solidify understanding and remember it better.
 
-- [Microservices]({% post_url knowledge/engineering/2024-03-28-microservices %}) - notes taken during reading _Building Microservices_ from O'Reilly, detailed summary
-- [Linux/shell]({% post_url knowledge/shell/2024-03-26-LinuxShell %}) - interesting features of zsh + oh-my-zsh + Powerlevel10k combo and other Linux stuff
-- [Docker]({% post_url knowledge/devops/2024-05-28-Docker %}) - commands, images, networking, volumes and Dockerfile
-- [Terraform]({% post_url knowledge/devops/2024-03-29-Terraform %}) - cheatsheet of syntax, descriptions of features, best practices
+- [Microservices]({% post_url knowledge/engineering/2026-04-23-microservices %}) - notes taken during reading _Building Microservices_ from O'Reilly, detailed summary
+- [Linux/shell]({% post_url knowledge/shell/2024-10-28-LinuxShell %}) - interesting features of zsh + oh-my-zsh + Powerlevel10k combo and other Linux stuff
+- [Docker]({% post_url knowledge/devops/2025-03-26-Docker %}) - commands, images, networking, volumes and Dockerfile
+- [Terraform]({% post_url knowledge/devops/2025-01-11-Terraform %}) - cheatsheet of syntax, descriptions of features, best practices
 - [Google Cloud]({% post_url knowledge/devops/2024-03-20-GoogleCloud %}) - GCP services, gcloud commands and comparison of available solutions
-- [Frontend]({% post_url knowledge/frontend/2024-03-22-frontend %}) - all around frontend - HTML, CSS, VS Code tooling. Warm-up before Angular.
-- [Angular]({% post_url knowledge/frontend/2024-03-23-Angular %}) - components, directives, dependency injection, testing, patterns and hands-on snippets
-- [Cassandra]({% post_url knowledge/database/2024-03-30-Cassandra %}) - architecture, CQL, replication and consistency explained
+- [Frontend]({% post_url knowledge/frontend/2024-04-11-frontend %}) - all around frontend - HTML, CSS, VS Code tooling. Warm-up before Angular.
+- [Angular]({% post_url knowledge/frontend/2024-06-08-Angular %}) - components, directives, dependency injection, testing, patterns and hands-on snippets
+- [Cassandra]({% post_url knowledge/database/2025-03-13-Cassandra %}) - architecture, CQL, replication and consistency explained
 
 
 Posts use a consistent set of symbols to flag certain types of content - see the [legend](/legend/) page for the full list.
