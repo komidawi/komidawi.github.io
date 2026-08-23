@@ -3,8 +3,8 @@ title: "Draft: [Interview] Java Core and JVM"
 description: Interview questions and answers about Java language and JVM details
 date: 2026-06-03 00:00:00 +0100
 math: true
-categories: [ interview ]
-tags: [ java, jvm ] # TAG names should always be lowercase
+categories: [ interview, java ]
+tags: [ java, jvm, interview ] # TAG names should always be lowercase
 ---
 
 <!-- @formatter:off -->

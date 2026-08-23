@@ -2,7 +2,7 @@
 title: GitLab CI/CD
 date: 2025-07-17 00:00:00 +0100
 categories: [ devops ]
-tags: [ gitlab, cicd ] # TAG names should always be lowercase
+tags: [ gitlab, cicd, devops, repository ] # TAG names should always be lowercase
 ---
 
 Knowledge, commands, parameters, configurations, guides, settings and everything relevant when using GitLab CI/CD

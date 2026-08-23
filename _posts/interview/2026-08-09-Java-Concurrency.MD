@@ -3,8 +3,8 @@ title: "Draft: [Interview] Java Concurrency"
 description: Interview questions and answers about Java Concurrency
 date: 2026-08-09 00:00:00 +0100
 #math: true
-categories: [ interview ]
-tags: [ java, jvm, concurrency ] # TAG names should always be lowercase
+categories: [ interview, java ]
+tags: [ java, jvm, concurrency, interview ] # TAG names should always be lowercase
 ---
 
 <!-- @formatter:off -->

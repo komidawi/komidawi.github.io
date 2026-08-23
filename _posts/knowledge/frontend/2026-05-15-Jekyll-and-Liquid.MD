@@ -2,7 +2,7 @@
 title: Jekyll & Liquid
 date: 2026-05-15 00:00:00 +0100
 categories: [ frontend ]
-tags: [ jekyll, liquid ] # TAG names should always be lowercase
+tags: [ jekyll, liquid, frontend ] # TAG names should always be lowercase
 ---
 
 Knowledge, commands, configurations, guides and everything helpful while using Jekyll and Liquid.
