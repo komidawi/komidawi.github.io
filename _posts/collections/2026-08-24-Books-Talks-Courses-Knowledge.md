@@ -22,6 +22,12 @@ tags: [ collections, engineering, books, talks, courses, knowledge ] # TAG names
 
 [https://www.aidevs.pl/](https://www.aidevs.pl/)
 
+### Neural Networks: Zero to Hero (by Andrej Karpathy)
+
+![](https://i.ytimg.com/vi/VMj-3S1tku0/hq720.jpg?sqp=-oaymwEXCK4FEIIDSFryq4qpAwkIARUAAIhCGAE=&rs=AOn4CLCha6BQ_8h-Yt_aMOBw3vN19gfgnQ)
+
+[https://www.youtube.com/playlist?list=PLAqhIrjkxbuWI23v9cThsA9GvCAUhRvKZ](https://www.youtube.com/playlist?list=PLAqhIrjkxbuWI23v9cThsA9GvCAUhRvKZ)
+
 ### Claude Code: The Practical Guide (by Maximilian Schwarzmüller)
 
 ![](https://media.licdn.com/dms/image/v2/D4D22AQHknhf9vdaRbw/feedshare-shrink_800/B4DZwErTlYG8Ag-/0/1769604987604?e=2147483647&v=beta&t=k-JVG24ziXd8CpjllRJiB4uV7mRWbQEM-Eroy38Fhpc)
