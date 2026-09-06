@@ -1,4 +1,4 @@
-# .gitignore of komidawi v1.1.1
+# .gitignore of komidawi v1.2
 
 # "One solution to rule them all."
 
@@ -20,7 +20,12 @@
 # Yarn
 # zsh
 
+# -----------------------------------------------------------------------------
+
 # Changelog
+
+# v1.2
+# Add explicit space for Exclusions
 
 # v1.1.1
 # Add: Description, list of covered topics
@@ -33,6 +38,7 @@
 # Windows, Linux, MacOS, JetBrains, VS Code, zsh
 # Git, Gradle, Maven, Angular, Node, Yarn, Terraform
 
+# -----------------------------------------------------------------------------
 
 # Created by https://www.toptal.com/developers/gitignore/api/git,angular,terraform,gradle,maven,jetbrains+all,windows,linux,macos,node,visualstudiocode,zsh,yarn
 # Edit at https://www.toptal.com/developers/gitignore?templates=git,angular,terraform,gradle,maven,jetbrains+all,windows,linux,macos,node,visualstudiocode,zsh,yarn
@@ -583,3 +589,6 @@ replay_pid*
 
 # End of https://www.toptal.com/developers/gitignore/api/java,kotlin
 
+# -----------------------------------------------------------------------------
+
+### EXCLUSIONS ###
