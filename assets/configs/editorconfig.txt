@@ -1,6 +1,11 @@
-# EditorConfig (komidawi) v1.2.0
+# EditorConfig (komidawi) v1.2.1
 
-# Changelog
+### -------- DOCS -------- ###
+
+## Changelog
+
+# 1.2.1
+# JavaScript: Add `*.mjs` extension
 
 # v1.2.0
 # Java: Disable wildcard imports
@@ -11,6 +16,7 @@
 # v1.0.0
 # First version covering: charset, EOL, indent, newlines, TS quotes, Markdown, Spring Properties
 
+### -------- FILE CONTENT -------- ###
 
 root = true
 
